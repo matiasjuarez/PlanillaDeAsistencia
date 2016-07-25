@@ -8,10 +8,13 @@ namespace Entidades
     public class AsistenciaDatosParaTabla: IComparable<AsistenciaDatosParaTabla>
     {
         private string stringPorDefecto = "N/A";
+        private Asistencia asistencia;
+
         public AsistenciaDatosParaTabla(Asistencia asistencia)
         {
-            if (asistencia.Asignatura != null) NombreAsignatura = asistencia.Asignatura.Nombre;
-            else NombreAsignatura = stringPorDefecto;
+            this.asistencia = asistencia;
+
+            
 
             ComienzoClaseEsperado = asistencia.ComienzoClaseEsperado.TimeOfDay.ToString();
             FinClaseEsperado = asistencia.FinClaseEsperado.TimeOfDay.ToString();
@@ -32,22 +35,27 @@ namespace Entidades
             IdAsistencia = asistencia.Id;
         }
 
-        private String nombreAsignatura;
         public String NombreAsignatura
         {
-            get { return nombreAsignatura; }
-            set { nombreAsignatura = value; }
+            get {
+                if (asistencia.Asignatura != null) return asistencia.Asignatura.Nombre;
+                else return stringPorDefecto;
+            }
+            set {
+                asistencia.Asignatura.Nombre = value;
+            }
         }
 
-        private String comienzoClaseEsperado;
         public String ComienzoClaseEsperado
         {
             get {
-                return comienzoClaseEsperado;
+                string hora = asistencia.ComienzoClaseEsperado.ToString("HH:mm");
+                return hora;
             }
             set
             {
-                comienzoClaseEsperado = formatearHora(value);
+                string horaFormateada =  formatearHora(value);
+                asistencia.ComienzoClaseEsperado = DateTime.Parse(horaFormateada);
             }
         }
 
@@ -130,8 +138,8 @@ namespace Entidades
 
         public int CompareTo(AsistenciaDatosParaTabla otraAsistencia)
         {
-            DateTime estaFecha = DateTime.Parse(comienzoClaseEsperado);
-            DateTime otraFecha = DateTime.Parse(otraAsistencia.comienzoClaseEsperado);
+            DateTime estaFecha = DateTime.Parse(ComienzoClaseEsperado);
+            DateTime otraFecha = DateTime.Parse(otraAsistencia.ComienzoClaseEsperado);
 
             return estaFecha.CompareTo(otraFecha);
         }
@@ -173,5 +181,20 @@ namespace Entidades
 
             return fechaConFormato;
         }
+
+        private bool estaModificada;
+        public bool EstaModificada
+        {
+            get { return estaModificada; }
+            set { estaModificada = value; }
+        }
+
+        private bool estaSeleccionada;
+        public bool EstaSeleccionada
+        {
+            get { return estaSeleccionada; }
+            set { estaSeleccionada = value; }
+        }
+        
     }
 }

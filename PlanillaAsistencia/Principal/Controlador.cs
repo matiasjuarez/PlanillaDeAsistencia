@@ -121,5 +121,11 @@ namespace PlanillaAsistencia
         {
             return modelo.getEstadosAsistencia();
         }
+
+        public void actualizarModelo()
+        {
+            modelo.actualizar();
+            vista.cargarDatosParaFechaSeleccionada();
+        }
     }
 }

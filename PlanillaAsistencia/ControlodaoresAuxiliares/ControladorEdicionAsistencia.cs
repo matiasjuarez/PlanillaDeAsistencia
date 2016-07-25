@@ -15,7 +15,9 @@ namespace PlanillaAsistencia
 
         private Asistencia asistenciaOriginal;
 
+        // La asistencia sobre la que vamos a hacer cambios
         private Asistencia asistenciaEnEdicion;
+        // La asistencia sobre la que vamos a hacer cambios tal cual estaba antes de empezar a modificarla
         public Asistencia AsistenciaEnEdicion
         {
             get { return asistenciaEnEdicion; }

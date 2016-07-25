@@ -10,18 +10,18 @@ namespace PlanillaAsistencia
     public class TimerActualizacion
     {
         private Timer temporizador;
-        /*private IActualizable objetoActualizar;
+        private Controlador controlador;
 
-        public TimerActualizacion(int intervaloTiempoEnSegundos, IActualizable objetoActualizar)
+        public TimerActualizacion(int intervaloTiempoEnSegundos, Controlador controlador)
         {
-            this.objetoActualizar = objetoActualizar;
+            this.controlador = controlador;
 
             temporizador = new Timer();
             temporizador.Interval = intervaloTiempoEnSegundos * 1000; //El temporizador toma el tiempo en milisegundos...
 
             temporizador.Tick += timerDeActualizacionElapsed;
             temporizador.Enabled = true;
-        }*/
+        }
 
         // Habilita o deshabilite el temporizador
         public void habilitarTemporizador(bool habilitar)
@@ -31,7 +31,7 @@ namespace PlanillaAsistencia
 
         private void timerDeActualizacionElapsed(object sender, EventArgs args)
         {
-            //objetoActualizar.actualizar();
+            controlador.actualizarModelo();
         }
     }
 }

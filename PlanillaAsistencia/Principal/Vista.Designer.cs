@@ -381,6 +381,7 @@
             this.datePickerCargaAsistencia.Name = "datePickerCargaAsistencia";
             this.datePickerCargaAsistencia.Size = new System.Drawing.Size(200, 20);
             this.datePickerCargaAsistencia.TabIndex = 8;
+            this.datePickerCargaAsistencia.Value = new System.DateTime(2016, 3, 17, 0, 0, 0, 0);
             this.datePickerCargaAsistencia.ValueChanged += new System.EventHandler(this.datePickerCargaAsistencia_ValueChanged);
             // 
             // tabFiltroCursos

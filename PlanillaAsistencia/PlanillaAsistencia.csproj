@@ -50,7 +50,6 @@
     <Compile Include="ControlesPersonalizados\LabelConEfectos.Designer.cs">
       <DependentUpon>LabelConEfectos.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlesPersonalizados\Mensaje.cs" />
     <Compile Include="ControlesPersonalizados\TripleGrillaAsistencias.cs">
       <SubType>UserControl</SubType>
     </Compile>

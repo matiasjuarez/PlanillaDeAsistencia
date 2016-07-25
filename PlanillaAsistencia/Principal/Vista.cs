@@ -19,9 +19,6 @@ namespace PlanillaAsistencia
 
         private List<IObservadorCamposPlanilla> observadoresCamposEditables;
 
-        // Los objetos mensajes permiten crear mensaje en labels y añadirle algun tipo de efecto a esos mensajes
-        private Mensaje mensaje = null;
-
         // Inicializa la planilla
         public planillaAsistencia()
         {
@@ -74,16 +71,18 @@ namespace PlanillaAsistencia
             /*
              * Casteamos el sender que es el datePicker que desencadeno el evento
              */
-            DateTimePicker dateTimePicker = (DateTimePicker)sender;
+            //DateTimePicker dateTimePicker = (DateTimePicker)sender;
 
             // Obtenemos la fecha seleccionada
-            DateTime fechaSeleccionada = dateTimePicker.Value.Date;
+            //DateTime fechaSeleccionada = dateTimePicker.Value.Date;
 
-            cargarDatosParaFechaSeleccionada(fechaSeleccionada);
+            cargarDatosParaFechaSeleccionada();
         }
 
-        private void cargarDatosParaFechaSeleccionada(DateTime fechaSeleccionada)
+        public void cargarDatosParaFechaSeleccionada()
         {
+            DateTime fechaSeleccionada = datePickerCargaAsistencia.Value.Date;
+
             habilitarManejadoresDeEventos(false);
 
             controlador.manejarCambioFechaSeleccionada(fechaSeleccionada);
@@ -399,7 +398,7 @@ namespace PlanillaAsistencia
         {
             if (controlador.guardarAsistenciasModificadas())
             {
-                tripleGrillaAsistencias.limpiarFilasModificadas();
+                //tripleGrillaAsistencias.limpiarFilasModificadas();
                 habilitarBotonGuardado(false);
                 habilitarCampos(false);
                 resetearCampos();
@@ -447,22 +446,22 @@ namespace PlanillaAsistencia
         // El mensaje, el color del mensaje y la cantidad de tiempo que queremos que sea visible
         public void mostrarMensaje(string textoMensaje, Color color, int milisegundos)
         {
-            this.mensaje.mostrarMensaje(textoMensaje, color, milisegundos);
+            this.lbleMensajes.mostrarMensaje(textoMensaje, color, milisegundos);
         }
 
         public void mostrarMensaje(string textoMensaje)
         {
-            this.mensaje.mostrarMensaje(textoMensaje);
+            this.lbleMensajes.mostrarMensaje(textoMensaje);
         }
 
         public void mostrarMensaje(string textoMensaje, int milisegundos)
         {
-            this.mensaje.mostrarMensaje(textoMensaje, Color.Black, milisegundos);
+            this.lbleMensajes.mostrarMensaje(textoMensaje, Color.Black, milisegundos);
         }
 
         public void mostrarMensaje(string textoMensaje, Color color)
         {
-            this.mensaje.mostrarMensaje(textoMensaje, color);
+            this.lbleMensajes.mostrarMensaje(textoMensaje, color);
         }
 
         // ****************************************************************************************

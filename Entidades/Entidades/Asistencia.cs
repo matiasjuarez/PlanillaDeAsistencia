@@ -28,7 +28,21 @@ namespace Entidades
         private int id;
         private int eventId;    
         private int appointmentId;
-        private String observaciones;
+        private string observaciones;
+
+        public Asistencia()
+        {
+            comienzoClaseEsperado = new DateTime(1, 1, 1);
+            finClaseEsperado = new DateTime(1, 1, 1);
+            comienzoClaseReal = new DateTime(1, 1, 1);
+            finClaseReal = new DateTime(1, 1, 1);
+            docente = new Docente();
+            asignatura = new Asignatura();
+            encargado = new Encargado();
+            curso = new Curso();
+            estadoAsistencia = new EstadoAsistencia();
+            aulas = new List<Aula>();
+        }
 
         public int EventId
         {
@@ -94,13 +108,6 @@ namespace Entidades
         {
             get 
             {
-                /*if (docente == null)
-                {
-                    Docente inventado = new Docente();
-                    inventado.Nombre = config.DefectoStringNull;
-                    inventado.Id = config.DefectoIntNull;
-                    return inventado;
-                }*/
                 return docente; 
             }
             set { docente = value; }
@@ -110,13 +117,6 @@ namespace Entidades
         {
             get 
             {
-                /*if (asignatura == null)
-                {
-                    Asignatura inventada = new Asignatura();
-                    inventada.Nombre = config.DefectoStringNull;
-                    inventada.Id = config.DefectoIntNull;
-                    return inventada;
-                }*/
                 return asignatura; 
             }
             set { asignatura = value; }
@@ -126,13 +126,6 @@ namespace Entidades
         {
             get 
             {
-                /*if (encargado == null)
-                {
-                    Encargado inventado = new Encargado();
-                    inventado.Nombre = config.DefectoStringNull;
-                    inventado.Id = config.DefectoIntNull;
-                    return inventado;
-                }*/
                 return encargado; 
             }
             set { encargado = value; }
@@ -142,13 +135,6 @@ namespace Entidades
         {
             get 
             {
-                /*if (curso == null)
-                {
-                    Curso inventado = new Curso();
-                    inventado.Nombre = config.DefectoStringNull;
-                    inventado.Id = config.DefectoIntNull;
-                    return inventado;
-                }*/
                 return curso; 
             }
             set { curso = value; }
@@ -158,13 +144,6 @@ namespace Entidades
         {
             get 
             {
-                /*if (estadoAsistencia == null)
-                {
-                    EstadoAsistencia inventada = new EstadoAsistencia();
-                    inventada.Nombre = config.DefectoStringNull;
-                    inventada.Id = config.DefectoIntNull;
-                    return inventada;
-                }*/
                 return estadoAsistencia; 
             }
             set { estadoAsistencia = value; }
@@ -246,14 +225,25 @@ namespace Entidades
                 return false;
             }
 
-            if (!this.Aulas.Equals(otra.Aulas))
+            if (this.Observaciones != otra.Observaciones)
             {
                 return false;
             }
 
-            if (this.Observaciones != otra.Observaciones)
+            if (this.Aulas.Count != otra.Aulas.Count) return false;
+            foreach (Aula aulaO in this.Aulas)
             {
-                return false;
+                bool seEncontroAulaIgual = false;
+                foreach (Aula aulaC in otra.Aulas)
+                {
+                    if (aulaO.Equals(aulaC))
+                    {
+                        seEncontroAulaIgual = true;
+                        break;
+                    }
+                }
+
+                if (!seEncontroAulaIgual) return false;
             }
 
             return true;

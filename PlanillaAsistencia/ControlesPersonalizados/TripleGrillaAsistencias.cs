@@ -39,14 +39,13 @@ namespace PlanillaAsistencia
         }
 
         private List<IObservadorTripleGrilla> observadores;
-
-        private List<int> idsAsistenciasModificadas;
-
+        
         private List<AsistenciaDatosParaTabla> asistenciasTurnoManana;
         private List<AsistenciaDatosParaTabla> asistenciasTurnoTarde;
         private List<AsistenciaDatosParaTabla> asistenciasTurnoNoche;
 
         private AsistenciaDatosParaTabla asistenciaSeleccionada;
+        private DataGridView grillaSeleccionada;
 
         private RangoHorario rangoHorarioManana;
         private RangoHorario rangoHorarioTarde;
@@ -57,8 +56,6 @@ namespace PlanillaAsistencia
             InitializeComponent();
 
             observadores = new List<IObservadorTripleGrilla>();
-
-            idsAsistenciasModificadas = new List<int>();
 
             asistenciasTurnoManana = new List<AsistenciaDatosParaTabla>();
             asistenciasTurnoTarde = new List<AsistenciaDatosParaTabla>();
@@ -72,7 +69,6 @@ namespace PlanillaAsistencia
         public void mostrarAsistencias(List<Asistencia> asistencias)
         {
             asistenciaSeleccionada = null;
-            idsAsistenciasModificadas.Clear();
 
             separarAsistenciasEnDistintosTurnos(asistencias);
 
@@ -189,11 +185,6 @@ namespace PlanillaAsistencia
         {
             if (asistencia != null)
             {
-                if (!idsAsistenciasModificadas.Contains(asistencia.Id))
-                {
-                    idsAsistenciasModificadas.Add(asistencia.Id);
-                }
-
                 pintarFilaComoModificada(buscarFilaDeAsistencia(asistencia.Id));
             }
         }
@@ -206,18 +197,26 @@ namespace PlanillaAsistencia
             }
         }
 
-        public void limpiarFilasModificadas()
-        {
-            idsAsistenciasModificadas.Clear();
-            refrescarGrillas();
-        }
-
         private void refrescarGrillas()
         {
             dgvTurnoManana.Refresh();
             dgvTurnoTarde.Refresh();
             dgvTurnoNoche.Refresh();
+
+            if (grillaSeleccionada != null)
+            {
+                foreach (DataGridViewRow row in grillaSeleccionada.Rows)
+                {
+                    DataGridViewCell celdaId = row.Cells[row.Cells.Count - 1];
+                    if ((int)celdaId.Value == asistenciaSeleccionada.IdAsistencia)
+                    {
+                        row.Selected = true;
+                    }
+                }
+            }
         }
+
+
 
         private void pintarTodasLasFilasComoNormales()
         {
@@ -336,13 +335,22 @@ namespace PlanillaAsistencia
         {
             DataGridView grilla = (DataGridView)sender;
 
-            // Esta linea obtiene el objeto AsistenciaDatosParaTabla que esta ligada a la fila de la grilla
-            asistenciaSeleccionada = (AsistenciaDatosParaTabla)grilla.SelectedRows[0].DataBoundItem;
-
-            foreach (IObservadorTripleGrilla observador in observadores)
+            try
             {
-                observador.recibirNotificacionFilaSeleccionada();
+                // Esta linea obtiene el objeto AsistenciaDatosParaTabla que esta ligada a la fila de la grilla
+                asistenciaSeleccionada = (AsistenciaDatosParaTabla)grilla.SelectedRows[0].DataBoundItem;
+                grillaSeleccionada = grilla;
+
+                foreach (IObservadorTripleGrilla observador in observadores)
+                {
+                    observador.recibirNotificacionFilaSeleccionada();
+                }
             }
+            catch (Exception ex)
+            {
+                GestorExcepciones.mostrarExcepcion(ex);
+            }
+            
         }
     }
 }

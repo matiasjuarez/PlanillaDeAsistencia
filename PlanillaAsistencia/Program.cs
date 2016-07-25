@@ -20,18 +20,18 @@ namespace PlanillaAsistencia
             Application.SetCompatibleTextRenderingDefault(false);
 
             planillaAsistencia planilla = new planillaAsistencia();
-            /*Modelo modelo = new Modelo();
+            Modelo modelo = new Modelo();
             Controlador controlador = new Controlador(planilla, modelo);
 
             modelo.setControlador(controlador);
-            planilla.setControlador(controlador);*/
+            planilla.setControlador(controlador);
 
             //modelo.agregarObservador(controlador);
 
-            //TimerActualizacion actualizadorModelo = new TimerActualizacion(5, modelo);
+            TimerActualizacion actualizadorModelo = new TimerActualizacion(50000, controlador);
 
-            ControladorSincronizacionBaseRapla con = new ControladorSincronizacionBaseRapla();
-            con.sincronizarAsistencias("2016-01-01", "2016-12-12");
+            /*ControladorSincronizacionBaseRapla con = new ControladorSincronizacionBaseRapla();
+            con.sincronizarAsistencias("2016-01-01", "2016-12-12");*/
 
             Application.Run(planilla);
         }

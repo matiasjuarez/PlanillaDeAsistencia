@@ -38,7 +38,6 @@ namespace PlanillaAsistencia.Sincronizacion
             sincronizarEventosContraDocentes(evento);
             sincronizarEventosContraAulas(evento);
             sincronizarEventosContraCursos(evento);
-
             sincronizarEventosContraAsignaturas(evento);
         }
 
