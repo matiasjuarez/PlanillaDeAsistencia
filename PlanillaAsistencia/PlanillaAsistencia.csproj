@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CD0C34FD-52F9-4124-9D8A-8B48337A54DD}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PlanillaAsistencia</RootNamespace>
+    <AssemblyName>PlanillaAsistencia</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ControlesPersonalizados\LabelConEfectos.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ControlesPersonalizados\LabelConEfectos.Designer.cs">
+      <DependentUpon>LabelConEfectos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlesPersonalizados\Mensaje.cs" />
+    <Compile Include="ControlesPersonalizados\TripleGrillaAsistencias.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ControlesPersonalizados\TripleGrillaAsistencias.Designer.cs">
+      <DependentUpon>TripleGrillaAsistencias.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlodaoresAuxiliares\ControladorEdicionAsistencia.cs" />
+    <Compile Include="Sincronizacion\ControladorSincronizacionBasePlanillaAsistencia.cs" />
+    <Compile Include="Interfaces\IObservadorCamposPlanilla.cs" />
+    <Compile Include="Interfaces\IObservadorModelo.cs" />
+    <Compile Include="Interfaces\IObservadorTripleGrilla.cs" />
+    <Compile Include="Principal\Controlador.cs" />
+    <Compile Include="Principal\Modelo.cs" />
+    <Compile Include="Principal\Vista.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Principal\Vista.Designer.cs">
+      <DependentUpon>Vista.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sincronizacion\AsistenciaSincronizacion.cs" />
+    <Compile Include="Sincronizacion\AuxiliarSincronizacionContraEventos.cs" />
+    <Compile Include="Sincronizacion\ControladorSincronizacionBaseRapla.cs" />
+    <Compile Include="Sincronizacion\TimerActualizacion.cs" />
+    <EmbeddedResource Include="ControlesPersonalizados\LabelConEfectos.resx">
+      <DependentUpon>LabelConEfectos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlesPersonalizados\TripleGrillaAsistencias.resx">
+      <DependentUpon>TripleGrillaAsistencias.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Principal\Vista.resx">
+      <DependentUpon>Vista.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AccesoDatos\AccesoDatos.csproj">
+      <Project>{beea5f26-3a6f-4a01-8d62-ef0c27e929bf}</Project>
+      <Name>AccesoDatos</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Entidades\Entidades.csproj">
+      <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
+      <Name>Entidades</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilidades\Utilidades.csproj">
+      <Project>{7fcc5895-70d4-4825-a03c-e4d88eaca187}</Project>
+      <Name>Utilidades</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
