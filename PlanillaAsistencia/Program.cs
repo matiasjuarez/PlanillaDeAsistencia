@@ -28,7 +28,7 @@ namespace PlanillaAsistencia
 
             //modelo.agregarObservador(controlador);
 
-            TimerActualizacion actualizadorModelo = new TimerActualizacion(50000, controlador);
+            TimerActualizacion actualizadorModelo = new TimerActualizacion(22, controlador);
 
             /*ControladorSincronizacionBaseRapla con = new ControladorSincronizacionBaseRapla();
             con.sincronizarAsistencias("2016-01-01", "2016-12-12");*/

@@ -14,9 +14,6 @@ namespace Entidades
         {
             this.asistencia = asistencia;
 
-            
-
-            ComienzoClaseEsperado = asistencia.ComienzoClaseEsperado.TimeOfDay.ToString();
             FinClaseEsperado = asistencia.FinClaseEsperado.TimeOfDay.ToString();
             ComienzoClaseReal = asistencia.ComienzoClaseReal.TimeOfDay.ToString();
             FinClaseReal = asistencia.FinClaseReal.TimeOfDay.ToString();
@@ -59,81 +56,109 @@ namespace Entidades
             }
         }
 
-        private String finClaseEsperado;
         public String FinClaseEsperado
         {
             get {
-                return finClaseEsperado;
+                string hora = asistencia.FinClaseEsperado.ToString("HH:mm");
+                return hora;
             }
             set
             {
-                finClaseEsperado = formatearHora(value);
+                string horaFormateada = formatearHora(value);
+                asistencia.FinClaseEsperado = DateTime.Parse(horaFormateada);
             }
         }
 
-        private String comienzoClaseReal;
         public String ComienzoClaseReal
         {
             get {
-                return comienzoClaseReal;
+                string hora = asistencia.ComienzoClaseReal.ToString("HH:mm");
+                return hora;
             }
             set {
-                comienzoClaseReal = formatearHora(value);
+                string horaFormateada = formatearHora(value);
+                asistencia.ComienzoClaseReal = DateTime.Parse(horaFormateada);
             }
         }
 
-        private String finClaseReal;
         public String FinClaseReal
         {
             get {
-                return finClaseReal;
+                string hora = asistencia.FinClaseReal.ToString("HH:mm");
+                return hora;
             }
             set
             {
-                finClaseReal = formatearHora(value);
+                string horaFormateada = formatearHora(value);
+                asistencia.FinClaseReal = DateTime.Parse(horaFormateada);
             }
         }
 
-        private String nombreProfesor;
         public String NombreProfesor
         {
-            get { return nombreProfesor; }
-            set { nombreProfesor = value; }
+            get {
+                if (asistencia.Docente != null)
+                {
+                    return asistencia.Docente.Nombre;
+                }
+                else
+                {
+                    return stringPorDefecto;
+                }
+            }
+            set { 
+                asistencia.Docente.Nombre = value; 
+            }
         }
 
-        private String estadoAsistencia;
         public String EstadoAsistencia
         {
-            get { return estadoAsistencia; }
-            set { estadoAsistencia = value; }
+            get {
+                if (asistencia.EstadoAsistencia != null)
+                {
+                    return asistencia.EstadoAsistencia.Nombre;
+                }
+                else
+                {
+                    return stringPorDefecto;
+                }
+            }
+            set { 
+                asistencia.EstadoAsistencia.Nombre = value; 
+            }
         }
 
-        private int cantidadAlumnos;
         public int CantidadAlumnos
         {
-            get { return cantidadAlumnos; }
-            set { cantidadAlumnos = value; }
+            get { return asistencia.CantidadAlumnos; }
+            set { asistencia.CantidadAlumnos = value; }
         }
 
-        private int idAsistencia;
         public int IdAsistencia
         {
-            get { return idAsistencia; }
-            set { idAsistencia = value; }
+            get { return asistencia.Id; }
+            set { asistencia.Id = value; }
         }
 
-        private string encargados;
         public string Encargados
         {
-            get { return encargados; }
-            set { encargados = value; }
+            get {
+                if (asistencia.Encargado != null) return asistencia.Encargado.Nombre;
+                else return stringPorDefecto;
+            }
+            set {
+                asistencia.Encargado.Nombre = value;
+            }
         }
 
-        private string observaciones;
         public string Observaciones
         {
-            get { return observaciones; }
-            set { observaciones = value; }
+            get {
+                return asistencia.Observaciones;
+            }
+            set { 
+                asistencia.Observaciones = value; 
+            }
         }
 
         public int CompareTo(AsistenciaDatosParaTabla otraAsistencia)
@@ -182,18 +207,24 @@ namespace Entidades
             return fechaConFormato;
         }
 
-        private bool estaModificada;
-        public bool EstaModificada
+        private bool modificada;
+        public bool esModificada()
         {
-            get { return estaModificada; }
-            set { estaModificada = value; }
+            return modificada;
+        }
+        public void setModificada(bool valor)
+        {
+            modificada = valor;
         }
 
-        private bool estaSeleccionada;
-        public bool EstaSeleccionada
+        private bool seleccionada;
+        public bool esSeleccionada()
         {
-            get { return estaSeleccionada; }
-            set { estaSeleccionada = value; }
+            return seleccionada;
+        }
+        public void setSeleccionada(bool valor)
+        {
+            seleccionada = valor;
         }
         
     }

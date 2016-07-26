@@ -605,7 +605,6 @@
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(795, 513);
             this.Controls.Add(this.tabCargaAsistencia);
-            this.MaximizeBox = false;
             this.Name = "planillaAsistencia";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Planilla de asistencia";

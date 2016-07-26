@@ -258,7 +258,7 @@ namespace PlanillaAsistencia
             ComboBox combo = (ComboBox)sender;
             Docente docenteSeleccionado = (Docente)combo.SelectedItem;
 
-            tripleGrillaAsistencias.modificarAsistenciaSeleccionada(TripleGrillaAsistencias.NOMBRE_PROFESOR, docenteSeleccionado.Nombre);
+            tripleGrillaAsistencias.NombreProfesor = docenteSeleccionado.Nombre;
 
             foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
             {
@@ -271,7 +271,7 @@ namespace PlanillaAsistencia
             ComboBox combo = (ComboBox)sender;
             Asignatura asignaturaSeleccionada = (Asignatura)combo.SelectedItem;
 
-            tripleGrillaAsistencias.modificarAsistenciaSeleccionada(TripleGrillaAsistencias.NOMBRE_ASIGNATURA, asignaturaSeleccionada.Nombre);
+            tripleGrillaAsistencias.NombreAsignatura = asignaturaSeleccionada.Nombre;
 
             foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
             {
@@ -284,7 +284,7 @@ namespace PlanillaAsistencia
             ComboBox combo = (ComboBox)sender;
             EstadoAsistencia estadoAsistenciaSeleccionado = (EstadoAsistencia)combo.SelectedItem;
 
-            tripleGrillaAsistencias.modificarAsistenciaSeleccionada(TripleGrillaAsistencias.ESTADO_ASISTENCIA, estadoAsistenciaSeleccionado.Nombre);
+            tripleGrillaAsistencias.EstadoAsistencia = estadoAsistenciaSeleccionado.Nombre;
 
             foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
             {
@@ -292,15 +292,11 @@ namespace PlanillaAsistencia
             }
         }
 
-        private void mktxtHoraEntradaReal_TextChanged(object sender, EventArgs e)
+        private string manejarCambioHoraEntradaFinReal(MaskedTextBox mask)
         {
-            MaskedTextBox mask = (MaskedTextBox)sender;
             string textoCampo = mask.Text;
-
             DateTime fecha = datePickerCargaAsistencia.Value.Date;
-
             TimeSpan hora = new TimeSpan(0, 0, 0);
-
 
             if (textoCampo != null && textoCampo != "")
             {
@@ -315,54 +311,32 @@ namespace PlanillaAsistencia
             }
 
             fecha = fecha.Add(hora);
-
-            tripleGrillaAsistencias.modificarAsistenciaSeleccionada(TripleGrillaAsistencias.COMIENZO_CLASE_REAL, textoCampo);
 
             foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
             {
                 observador.observarCambioHoraRealDeEntrada(fecha);
             }
+
+            return textoCampo;
+        }
+
+        private void mktxtHoraEntradaReal_TextChanged(object sender, EventArgs e)
+        {
+            MaskedTextBox mask = (MaskedTextBox)sender;
+            tripleGrillaAsistencias.ComienzoClaseReal = manejarCambioHoraEntradaFinReal(mask);
         }
 
         private void mktxtHoraSalidaReal_TextChanged(object sender, EventArgs e)
         {
             MaskedTextBox mask = (MaskedTextBox)sender;
-            string textoCampo = mask.Text;
-
-            DateTime fecha = datePickerCargaAsistencia.Value.Date;
-            
-            TimeSpan hora = new TimeSpan(0, 0, 0);
-            
-
-            if (textoCampo != null && textoCampo != "")
-            {
-                try
-                {
-                    hora = TimeSpan.Parse(textoCampo);
-                }
-                catch
-                {
-                    hora = new TimeSpan(0, 0, 0);
-                }
-            }
-
-            fecha = fecha.Add(hora);
-
-            tripleGrillaAsistencias.modificarAsistenciaSeleccionada(TripleGrillaAsistencias.FIN_CLASE_REAL, textoCampo);
-
-            foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
-            {
-                observador.observarCambioHoraRealDeSalida(fecha);
-            }
+            tripleGrillaAsistencias.FinClaseReal = manejarCambioHoraEntradaFinReal(mask);
         }
 
         private void numUpDownAlumnos_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown spinner = (NumericUpDown)sender;
-
             int valor = (int)spinner.Value;
-
-            tripleGrillaAsistencias.modificarAsistenciaSeleccionada(TripleGrillaAsistencias.CANTIDAD_ALUMNOS, valor.ToString());
+            tripleGrillaAsistencias.CantidadAlumnos = valor;
 
             foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
             {
@@ -375,7 +349,7 @@ namespace PlanillaAsistencia
             TextBox txt = (TextBox)sender;
             string texto = txt.Text;
 
-            tripleGrillaAsistencias.modificarAsistenciaSeleccionada(TripleGrillaAsistencias.OBSERVACIONES, texto);
+            tripleGrillaAsistencias.Observaciones = texto;
 
             foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
             {
@@ -475,17 +449,7 @@ namespace PlanillaAsistencia
 
         public int obtenerIdAsistenciaSeleccionada()
         {
-            int retorno = -1;
-            string valorDeGrilla = tripleGrillaAsistencias.obtenerDatoDeAsistenciaSeleccionada(TripleGrillaAsistencias.ASISTENCIA_ID);
-            try{
-                if(valorDeGrilla != null){
-                    retorno = Int32.Parse(valorDeGrilla);
-                }
-            }
-            catch{
-                return -1;
-            }
-            return retorno;
+            return tripleGrillaAsistencias.IdAsistencia;
         }
 
         public void cargarAsistenciasEnGrillas(List<Asistencia> asistencias)

@@ -14,35 +14,14 @@ namespace PlanillaAsistencia
 {
     public partial class TripleGrillaAsistencias : UserControl
     {
-        public const int NOMBRE_ASIGNATURA = 0;
-        public const int COMIENZO_CLASE_ESPERADO = 1;
-        public const int FIN_CLASE_ESPERADO = 2;
-        public const int COMIENZO_CLASE_REAL = 3;
-        public const int FIN_CLASE_REAL = 4;
-        public const int NOMBRE_PROFESOR = 5;
-        public const int ESTADO_ASISTENCIA = 6;
-        public const int CANTIDAD_ALUMNOS = 7;
-        public const int ENCARGADOS = 8;
-        public const int ASISTENCIA_ID = 9;
-        public const int OBSERVACIONES = 10;
-
-        private Color fondoAsistenciaModificada = Color.Yellow;
-        public Color FondoAsistenciaModificada
-        {
-            set { fondoAsistenciaModificada = value; }
-        }
-
-        private Color fondoAsistenciaNormal = Color.White;
-        public Color FondoAsistenciaNormal
-        {
-            set { fondoAsistenciaNormal = value; }
-        }
+        private Presentador presentador;
+        private ControladorRecargaDeGrillas controladorRecarga;
 
         private List<IObservadorTripleGrilla> observadores;
         
-        private List<AsistenciaDatosParaTabla> asistenciasTurnoManana;
-        private List<AsistenciaDatosParaTabla> asistenciasTurnoTarde;
-        private List<AsistenciaDatosParaTabla> asistenciasTurnoNoche;
+        private BindingList<AsistenciaDatosParaTabla> asistenciasTurnoManana;
+        private BindingList<AsistenciaDatosParaTabla> asistenciasTurnoTarde;
+        private BindingList<AsistenciaDatosParaTabla> asistenciasTurnoNoche;
 
         private AsistenciaDatosParaTabla asistenciaSeleccionada;
         private DataGridView grillaSeleccionada;
@@ -51,141 +30,195 @@ namespace PlanillaAsistencia
         private RangoHorario rangoHorarioTarde;
         private RangoHorario rangoHorarioNoche;
 
+        private DateTime fechaDeLasAsistencias;
+
         public TripleGrillaAsistencias()
         {
             InitializeComponent();
+            presentador = new Presentador(this);
+            presentador.configurarPresentacionGrillas();
+
+            controladorRecarga = new ControladorRecargaDeGrillas(this);
 
             observadores = new List<IObservadorTripleGrilla>();
 
-            asistenciasTurnoManana = new List<AsistenciaDatosParaTabla>();
-            asistenciasTurnoTarde = new List<AsistenciaDatosParaTabla>();
-            asistenciasTurnoNoche = new List<AsistenciaDatosParaTabla>();
+            asistenciasTurnoManana = new BindingList<AsistenciaDatosParaTabla>();
+            asistenciasTurnoTarde = new BindingList<AsistenciaDatosParaTabla>();
+            asistenciasTurnoNoche = new BindingList<AsistenciaDatosParaTabla>();
+
+            bindearListaATabla(dgvTurnoManana, asistenciasTurnoManana);
+            bindearListaATabla(dgvTurnoTarde, asistenciasTurnoTarde);
+            bindearListaATabla(dgvTurnoNoche, asistenciasTurnoNoche);
 
             rangoHorarioManana = new RangoHorario("00:00:00", "12:00:00");
             rangoHorarioTarde = new RangoHorario("12:00:00", "18:00:00");
             rangoHorarioNoche = new RangoHorario("18:00:00", "23:59:59");
         }
 
+        private void configuracionAdicional()
+        {
+            dgvTurnoNoche.Columns[0].MinimumWidth = 300;
+            dgvTurnoNoche.BackgroundColor = System.Drawing.SystemColors.Control;
+        }
+
         public void mostrarAsistencias(List<Asistencia> asistencias)
         {
             asistenciaSeleccionada = null;
 
-            separarAsistenciasEnDistintosTurnos(asistencias);
-
-            cargarDatosParaTurno(dgvTurnoManana, asistenciasTurnoManana);
-            cargarDatosParaTurno(dgvTurnoTarde, asistenciasTurnoTarde);
-            cargarDatosParaTurno(dgvTurnoNoche, asistenciasTurnoNoche);
-
-            refrescarGrillas();
-        }
-
-        public void modificarAsistenciaSeleccionada(int campoDeAsistencia, string nuevoValor)
-        {
-            if (asistenciaSeleccionada != null)
+            if (asistencias != null && asistencias.Count > 0)
             {
-                if (campoDeAsistencia == NOMBRE_ASIGNATURA)
-                {
-                    asistenciaSeleccionada.NombreAsignatura = nuevoValor;
-                }
-                else if (campoDeAsistencia == COMIENZO_CLASE_ESPERADO)
-                {
-                    asistenciaSeleccionada.ComienzoClaseEsperado = nuevoValor;
-                }
-                else if (campoDeAsistencia == FIN_CLASE_ESPERADO)
-                {
-                    asistenciaSeleccionada.FinClaseEsperado = nuevoValor;
-                }
-                else if (campoDeAsistencia == COMIENZO_CLASE_REAL)
-                {
-                    asistenciaSeleccionada.ComienzoClaseReal = nuevoValor;
-                }
-                else if (campoDeAsistencia == FIN_CLASE_REAL)
-                {
-                    asistenciaSeleccionada.FinClaseReal = nuevoValor;
-                }
-                else if (campoDeAsistencia == NOMBRE_PROFESOR)
-                {
-                    asistenciaSeleccionada.NombreProfesor = nuevoValor;
-                }
-                else if (campoDeAsistencia == ESTADO_ASISTENCIA)
-                {
-                    asistenciaSeleccionada.EstadoAsistencia = nuevoValor;
-                }
-                else if (campoDeAsistencia == CANTIDAD_ALUMNOS)
-                {
-                    asistenciaSeleccionada.CantidadAlumnos = Int32.Parse(nuevoValor);
-                }
-                else if (campoDeAsistencia == ENCARGADOS)
-                {
-                    asistenciaSeleccionada.Encargados = nuevoValor;
-                }
-                else if (campoDeAsistencia == OBSERVACIONES)
-                {
-                    asistenciaSeleccionada.Observaciones = nuevoValor;
-                }
-
-                refrescarGrillas();
+                ActualizarAsistencias(asistencias);
+                fechaDeLasAsistencias = asistencias.ElementAt(0).ComienzoClaseEsperado.Date;
             }
         }
 
-        public string obtenerDatoDeAsistenciaSeleccionada(int campoDeAsistencia)
+        public string NombreAsignatura
         {
-            if (asistenciaSeleccionada != null)
+            get
             {
-                if (campoDeAsistencia == NOMBRE_ASIGNATURA)
-                {
-                    return asistenciaSeleccionada.NombreAsignatura;
-                }
-                else if (campoDeAsistencia == COMIENZO_CLASE_ESPERADO)
-                {
-                    return asistenciaSeleccionada.ComienzoClaseEsperado;
-                }
-                else if (campoDeAsistencia == FIN_CLASE_ESPERADO)
-                {
-                    return asistenciaSeleccionada.FinClaseEsperado;
-                }
-                else if (campoDeAsistencia == COMIENZO_CLASE_REAL)
-                {
-                    return asistenciaSeleccionada.ComienzoClaseReal;
-                }
-                else if (campoDeAsistencia == FIN_CLASE_REAL)
-                {
-                    return asistenciaSeleccionada.FinClaseReal;
-                }
-                else if (campoDeAsistencia == NOMBRE_PROFESOR)
-                {
-                    return asistenciaSeleccionada.NombreProfesor;
-                }
-                else if (campoDeAsistencia == ESTADO_ASISTENCIA)
-                {
-                    return asistenciaSeleccionada.EstadoAsistencia;
-                }
-                else if (campoDeAsistencia == CANTIDAD_ALUMNOS)
-                {
-                    return asistenciaSeleccionada.CantidadAlumnos.ToString();
-                }
-                else if (campoDeAsistencia == ENCARGADOS)
+                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.NombreAsignatura;
+                return "";
+            }
+            set
+            {
+                if (asistenciaSeleccionada != null) asistenciaSeleccionada.NombreAsignatura = value;
+            }
+        }
+
+        public string ComienzoClaseEsperado
+        {
+            get
+            {
+                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.ComienzoClaseEsperado;
+                return "";
+            }
+            set
+            {
+                if (asistenciaSeleccionada != null) asistenciaSeleccionada.ComienzoClaseEsperado = value;
+            }
+        }
+
+        public string FinClaseEsperado
+        {
+            get
+            {
+                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.FinClaseEsperado;
+                return "";
+            }
+            set
+            {
+                if (asistenciaSeleccionada != null) asistenciaSeleccionada.FinClaseEsperado = value;
+            }
+        }
+
+        public string ComienzoClaseReal
+        {
+            get
+            {
+                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.ComienzoClaseReal;
+                return "";
+            }
+            set
+            {
+                if (asistenciaSeleccionada != null) asistenciaSeleccionada.ComienzoClaseReal = value;
+            }
+        }
+
+        public string FinClaseReal
+        {
+            get
+            {
+                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.FinClaseReal;
+                return "";
+            }
+            set
+            {
+                if(asistenciaSeleccionada != null) asistenciaSeleccionada.FinClaseReal = value;
+            }
+        }
+
+        public string NombreProfesor
+        {
+            get
+            {
+                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.NombreProfesor;
+                return "";
+            }
+            set
+            {
+                if (asistenciaSeleccionada != null) asistenciaSeleccionada.NombreProfesor = value;
+            }
+        }
+
+        public string EstadoAsistencia
+        {
+            get
+            {
+                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.EstadoAsistencia;
+                return "";
+            }
+            set
+            {
+                if (asistenciaSeleccionada != null) asistenciaSeleccionada.EstadoAsistencia = value;
+            }
+        }
+
+        public int CantidadAlumnos
+        {
+            get
+            {
+                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.CantidadAlumnos;
+                return -1;
+            }
+            set
+            {
+                if (asistenciaSeleccionada != null) asistenciaSeleccionada.CantidadAlumnos = value;
+            }
+        }
+
+        public string Encargado
+        {
+            get
+            {
+                if (asistenciaSeleccionada != null)
                 {
                     return asistenciaSeleccionada.Encargados;
                 }
-                else if (campoDeAsistencia == ASISTENCIA_ID)
-                {
-                    return asistenciaSeleccionada.IdAsistencia.ToString();
-                }
-                else if (campoDeAsistencia == OBSERVACIONES)
-                {
-                    return asistenciaSeleccionada.Observaciones;
-                }
+                return "";
             }
+            set
+            {
+                if (asistenciaSeleccionada != null) asistenciaSeleccionada.Encargados = value;
+            }
+        }
 
-            return null;
+        public string Observaciones
+        {
+            get
+            {
+                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.Observaciones;
+                return "";
+            }
+            set
+            {
+                if (asistenciaSeleccionada != null) asistenciaSeleccionada.Observaciones = value;
+            }
+        }
+
+        public int IdAsistencia
+        {
+            get
+            {
+                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.IdAsistencia;
+                return -1;
+            }
         }
 
         public void marcarAsistenciaComoModificada(Asistencia asistencia)
         {
             if (asistencia != null)
             {
-                pintarFilaComoModificada(buscarFilaDeAsistencia(asistencia.Id));
+                presentador.pintarFilaComoModificada(buscarFilaDeAsistencia(asistencia.Id));
             }
         }
 
@@ -202,62 +235,10 @@ namespace PlanillaAsistencia
             dgvTurnoManana.Refresh();
             dgvTurnoTarde.Refresh();
             dgvTurnoNoche.Refresh();
-
-            if (grillaSeleccionada != null)
-            {
-                foreach (DataGridViewRow row in grillaSeleccionada.Rows)
-                {
-                    DataGridViewCell celdaId = row.Cells[row.Cells.Count - 1];
-                    if ((int)celdaId.Value == asistenciaSeleccionada.IdAsistencia)
-                    {
-                        row.Selected = true;
-                    }
-                }
-            }
-        }
-
-
-
-        private void pintarTodasLasFilasComoNormales()
-        {
-            foreach (DataGridViewRow fila in dgvTurnoManana.Rows)
-            {
-                pintarFilaComoNormal(fila);
-            }
-            foreach (DataGridViewRow fila in dgvTurnoTarde.Rows)
-            {
-                pintarFilaComoNormal(fila);
-            }
-            foreach (DataGridViewRow fila in dgvTurnoNoche.Rows)
-            {
-                pintarFilaComoNormal(fila);
-            }
-        }
-
-        private void pintarFilaComoNormal(DataGridViewRow fila)
-        {
-            pintarFila(fila, fondoAsistenciaNormal);
-        }
-
-        private void pintarFilaComoModificada(DataGridViewRow fila)
-        {
-            pintarFila(fila, fondoAsistenciaModificada);
-        }
-
-        private void pintarFila(DataGridViewRow fila, Color color)
-        {
-            if (fila != null)
-            {
-                if (color != null)
-                {
-                    fila.DefaultCellStyle.BackColor = color;
-                }
-            }
         }
 
         // Busca en la lista de DataGridViewRow si existe alguna fila que contenga una asistencia
         // con el id pasado por parametro
-
         private DataGridViewRow buscarFilaDeAsistencia(int idAsistencia)
         {
             foreach (DataGridViewRow fila in dgvTurnoManana.Rows)
@@ -290,46 +271,63 @@ namespace PlanillaAsistencia
             return null;
         }
 
-        // Carga objetos de la clase AsistenciaDatosParaTabla que es una representacion de los objetos
-        // de clase 'Asistencia' especialmente diseñada para comportarse bien con los dataGridViewRow en
-        // la tabla pasada por parametro
-        private void cargarDatosParaTurno(DataGridView tabla, List<AsistenciaDatosParaTabla> asistencias)
+        private void bindearListaATabla(DataGridView tabla, BindingList<AsistenciaDatosParaTabla> asistencias)
         {
-            var bindingList = new BindingList<AsistenciaDatosParaTabla>(asistencias);
-            var source = new BindingSource(bindingList, null);
-
-            tabla.DataSource = source;
+            tabla.DataSource = asistencias;
         }
 
         // Separa las asistencias pasadas por parametro en 3 grupos: 
-        //uno para la manana, otro para la tarde y otro para la noche
-        private void separarAsistenciasEnDistintosTurnos(List<Asistencia> asistencias)
+        //uno para la manana, otro para la tarde y otro para la noche.
+        // Luego de separar las asistencias, las coloca en la bindinglist correspondiente
+        // a cada una de las tablas
+        private void ActualizarAsistencias(List<Asistencia> asistencias)
         {
-            asistenciasTurnoManana = new List<AsistenciaDatosParaTabla>();
-            asistenciasTurnoTarde = new List<AsistenciaDatosParaTabla>();
-            asistenciasTurnoNoche = new List<AsistenciaDatosParaTabla>();
+            List<AsistenciaDatosParaTabla> auxManana = new List<AsistenciaDatosParaTabla>();
+            List<AsistenciaDatosParaTabla> auxTarde = new List<AsistenciaDatosParaTabla>();
+            List<AsistenciaDatosParaTabla> auxNoche = new List<AsistenciaDatosParaTabla>();
 
             foreach (Asistencia asistencia in asistencias)
             {
                 TimeSpan horaClase = asistencia.ComienzoClaseEsperado.TimeOfDay;
                 if (rangoHorarioManana.estaDentroDelRangoHorario(horaClase))
                 {
-                    asistenciasTurnoManana.Add(new AsistenciaDatosParaTabla(asistencia));
+                    auxManana.Add(new AsistenciaDatosParaTabla(asistencia));
                 }
                 else if (rangoHorarioTarde.estaDentroDelRangoHorario(horaClase))
                 {
-                    asistenciasTurnoTarde.Add(new AsistenciaDatosParaTabla(asistencia));
+                    auxTarde.Add(new AsistenciaDatosParaTabla(asistencia));
                 }
                 else
                 {
-                    asistenciasTurnoNoche.Add(new AsistenciaDatosParaTabla(asistencia));
+                    auxNoche.Add(new AsistenciaDatosParaTabla(asistencia));
                 }
             }
 
-            asistenciasTurnoManana.Sort();
-            asistenciasTurnoTarde.Sort();
-            asistenciasTurnoNoche.Sort();
+            auxManana.Sort();
+            auxTarde.Sort();
+            auxNoche.Sort();
+
+            controladorRecarga.guardarSeleccionActual();
+
+            asistenciasTurnoManana.Clear();
+            agregarListABindingList(auxManana, asistenciasTurnoManana);
+            asistenciasTurnoTarde.Clear();
+            agregarListABindingList(auxTarde, asistenciasTurnoTarde);
+            asistenciasTurnoNoche.Clear();
+            agregarListABindingList(auxNoche, asistenciasTurnoNoche);
+
+            controladorRecarga.restaurarSeleccion();
         }
+
+        private void agregarListABindingList(List<AsistenciaDatosParaTabla> asistencias, BindingList<AsistenciaDatosParaTabla> bindingList)
+        {
+            foreach (AsistenciaDatosParaTabla asistencia in asistencias)
+            {
+                bindingList.Add(asistencia);
+            }
+        }
+
+        
 
         private void dgv_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -351,6 +349,163 @@ namespace PlanillaAsistencia
                 GestorExcepciones.mostrarExcepcion(ex);
             }
             
+        }
+
+        private void dgvTurnoNoche_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            DataGridView dgv = (DataGridView)sender;
+            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            dgv.Columns[dgv.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+        }
+
+        // Esta clase se encarga de controlar la logica que se debe hacer cuando
+        // se recargan las grillas
+        private class ControladorRecargaDeGrillas
+        {
+            private TripleGrillaAsistencias tga;
+            // Se usan para restaurar la seleccion cuando se refresque la lista
+            private int dgvMananaSelectedRowIndex = -1;
+            private int dgvTardeSelectedRowIndex = -1;
+            private int dgvNocheSelectedRowIndex = -1;
+            private DateTime fechaCorrespondienteUltimasFilasSeleccionadas;
+
+            public ControladorRecargaDeGrillas(TripleGrillaAsistencias tga)
+            {
+                this.tga = tga;
+            }
+
+            // Guarda el indice de la fila seleccionada en cada tabla
+            public void guardarSeleccionActual()
+            {
+                dgvMananaSelectedRowIndex = -1;
+                dgvTardeSelectedRowIndex = -1;
+                dgvNocheSelectedRowIndex = -1;
+                fechaCorrespondienteUltimasFilasSeleccionadas = tga.fechaDeLasAsistencias;
+
+                if (tga.dgvTurnoManana.SelectedRows.Count > 0)
+                {
+                    dgvMananaSelectedRowIndex = tga.dgvTurnoManana.SelectedRows[0].Index;
+                }
+
+                if (tga.dgvTurnoTarde.SelectedRows.Count > 0)
+                {
+                    dgvTardeSelectedRowIndex = tga.dgvTurnoTarde.SelectedRows[0].Index;
+                }
+
+                if (tga.dgvTurnoNoche.SelectedRows.Count > 0)
+                {
+                    dgvNocheSelectedRowIndex = tga.dgvTurnoNoche.SelectedRows[0].Index;
+                }
+            }
+
+            // Reselecciona las filas que estaban seleccionadas antes de que
+            // las grillas se recargaran
+            public void restaurarSeleccion()
+            {
+                if (this.fechaCorrespondienteUltimasFilasSeleccionadas.Equals(tga.fechaDeLasAsistencias))
+                {
+                    if (dgvMananaSelectedRowIndex >= 0)
+                    {
+                        tga.dgvTurnoManana.Rows[dgvMananaSelectedRowIndex].Selected = true;
+                    }
+
+                    if (dgvTardeSelectedRowIndex >= 0)
+                    {
+                        tga.dgvTurnoTarde.Rows[dgvTardeSelectedRowIndex].Selected = true;
+                    }
+
+                    if (dgvNocheSelectedRowIndex >= 0)
+                    {
+                        tga.dgvTurnoNoche.Rows[dgvNocheSelectedRowIndex].Selected = true;
+                    }
+                }
+            }
+        }
+
+        // Esta clase se encarga de todos los aspectos relacionados a como se debe visualizar
+        // la grilla
+        private class Presentador
+        {
+            private TripleGrillaAsistencias tga;
+
+            private Color fondoAsistenciaModificada = Color.Yellow;
+            private Color fondoAsistenciaNormal = Color.White;
+
+            public Presentador(TripleGrillaAsistencias tga)
+            {
+                this.tga = tga;
+            }
+
+            public void pintarTodasLasFilasComoNormales()
+            {
+                foreach (DataGridViewRow fila in tga.dgvTurnoManana.Rows)
+                {
+                    pintarFilaComoNormal(fila);
+                }
+                foreach (DataGridViewRow fila in tga.dgvTurnoTarde.Rows)
+                {
+                    pintarFilaComoNormal(fila);
+                }
+                foreach (DataGridViewRow fila in tga.dgvTurnoNoche.Rows)
+                {
+                    pintarFilaComoNormal(fila);
+                }
+            }
+
+            public void pintarFilaComoNormal(DataGridViewRow fila)
+            {
+                pintarFila(fila, fondoAsistenciaNormal);
+            }
+
+            public void pintarFilaComoModificada(DataGridViewRow fila)
+            {
+                pintarFila(fila, fondoAsistenciaModificada);
+            }
+
+            public void pintarFila(DataGridViewRow fila, Color color)
+            {
+                if (fila != null)
+                {
+                    if (color != null)
+                    {
+                        fila.DefaultCellStyle.BackColor = color;
+                    }
+                }
+            }
+
+            public void configurarPresentacionGrillas()
+            {
+                configurarGrilla(tga.dgvTurnoManana);
+                configurarGrilla(tga.dgvTurnoTarde);
+                configurarGrilla(tga.dgvTurnoNoche);
+            }
+
+            private void configurarGrilla(DataGridView grilla)
+            {
+                grilla.BackgroundColor = System.Drawing.SystemColors.Control;
+
+                foreach (DataGridViewColumn column in grilla.Columns)
+                {
+                    column.MinimumWidth = 100;
+                    column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                }
+
+                grilla.Columns[0].MinimumWidth = 300;
+
+                grilla.DataBindingComplete += (o, i) =>
+                {
+                    grilla.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+                    grilla.Columns[grilla.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                };
+
+                grilla.AllowUserToResizeColumns = false;
+                grilla.AllowUserToResizeRows = false;
+            }
+
+            private void configurarAutosizeGrilla(DataGridView grilla)
+            {
+
+            }
         }
     }
 }

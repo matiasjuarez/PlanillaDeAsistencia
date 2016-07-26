@@ -93,6 +93,7 @@
             // 
             this.tabDatosDelDia.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabDatosDelDia.CausesValidation = false;
             this.tabDatosDelDia.Controls.Add(this.tabTurnoManana);
             this.tabDatosDelDia.Controls.Add(this.tabTurnoTarde);
             this.tabDatosDelDia.Controls.Add(this.tabTurnoNoche);
@@ -116,7 +117,7 @@
             // 
             this.dgvTurnoManana.AllowUserToAddRows = false;
             this.dgvTurnoManana.AllowUserToDeleteRows = false;
-            this.dgvTurnoManana.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvTurnoManana.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.dgvTurnoManana.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvTurnoManana.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.asignatura,
@@ -151,6 +152,7 @@
             dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvTurnoManana.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            this.dgvTurnoManana.RowHeadersVisible = false;
             this.dgvTurnoManana.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dgvTurnoManana.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvTurnoManana.Size = new System.Drawing.Size(766, 211);
@@ -180,7 +182,7 @@
             this.horaEntrada.HeaderText = "Hora de entrada esperada";
             this.horaEntrada.Name = "horaEntrada";
             this.horaEntrada.ReadOnly = true;
-            this.horaEntrada.Width = 142;
+            this.horaEntrada.Width = 103;
             // 
             // horaSalida
             // 
@@ -191,7 +193,7 @@
             this.horaSalida.Name = "horaSalida";
             this.horaSalida.ReadOnly = true;
             this.horaSalida.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.horaSalida.Width = 134;
+            this.horaSalida.Width = 95;
             // 
             // horaEntradaReal
             // 
@@ -200,7 +202,7 @@
             this.horaEntradaReal.HeaderText = "Hora de entrada real";
             this.horaEntradaReal.Name = "horaEntradaReal";
             this.horaEntradaReal.ReadOnly = true;
-            this.horaEntradaReal.Width = 103;
+            this.horaEntradaReal.Width = 81;
             // 
             // horaSalidaReal
             // 
@@ -209,7 +211,7 @@
             this.horaSalidaReal.HeaderText = "Hora de salida real";
             this.horaSalidaReal.Name = "horaSalidaReal";
             this.horaSalidaReal.ReadOnly = true;
-            this.horaSalidaReal.Width = 95;
+            this.horaSalidaReal.Width = 73;
             // 
             // profesor
             // 
@@ -236,6 +238,7 @@
             this.cantidadAlumnos.HeaderText = "Alumnos";
             this.cantidadAlumnos.Name = "cantidadAlumnos";
             this.cantidadAlumnos.ReadOnly = true;
+            this.cantidadAlumnos.Width = 72;
             // 
             // observaciones
             // 
@@ -243,6 +246,7 @@
             this.observaciones.HeaderText = "Observaciones";
             this.observaciones.Name = "observaciones";
             this.observaciones.ReadOnly = true;
+            this.observaciones.Width = 103;
             // 
             // encargados
             // 
@@ -250,6 +254,7 @@
             this.encargados.HeaderText = "Encargados";
             this.encargados.Name = "encargados";
             this.encargados.ReadOnly = true;
+            this.encargados.Width = 89;
             // 
             // idAsistenciaManana
             // 
@@ -307,6 +312,7 @@
             dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvTurnoTarde.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
+            this.dgvTurnoTarde.RowHeadersVisible = false;
             this.dgvTurnoTarde.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dgvTurnoTarde.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvTurnoTarde.Size = new System.Drawing.Size(766, 211);
@@ -429,6 +435,9 @@
             // 
             this.dgvTurnoNoche.AllowUserToAddRows = false;
             this.dgvTurnoNoche.AllowUserToDeleteRows = false;
+            this.dgvTurnoNoche.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvTurnoNoche.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
             this.dgvTurnoNoche.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvTurnoNoche.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.idAsistenciaNoche,
@@ -450,7 +459,6 @@
             dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvTurnoNoche.DefaultCellStyle = dataGridViewCellStyle11;
-            this.dgvTurnoNoche.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvTurnoNoche.Location = new System.Drawing.Point(0, 0);
             this.dgvTurnoNoche.MultiSelect = false;
             this.dgvTurnoNoche.Name = "dgvTurnoNoche";
@@ -463,11 +471,13 @@
             dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvTurnoNoche.RowHeadersDefaultCellStyle = dataGridViewCellStyle12;
+            this.dgvTurnoNoche.RowHeadersVisible = false;
             this.dgvTurnoNoche.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dgvTurnoNoche.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvTurnoNoche.Size = new System.Drawing.Size(766, 211);
             this.dgvTurnoNoche.TabIndex = 2;
             this.dgvTurnoNoche.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellClick);
+            this.dgvTurnoNoche.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvTurnoNoche_DataBindingComplete);
             // 
             // idAsistenciaNoche
             // 
@@ -548,6 +558,7 @@
             this.dataGridViewTextBoxColumn19.HeaderText = "Alumnos";
             this.dataGridViewTextBoxColumn19.Name = "dataGridViewTextBoxColumn19";
             this.dataGridViewTextBoxColumn19.ReadOnly = true;
+            this.dataGridViewTextBoxColumn19.Width = 72;
             // 
             // dataGridViewTextBoxColumn20
             // 
@@ -555,6 +566,7 @@
             this.dataGridViewTextBoxColumn20.HeaderText = "Observaciones";
             this.dataGridViewTextBoxColumn20.Name = "dataGridViewTextBoxColumn20";
             this.dataGridViewTextBoxColumn20.ReadOnly = true;
+            this.dataGridViewTextBoxColumn20.Width = 103;
             // 
             // dataGridViewTextBoxColumn21
             // 
@@ -562,6 +574,7 @@
             this.dataGridViewTextBoxColumn21.HeaderText = "Encargados";
             this.dataGridViewTextBoxColumn21.Name = "dataGridViewTextBoxColumn21";
             this.dataGridViewTextBoxColumn21.ReadOnly = true;
+            this.dataGridViewTextBoxColumn21.Width = 89;
             // 
             // dataGridViewTextBoxColumn22
             // 
