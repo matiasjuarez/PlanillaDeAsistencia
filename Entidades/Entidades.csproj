@@ -42,6 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clases auxiliares\AsistenciaDual.cs" />
+    <Compile Include="Clases auxiliares\DiccionarioAsistenciasPorFechaSimple.cs" />
     <Compile Include="Entidades\Asignatura.cs" />
     <Compile Include="Entidades\Asistencia.cs" />
     <Compile Include="Clases auxiliares\AsistenciaDatosParaTabla.cs" />

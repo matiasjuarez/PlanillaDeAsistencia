@@ -7,7 +7,7 @@ namespace Entidades
 {
     public class DiccionarioAsistenciasPorFecha
     {
-        private Dictionary<string, List<Asistencia>> diccionarioAsistencias;
+        private Dictionary<string, List<AsistenciaDual>> diccionarioAsistencias;
 
         public int Count
         {
@@ -26,32 +26,43 @@ namespace Entidades
 
         public DiccionarioAsistenciasPorFecha()
         {
-            diccionarioAsistencias = new Dictionary<string, List<Asistencia>>();
+            diccionarioAsistencias = new Dictionary<string, List<AsistenciaDual>>();
         }
 
-        public void agregarListAsistencias(List<Asistencia> listaAsistencias, bool comprobarAsistenciaNoRepetida = true)
+        public void agregarListAsistencias(List<AsistenciaDual> listaAsistencias, bool comprobarAsistenciaNoRepetida = true)
         {
-            foreach (Asistencia asistencia in listaAsistencias)
+            foreach (AsistenciaDual asistencia in listaAsistencias)
             {
                 agregarAsistencia(asistencia, comprobarAsistenciaNoRepetida);
             }
         }
 
-        public void agregarAsistencia(Asistencia asistencia, bool comprobarAsistenciaNoRepetida = true)
+        public void agregarListAsistencias(List<Asistencia> listaAsistencias, bool comprobarAsistenciaNoRepetida = true)
+        {
+            List<AsistenciaDual> asistenciasDuales = new List<AsistenciaDual>();
+            foreach (Asistencia asistencia in listaAsistencias)
+            {
+                AsistenciaDual asistenciaD = new AsistenciaDual(asistencia);
+                asistenciasDuales.Add(asistenciaD);
+            }
+            agregarListAsistencias(asistenciasDuales, comprobarAsistenciaNoRepetida);
+        } 
+
+        public void agregarAsistencia(AsistenciaDual asistencia, bool comprobarAsistenciaNoRepetida = true)
         {
             // Se agrega al diccionario por fechas
-            string fechaAsistencia = asistencia.ComienzoClaseEsperado.Date.ToString("d");
-            List<Asistencia> asistenciasParaFecha;
+            string fechaAsistencia = asistencia.Original.DiaDeAsistencia.Date.ToString("d");
+            List<AsistenciaDual> asistenciasParaFecha;
 
             if (!diccionarioAsistencias.TryGetValue(fechaAsistencia, out asistenciasParaFecha))
             {
-                asistenciasParaFecha = new List<Asistencia>();
+                asistenciasParaFecha = new List<AsistenciaDual>();
                 diccionarioAsistencias[fechaAsistencia] = asistenciasParaFecha;
             }
 
             if (comprobarAsistenciaNoRepetida)
             {
-                if (!asistenciasParaFecha.Contains(asistencia))
+                if (!contieneAsistencia(asistencia, asistenciasParaFecha))
                 {
                     asistenciasParaFecha.Add(asistencia);
                 }
@@ -62,7 +73,28 @@ namespace Entidades
             }
         }
 
-        public List<Asistencia> obtenerAsistenciasParaFecha(DateTime fecha)
+        public void agregarAsistencia(Asistencia asistencia)
+        {
+            AsistenciaDual asistenciaD = new AsistenciaDual(asistencia);
+            agregarAsistencia(asistenciaD);
+        }
+
+        private bool contieneAsistencia(AsistenciaDual asistencia, List<AsistenciaDual> lista)
+        {
+            if (asistencia == null) return false;
+
+            foreach (AsistenciaDual asistenciaD in lista)
+            {
+                if (asistencia.Original.Id == asistenciaD.Original.Id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public List<AsistenciaDual> obtenerAsistenciasParaFecha(DateTime fecha)
         {
             // Esto obtiene la parte de la fecha sin la hora
             String fechaDeBusqueda = fecha.Date.ToString("d");
@@ -70,9 +102,9 @@ namespace Entidades
             return obtenerAsistenciasParaFecha(fechaDeBusqueda);
         }
 
-        public List<Asistencia> obtenerAsistenciasParaFecha(string fecha)
+        public List<AsistenciaDual> obtenerAsistenciasParaFecha(string fecha)
         {
-            List<Asistencia> asistenciasDeFecha;
+            List<AsistenciaDual> asistenciasDeFecha;
 
             if (diccionarioAsistencias.TryGetValue(fecha, out asistenciasDeFecha))
             {
@@ -85,29 +117,29 @@ namespace Entidades
             }
         }
 
-        public void setearEntrada(DateTime fecha, List<Asistencia> asistencias)
+        public void setearEntrada(DateTime fecha, List<AsistenciaDual> asistencias)
         {
             String fechaDeBusqueda = fecha.Date.ToString("d");
             setearEntrada(fechaDeBusqueda, asistencias);
         }
 
-        public void setearEntrada(string fecha, List<Asistencia> asistencias)
+        public void setearEntrada(string fecha, List<AsistenciaDual> asistencias)
         {
             diccionarioAsistencias[fecha] = asistencias;
         }
 
         public bool quitarAsistencia(Asistencia asistencia)
         {
-            string fechaAsistencia = asistencia.ComienzoClaseEsperado.Date.ToString("d");
-            List<Asistencia> asistenciasParaFecha;
+            string fechaAsistencia = asistencia.DiaDeAsistencia.Date.ToString("d");
+            List<AsistenciaDual> asistenciasParaFecha;
 
             if (diccionarioAsistencias.TryGetValue(fechaAsistencia, out asistenciasParaFecha))
             {
                 for (int i = 0; i < asistenciasParaFecha.Count; i++)
                 {
-                    Asistencia asistenciaEnLista = asistenciasParaFecha.ElementAt(i);
+                    AsistenciaDual asistenciaEnLista = asistenciasParaFecha.ElementAt(i);
 
-                    if (asistenciaEnLista.Id == asistencia.Id)
+                    if (asistenciaEnLista.Original.Id == asistencia.Id)
                     {
                         asistenciasParaFecha.RemoveAt(i);
                         return true;
@@ -116,6 +148,11 @@ namespace Entidades
             }
 
             return false;
+        }
+
+        public bool quitarAsistencia(AsistenciaDual asistencia)
+        {
+            return quitarAsistencia(asistencia.Original);
         }
 
         public void limpiarDiccionario()

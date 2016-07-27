@@ -127,7 +127,7 @@ namespace AccesoDatos
                     "asistencias.encargadoNombre as Encargado, asistencias.docenteNombre, " +
                     "asistencias.docenteId, asistencias.asignaturaNombre, asistencias.asignaturaId, " +
                     "asistencias.estadoAsistenciaNombre, asistencias.estadoAsistenciaId, " +
-                    "asistencias.cursoId, asistencias.cursoNombre, aulas.aulasId, aulas.aulasNombre FROM ( " +
+                    "asistencias.cursoId, asistencias.cursoNombre, aulas.aulasId, aulas.aulasNombre, asistencias.observaciones FROM ( " +
                     "select asistencia.id as asistenciaId, asistencia.appointmentId as APID, asistencia.eventId as eventId, " +
                     "comienzoClaseEsperado, finClaseEsperado, " +
                     "comienzoClaseReal, finClaseReal, cantidadAlumnos, " +
@@ -135,7 +135,7 @@ namespace AccesoDatos
                     "docente.nombre as docenteNombre, docente.id as docenteId, " +
                     "asignatura.nombre as asignaturaNombre, asignatura.id as asignaturaId, " +
                     "estadoasistencia.nombre as estadoAsistenciaNombre, estadoasistencia.id as estadoAsistenciaId, " +
-                    "curso.id as cursoId, curso.nombre as cursoNombre " +
+                    "curso.id as cursoId, curso.nombre as cursoNombre, observaciones " +
                     "from asistencia " +
                     "left join docente on docente.id = asistencia.idDocente " +
                     "left join asignatura on asignatura.id = asistencia.idAsignatura " +
@@ -205,13 +205,15 @@ namespace AccesoDatos
             asistencia.Encargado = encargado;
             asistencia.EstadoAsistencia = estadoAsistencia;
             asistencia.CantidadAlumnos = ValidadorValoresNull.getInt(reader, "alumnos");
-            asistencia.ComienzoClaseEsperado = ValidadorValoresNull.getDateTime(reader, "InicioEsperado");
-            asistencia.ComienzoClaseReal = ValidadorValoresNull.getDateTime(reader, "InicioReal");
-            asistencia.FinClaseEsperado = ValidadorValoresNull.getDateTime(reader, "FinEsperado");
-            asistencia.FinClaseReal = ValidadorValoresNull.getDateTime(reader, "FinReal");
+            asistencia.DiaDeAsistencia = ValidadorValoresNull.getDateTime(reader, "InicioEsperado");
+            asistencia.ComienzoClaseEsperado = ValidadorValoresNull.getTimeSpan(reader, "InicioEsperado");
+            asistencia.ComienzoClaseReal = ValidadorValoresNull.getTimeSpan(reader, "InicioReal");
+            asistencia.FinClaseEsperado = ValidadorValoresNull.getTimeSpan(reader, "FinEsperado");
+            asistencia.FinClaseReal = ValidadorValoresNull.getTimeSpan(reader, "FinReal");
             asistencia.Id = ValidadorValoresNull.getInt(reader, "Id");
             asistencia.EventId = ValidadorValoresNull.getInt(reader, "eventId");
             asistencia.AppointmentId = ValidadorValoresNull.getInt(reader, "appointmentId");
+            asistencia.Observaciones = ValidadorValoresNull.getString(reader, "observaciones");
 
             return asistencia;
         }

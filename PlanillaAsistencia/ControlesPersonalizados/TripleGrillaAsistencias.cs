@@ -55,21 +55,11 @@ namespace PlanillaAsistencia
             rangoHorarioNoche = new RangoHorario("18:00:00", "23:59:59");
         }
 
-        private void configuracionAdicional()
-        {
-            dgvTurnoNoche.Columns[0].MinimumWidth = 300;
-            dgvTurnoNoche.BackgroundColor = System.Drawing.SystemColors.Control;
-        }
-
-        public void mostrarAsistencias(List<Asistencia> asistencias)
+        public void mostrarAsistencias(List<AsistenciaDual> asistencias)
         {
             asistenciaSeleccionada = null;
 
-            if (asistencias != null && asistencias.Count > 0)
-            {
-                ActualizarAsistencias(asistencias);
-                fechaDeLasAsistencias = asistencias.ElementAt(0).ComienzoClaseEsperado.Date;
-            }
+            ActualizarAsistencias(asistencias);
         }
 
         public string NombreAsignatura
@@ -280,32 +270,36 @@ namespace PlanillaAsistencia
         //uno para la manana, otro para la tarde y otro para la noche.
         // Luego de separar las asistencias, las coloca en la bindinglist correspondiente
         // a cada una de las tablas
-        private void ActualizarAsistencias(List<Asistencia> asistencias)
+        private void ActualizarAsistencias(List<AsistenciaDual> asistencias)
         {
             List<AsistenciaDatosParaTabla> auxManana = new List<AsistenciaDatosParaTabla>();
             List<AsistenciaDatosParaTabla> auxTarde = new List<AsistenciaDatosParaTabla>();
             List<AsistenciaDatosParaTabla> auxNoche = new List<AsistenciaDatosParaTabla>();
 
-            foreach (Asistencia asistencia in asistencias)
+            if (asistencias != null)
             {
-                TimeSpan horaClase = asistencia.ComienzoClaseEsperado.TimeOfDay;
-                if (rangoHorarioManana.estaDentroDelRangoHorario(horaClase))
+                foreach (AsistenciaDual asistencia in asistencias)
                 {
-                    auxManana.Add(new AsistenciaDatosParaTabla(asistencia));
+                    TimeSpan horaClase = asistencia.Clonada.ComienzoClaseEsperado;
+                    if (rangoHorarioManana.estaDentroDelRangoHorario(horaClase))
+                    {
+                        auxManana.Add(new AsistenciaDatosParaTabla(asistencia));
+                    }
+                    else if (rangoHorarioTarde.estaDentroDelRangoHorario(horaClase))
+                    {
+                        auxTarde.Add(new AsistenciaDatosParaTabla(asistencia));
+                    }
+                    else
+                    {
+                        auxNoche.Add(new AsistenciaDatosParaTabla(asistencia));
+                    }
                 }
-                else if (rangoHorarioTarde.estaDentroDelRangoHorario(horaClase))
-                {
-                    auxTarde.Add(new AsistenciaDatosParaTabla(asistencia));
-                }
-                else
-                {
-                    auxNoche.Add(new AsistenciaDatosParaTabla(asistencia));
-                }
-            }
 
-            auxManana.Sort();
-            auxTarde.Sort();
-            auxNoche.Sort();
+                auxManana.Sort();
+                auxTarde.Sort();
+                auxNoche.Sort();
+            }
+            
 
             controladorRecarga.guardarSeleccionActual();
 
@@ -315,6 +309,7 @@ namespace PlanillaAsistencia
             agregarListABindingList(auxTarde, asistenciasTurnoTarde);
             asistenciasTurnoNoche.Clear();
             agregarListABindingList(auxNoche, asistenciasTurnoNoche);
+            refrescarGrillas();
 
             controladorRecarga.restaurarSeleccion();
         }
@@ -358,16 +353,21 @@ namespace PlanillaAsistencia
             dgv.Columns[dgv.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
+        public int getIdAsistenciaSeleccionada()
+        {
+            // Cuando modifica la asistencia
+            return asistenciaSeleccionada.IdAsistencia;
+        }
+
         // Esta clase se encarga de controlar la logica que se debe hacer cuando
         // se recargan las grillas
         private class ControladorRecargaDeGrillas
         {
             private TripleGrillaAsistencias tga;
             // Se usan para restaurar la seleccion cuando se refresque la lista
-            private int dgvMananaSelectedRowIndex = -1;
-            private int dgvTardeSelectedRowIndex = -1;
-            private int dgvNocheSelectedRowIndex = -1;
-            private DateTime fechaCorrespondienteUltimasFilasSeleccionadas;
+            private AsistenciaDatosParaTabla dgvMananaAsistenciaSeleccionada = null;
+            private AsistenciaDatosParaTabla dgvTardeAsistenciaSeleccionada = null;
+            private AsistenciaDatosParaTabla dgvNocheAsistenciaSeleccionada = null;
 
             public ControladorRecargaDeGrillas(TripleGrillaAsistencias tga)
             {
@@ -377,46 +377,50 @@ namespace PlanillaAsistencia
             // Guarda el indice de la fila seleccionada en cada tabla
             public void guardarSeleccionActual()
             {
-                dgvMananaSelectedRowIndex = -1;
-                dgvTardeSelectedRowIndex = -1;
-                dgvNocheSelectedRowIndex = -1;
-                fechaCorrespondienteUltimasFilasSeleccionadas = tga.fechaDeLasAsistencias;
+                dgvMananaAsistenciaSeleccionada = null;
+                dgvTardeAsistenciaSeleccionada = null;
+                dgvNocheAsistenciaSeleccionada = null;
 
                 if (tga.dgvTurnoManana.SelectedRows.Count > 0)
                 {
-                    dgvMananaSelectedRowIndex = tga.dgvTurnoManana.SelectedRows[0].Index;
+                    dgvMananaAsistenciaSeleccionada =
+                        (AsistenciaDatosParaTabla)tga.dgvTurnoManana.SelectedRows[0].DataBoundItem;
                 }
 
                 if (tga.dgvTurnoTarde.SelectedRows.Count > 0)
                 {
-                    dgvTardeSelectedRowIndex = tga.dgvTurnoTarde.SelectedRows[0].Index;
+                    dgvTardeAsistenciaSeleccionada =
+                        (AsistenciaDatosParaTabla)tga.dgvTurnoTarde.SelectedRows[0].DataBoundItem;
                 }
 
                 if (tga.dgvTurnoNoche.SelectedRows.Count > 0)
                 {
-                    dgvNocheSelectedRowIndex = tga.dgvTurnoNoche.SelectedRows[0].Index;
+                    dgvNocheAsistenciaSeleccionada =
+                        (AsistenciaDatosParaTabla)tga.dgvTurnoNoche.SelectedRows[0].DataBoundItem;
                 }
             }
 
             // Reselecciona las filas que estaban seleccionadas antes de que
-            // las grillas se recargaran
+            // las grillas se recargaran (AsistenciaDatosParaTabla)fila.DataBoundItem
             public void restaurarSeleccion()
             {
-                if (this.fechaCorrespondienteUltimasFilasSeleccionadas.Equals(tga.fechaDeLasAsistencias))
+                buscarYseleccionarAsistenciaEnGrilla(tga.dgvTurnoManana, dgvMananaAsistenciaSeleccionada);
+                buscarYseleccionarAsistenciaEnGrilla(tga.dgvTurnoTarde, dgvTardeAsistenciaSeleccionada);
+                buscarYseleccionarAsistenciaEnGrilla(tga.dgvTurnoNoche, dgvNocheAsistenciaSeleccionada);
+            }
+
+            private void buscarYseleccionarAsistenciaEnGrilla(DataGridView grilla, AsistenciaDatosParaTabla asistencia)
+            {
+                grilla.ClearSelection();
+                if (asistencia != null)
                 {
-                    if (dgvMananaSelectedRowIndex >= 0)
+                    foreach (DataGridViewRow fila in grilla.Rows)
                     {
-                        tga.dgvTurnoManana.Rows[dgvMananaSelectedRowIndex].Selected = true;
-                    }
-
-                    if (dgvTardeSelectedRowIndex >= 0)
-                    {
-                        tga.dgvTurnoTarde.Rows[dgvTardeSelectedRowIndex].Selected = true;
-                    }
-
-                    if (dgvNocheSelectedRowIndex >= 0)
-                    {
-                        tga.dgvTurnoNoche.Rows[dgvNocheSelectedRowIndex].Selected = true;
+                        AsistenciaDatosParaTabla asistenciaActual = (AsistenciaDatosParaTabla)fila.DataBoundItem;
+                        if (asistencia.IdAsistencia == asistenciaActual.IdAsistencia)
+                        {
+                            fila.Selected = true;
+                        }
                     }
                 }
             }

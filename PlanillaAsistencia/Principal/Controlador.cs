@@ -44,10 +44,10 @@ namespace PlanillaAsistencia
             {
                 vista.quitarObservadorCamposEditables(controladorEdicionAsistencia);
 
-                if (controladorEdicionAsistencia.seModificoAsistencia())
+                /*if (controladorEdicionAsistencia.seModificoAsistencia())
                 {
-                    modelo.agregarAsistenciaModificada(controladorEdicionAsistencia.AsistenciaEnEdicion);
-                }
+                    modelo.marcarAsistenciaComoModificada(controladorEdicionAsistencia.AsistenciaEnEdicion);
+                }*/
             }
 
             controladorEdicionAsistencia = new ControladorEdicionAsistencia(vista, modelo);
@@ -56,14 +56,14 @@ namespace PlanillaAsistencia
             controladorEdicionAsistencia.manejarSeleccionDeAsistenciaDesdeGrilla();
         }
 
-        // Actualiza la vista cuando el modelo ha sido actualizado
-        private void manejarActualizacionDelModelo()
+        private bool comprobarSiQuedanAsistenciasModificadas()
         {
-            DateTime fechaSeleccionadaPorUsuario = this.vista.obtenerFechaSeleccionada();
-            cargarAsistenciasDeFechaEnGrillasDeVista(fechaSeleccionadaPorUsuario);
-            vista.mostrarMensaje("ACTUALIZADO", 2000);
+            foreach (AsistenciaDual asistenciaD in modelo.getAsistenciasEnMemoria())
+            {
+                if (asistenciaD.esModificada()) return true;
+            }
+            return false;
         }
-
 
         // Cuando el usuario cambia la fecha seleccionada debe llamar a esta funcion.
         public void manejarCambioFechaSeleccionada(DateTime fechaSeleccionada)
@@ -82,12 +82,12 @@ namespace PlanillaAsistencia
             vista.cargarAsistenciasEnGrillas(modelo.getAsistenciasParaFecha(fecha, true));
             vista.habilitarManejadoresDeEventos(true);
 
-            List<Asistencia> asistencias = modelo.getAsistenciasModificadas();
+            /*List<Asistencia> asistencias = modelo.getAsistenciasModificadas();
 
             foreach (Asistencia asistencia in asistencias)
             {
                 vista.marcarAsistenciaComoModificada(asistencia);
-            }
+            }*/
         }
 
         // Ejecuta las acciones PERTINENTES(jaja) al momento de crear la parte visual de la planilla.
@@ -124,8 +124,24 @@ namespace PlanillaAsistencia
 
         public void actualizarModelo()
         {
-            modelo.actualizar();
-            vista.cargarDatosParaFechaSeleccionada();
+            ControladorSincronizacionModelo controlador = new ControladorSincronizacionModelo(modelo, this);
+            controlador.actualizarModelo();
+
+            if (!comprobarSiQuedanAsistenciasModificadas())
+            {
+                vista.habilitarBotonGuardado(false);
+            }
+
+            if (controlador.SeActualizoModelo)
+            {
+                int idAsistenciaSeleccionada = vista.getIdAsistenciaSeleccionada();
+                AsistenciaDual asistenciaDualSeleccionada = modelo.getAsistencia(idAsistenciaSeleccionada);
+                vista.cargarDatosDeAsistencia(asistenciaDualSeleccionada.Clonada);
+
+                DateTime fechaSeleccionadaPorUsuario = this.vista.obtenerFechaSeleccionada();
+                cargarAsistenciasDeFechaEnGrillasDeVista(fechaSeleccionadaPorUsuario);
+                vista.mostrarMensaje("ACTUALIZADO", 2000);
+            }
         }
     }
 }

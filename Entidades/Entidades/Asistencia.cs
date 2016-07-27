@@ -14,10 +14,11 @@ namespace Entidades
     [Serializable]
     public class Asistencia
     {
-        private DateTime comienzoClaseEsperado;
-        private DateTime finClaseEsperado;
-        private DateTime comienzoClaseReal;
-        private DateTime finClaseReal;
+        private TimeSpan comienzoClaseEsperado;
+        private TimeSpan finClaseEsperado;
+        private TimeSpan comienzoClaseReal;
+        private TimeSpan finClaseReal;
+        private DateTime diaDeAsistencia;
         private int cantidadAlumnos;
         private Docente docente;
         private Asignatura asignatura;
@@ -29,13 +30,15 @@ namespace Entidades
         private int eventId;    
         private int appointmentId;
         private string observaciones;
+        private bool comienzoClaseEsperadoSeteado = false;
+        private bool finClaseEsperadoSeteado = false;
 
         public Asistencia()
         {
-            comienzoClaseEsperado = new DateTime(1, 1, 1);
-            finClaseEsperado = new DateTime(1, 1, 1);
-            comienzoClaseReal = new DateTime(1, 1, 1);
-            finClaseReal = new DateTime(1, 1, 1);
+            comienzoClaseEsperado = new TimeSpan(0, 0, 0);
+            finClaseEsperado = new TimeSpan(0, 0, 0);
+            comienzoClaseReal = new TimeSpan(0, 0, 0);
+            finClaseReal = new TimeSpan(0, 0, 0);
             docente = new Docente();
             asignatura = new Asignatura();
             encargado = new Encargado();
@@ -68,25 +71,31 @@ namespace Entidades
             set { id = value; }
         }
 
-        public DateTime ComienzoClaseEsperado
+        public DateTime DiaDeAsistencia
+        {
+            get { return diaDeAsistencia; }
+            set { diaDeAsistencia = value; }
+        }
+
+        public TimeSpan ComienzoClaseEsperado
         {
             get { return comienzoClaseEsperado; }
             set { comienzoClaseEsperado = value; }
         }
-        
-        public DateTime FinClaseEsperado
+
+        public TimeSpan FinClaseEsperado
         {
             get { return finClaseEsperado; }
             set { finClaseEsperado = value; }
         }
 
-        public DateTime ComienzoClaseReal
+        public TimeSpan ComienzoClaseReal
         {
             get { return comienzoClaseReal; }
             set { comienzoClaseReal = value; }
         }
-        
-        public DateTime FinClaseReal
+
+        public TimeSpan FinClaseReal
         {
             get { return finClaseReal; }
             set { finClaseReal = value; }
@@ -247,6 +256,11 @@ namespace Entidades
             }
 
             return true;
+        }
+
+        private void compararDosHoras(DateTime fecha, DateTime otra)
+        {
+
         }
 
         // Toma los datos de la asistencia pasada por paremtro que solo pueden ser generados por 

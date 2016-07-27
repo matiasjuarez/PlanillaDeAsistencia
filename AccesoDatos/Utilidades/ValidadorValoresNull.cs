@@ -68,6 +68,22 @@ namespace AccesoDatos
                 return VALOR_POR_DEFECTO_DATETIME;
         }
 
+        public static TimeSpan getTimeSpan(MySqlDataReader reader, int indiceColumna)
+        {
+            if (!reader.IsDBNull(indiceColumna))
+            {
+                DateTime fecha = reader.GetDateTime(indiceColumna);
+                return fecha.TimeOfDay;
+            }
+            else return new TimeSpan(0, 0, 0);
+        }
+
+        public static TimeSpan getTimeSpan(MySqlDataReader reader, string nombreColumna)
+        {
+            int indiceColumna = reader.GetOrdinal(nombreColumna);
+            return getTimeSpan(reader, indiceColumna);
+        }
+
         public static decimal getDecimal(MySqlDataReader reader, string nombreColumna, decimal valorPorDefecto)
         {
             int indiceColumna = reader.GetOrdinal(nombreColumna);

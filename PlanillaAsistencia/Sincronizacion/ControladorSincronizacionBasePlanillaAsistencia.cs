@@ -11,10 +11,21 @@ namespace PlanillaAsistencia
     public class ControladorSincronizacionModelo
     {
         private Modelo modelo;
+        private Controlador referenciaControladorPadre;
+        private bool seActualizoModelo = false;
+        public bool SeActualizoModelo
+        {
+            get
+            {
+                return seActualizoModelo;
+            }
 
-        public ControladorSincronizacionModelo(Modelo modelo)
+        }
+
+        public ControladorSincronizacionModelo(Modelo modelo, Controlador controlador)
         {
             this.modelo = modelo;
+            this.referenciaControladorPadre = controlador;
         }
 
         public void actualizarModelo()
@@ -24,12 +35,28 @@ namespace PlanillaAsistencia
             if (fechasCargadasEnDiccionario.Count > 0)
             {
                 List<Asistencia> asistenciasBaseDatos = DAOAsistencias.obtenerAsistenciasParaListadoDeFechas(fechasCargadasEnDiccionario);
+                bool requiereActualizar = false;
 
+                foreach (AsistenciaDual asistenciaD in modelo.getAsistenciasEnMemoria())
+                {
+                    foreach (Asistencia asistencia in asistenciasBaseDatos)
+                    {
+                        if (asistenciaD.Original.Id == asistencia.Id)
+                        {
+                            if (!asistenciaD.Original.poseeLosMismosDatosQueEstaAsistencia(asistencia))
+                            {
+                                asistenciaD.Original = asistencia;
+                                seActualizoModelo = true;
+                            }
+                        }
+                    }
+                }
+                /*referenciaControladorPadre.manejarActualizacionDelModelo();
                 bool requiereActualizar = modeloRequiereActualizarse(asistenciasBaseDatos);
 
                 if (requiereActualizar)
                 {
-                    verificarAsistenciasEnListaDeModificadas(asistenciasBaseDatos);
+                    verificarAsistenciasModificadas(asistenciasBaseDatos);
 
                     if (modelo.getAsistenciasModificadas().Count == 0)
                     {
@@ -42,8 +69,9 @@ namespace PlanillaAsistencia
                         modelo.agregarAsistenciaEnDiccionarios(asistenciaBaseDatos);
                     }
 
+                    
                    // modelo.notificarCambiosEnModelo();
-                }
+                }*/
             }
         }
 
@@ -54,16 +82,20 @@ namespace PlanillaAsistencia
                 return true;
             }
 
-            List<Asistencia> asistenciasEnMemoria = new List<Asistencia>();
+            List<AsistenciaDual> asistenciasEnMemoria = new List<AsistenciaDual>();
             asistenciasEnMemoria.AddRange(modelo.getAsistenciasEnMemoria());
 
             foreach (Asistencia asistenciaBaseDatos in asistenciasBaseDatos)
             {
-                foreach (Asistencia asistenciaMemoria in asistenciasEnMemoria)
+                foreach (AsistenciaDual asistenciaMemoria in asistenciasEnMemoria)
                 {
                     if (asistenciaBaseDatos.Id == asistenciaMemoria.Id)
                     {
-                        if (!asistenciaBaseDatos.poseeLosMismosDatosQueEstaAsistencia(asistenciaMemoria))
+                        if (asistenciaBaseDatos.Id == 68)
+                        {
+                            int bbb = 3;
+                        }
+                        if (!asistenciaMemoria.poseeLosMismosDatosOriginalesQueEstaAsistencia(asistenciaBaseDatos))
                         {
                             return true;
                         }
@@ -79,25 +111,25 @@ namespace PlanillaAsistencia
             return false;
         }
 
-        // La idea es que las asistencias que figuran en la lista de modificadas en el modelo se quiten si es necesario.
-        // Se debe quitar una asistencia modificada cuando dicha asistencia no figure en la lista de asistencias traidas
+        // La idea es que las asistencias que figuran como modificadas en el modelo se marquen como sin modificar si es necesario.
+        // Se debe marcar una asistencia como no modificada cuando dicha asistencia no figure en la lista de asistencias traidas
         // de la base de datos ya que esto significa que dicha asistencia fue eliminada de la base de datos. 
-        //En caso de que si figure en la lista, se debe comprobar que la asistencia correspondiente
+        // En caso de que si figure en la lista, se debe comprobar que la asistencia correspondiente
         // que figura en la lista de asistencias de la base de datos y la asistencia correspondiente que figura en la lista
         // de asistencias que estan en memoria sean iguales. Si no son iguales, significa que alguien ha modificado la asistencia
-        // en cuestion y la quitaremos del listado de asistencias modificadas para darle validez a la actualizacion que ha hecho el
+        // en cuestion y la marcaremos como no modificada para darle validez a la actualizacion que ha hecho el
         // otro usuario
-        private void verificarAsistenciasEnListaDeModificadas(List<Asistencia> asistenciasBaseDatos)
+        /*private void verificarAsistenciasModificadas(List<Asistencia> asistenciasBaseDatos)
         {
             Dictionary<string, List<Asistencia>> diccionarioAsistenciasPorFechaBaseDatos = 
                 separarListadoDeAsistenciasPorFecha(asistenciasBaseDatos);
 
-            foreach (Asistencia asistenciaModificada in modelo.getAsistenciasModificadas())
+            foreach (AsistenciaDual asistenciaModificada in modelo.getAsistenciasModificadas())
             {
-                string fechaKeyAsistenciaModificada = asistenciaModificada.ComienzoClaseEsperado.Date.ToString("d");
+                string fechaKeyAsistenciaModificada = asistenciaModificada.DiaDeAsistencia.Date.ToString("d");
 
                 List<Asistencia> asistenciasDeFechaBaseDatos = diccionarioAsistenciasPorFechaBaseDatos[fechaKeyAsistenciaModificada];
-                List<Asistencia> asistenciasDeFechaMemoria = modelo.getAsistenciasParaFecha(asistenciaModificada.ComienzoClaseEsperado, false);
+                List<AsistenciaDual> asistenciasDeFechaMemoria = modelo.getAsistenciasParaFecha(asistenciaModificada.DiaDeAsistencia, false);
 
                 bool asistenciaFiguraEnBaseDatos = false;
 
@@ -107,12 +139,13 @@ namespace PlanillaAsistencia
                     {
                         asistenciaFiguraEnBaseDatos = true;
 
-                        foreach (Asistencia asistenciaDeFechaMemoria in asistenciasDeFechaMemoria)
+                        foreach (AsistenciaDual asistenciaDeFechaMemoria in asistenciasDeFechaMemoria)
                         {
                             if (asistenciaDeFechaBaseDatos.Id == asistenciaDeFechaMemoria.Id)
                             {
-                                if(!asistenciaDeFechaBaseDatos.poseeLosMismosDatosQueEstaAsistencia(asistenciaDeFechaMemoria)){
-                                    modelo.quitarAsistenciaModificada(asistenciaModificada);
+                                if (!asistenciaDeFechaMemoria.poseeLosMismosDatosQueEstaAsistencia(asistenciaDeFechaBaseDatos))
+                                {
+                                    modelo.marcarAsistenciaComoSinModificar(asistenciaModificada);
                                 }
                                 break;
                             }
@@ -124,10 +157,10 @@ namespace PlanillaAsistencia
 
                 if (!asistenciaFiguraEnBaseDatos)
                 {
-                    modelo.quitarAsistenciaModificada(asistenciaModificada);
+                    modelo.marcarAsistenciaComoSinModificar(asistenciaModificada);
                 }
             }
-        }
+        }*/
 
         // Se le pasa por parametro una lista de asistencias y devuelve un diccionario en el que se han separado
         // las asistencias en una lista de asistencia por cada fecha
@@ -146,7 +179,7 @@ namespace PlanillaAsistencia
             foreach (Asistencia asistencia in asistencias)
             {
                 // Se obtiene la fecha sin la hora...
-                fechaDeAsistenciaActual = asistencia.ComienzoClaseEsperado.Date.ToString("d");
+                fechaDeAsistenciaActual = asistencia.DiaDeAsistencia.Date.ToString("d");
 
                 if (diccionario.ContainsKey(fechaDeAsistenciaActual))
                 {

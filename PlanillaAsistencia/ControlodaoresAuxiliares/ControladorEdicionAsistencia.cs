@@ -13,12 +13,10 @@ namespace PlanillaAsistencia
         private planillaAsistencia vista;
         private Modelo modelo;
 
-        private Asistencia asistenciaOriginal;
-
         // La asistencia sobre la que vamos a hacer cambios
-        private Asistencia asistenciaEnEdicion;
+        private AsistenciaDual asistenciaEnEdicion;
         // La asistencia sobre la que vamos a hacer cambios tal cual estaba antes de empezar a modificarla
-        public Asistencia AsistenciaEnEdicion
+        public AsistenciaDual AsistenciaEnEdicion
         {
             get { return asistenciaEnEdicion; }
             set { asistenciaEnEdicion = value; }
@@ -34,11 +32,10 @@ namespace PlanillaAsistencia
         {
             int idAsistencia = vista.obtenerIdAsistenciaSeleccionada();
 
-            asistenciaEnEdicion = modelo.getAsistencia(idAsistencia).Clone();
-            asistenciaOriginal = asistenciaEnEdicion.Clone();
+            asistenciaEnEdicion = modelo.getAsistencia(idAsistencia);
 
             vista.habilitarManejadoresDeEventos(false);
-            vista.cargarDatosDeAsistencia(asistenciaEnEdicion);
+            vista.cargarDatosDeAsistencia(asistenciaEnEdicion.Clonada);
             vista.habilitarManejadoresDeEventos(true);
 
             vista.habilitarCampos(true);
@@ -46,25 +43,26 @@ namespace PlanillaAsistencia
 
         public bool seModificoAsistencia()
         {
-            if (!asistenciaEnEdicion.poseeLosMismosDatosQueEstaAsistencia(asistenciaOriginal))
-            {
-                return true;
-            }
-            return false;
+            return asistenciaEnEdicion.esModificada();
         }
 
         public bool guardarAsistenciasModificadas()
         {
-            List<Asistencia> asistencias = modelo.getAsistenciasModificadas();
+            List<AsistenciaDual> asistenciasD = modelo.getAsistenciasModificadas();
+            List<Asistencia> asistencias = new List<Asistencia>();
+            foreach (AsistenciaDual asistenciaD in asistenciasD)
+            {
+                asistencias.Add(asistenciaD.Clonada);
+            }
 
             bool resultado = DAOAsistencias.updateAsistencias(asistencias);
 
             if (resultado)
             {
-                modelo.combinarAsistenciasModificadasEnDiccionarios();
+                modelo.setearAsistenciasClonadasComoOriginales();
 
                 DateTime fechaSeleccionada = vista.obtenerFechaSeleccionada();
-                List<Asistencia> asistenciasParaFechaSeleccionada = modelo.getAsistenciasParaFecha(fechaSeleccionada, true);
+                List<AsistenciaDual> asistenciasParaFechaSeleccionada = modelo.getAsistenciasParaFecha(fechaSeleccionada, true);
                 vista.cargarAsistenciasEnGrillas(asistenciasParaFechaSeleccionada);
             }
 
@@ -86,13 +84,13 @@ namespace PlanillaAsistencia
             manejarCambioDatosAsistencia();
         }
 
-        public void observarCambioHoraRealDeSalida(DateTime horaSalida)
+        public void observarCambioHoraRealDeSalida(TimeSpan horaSalida)
         {
             asistenciaEnEdicion.FinClaseReal = horaSalida;
             manejarCambioDatosAsistencia();
         }
 
-        public void observarCambioHoraRealDeEntrada(DateTime horaEntrada)
+        public void observarCambioHoraRealDeEntrada(TimeSpan horaEntrada)
         {
             asistenciaEnEdicion.ComienzoClaseReal = horaEntrada;
             manejarCambioDatosAsistencia();
@@ -118,8 +116,8 @@ namespace PlanillaAsistencia
 
         private void manejarCambioDatosAsistencia()
         {
-            modelo.agregarAsistenciaModificada(this.asistenciaEnEdicion);
-            vista.marcarAsistenciaComoModificada(this.asistenciaEnEdicion);
+            //modelo.agregarAsistenciaModificada(this.asistenciaEnEdicion);
+            //vista.marcarAsistenciaComoModificada(this.asistenciaEnEdicion);
             vista.habilitarBotonGuardado(true);
         }
         // ****************************************************************************

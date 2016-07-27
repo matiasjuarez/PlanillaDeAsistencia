@@ -10,6 +10,7 @@ using System.Timers;
 
 using AccesoDatos;
 using Entidades;
+using Utilidades;
 
 namespace PlanillaAsistencia
 {
@@ -19,6 +20,7 @@ namespace PlanillaAsistencia
 
         private List<IObservadorCamposPlanilla> observadoresCamposEditables;
 
+        public Escalador escalador;
         // Inicializa la planilla
         public planillaAsistencia()
         {
@@ -27,6 +29,8 @@ namespace PlanillaAsistencia
             observadoresCamposEditables = new List<IObservadorCamposPlanilla>();
 
             tripleGrillaAsistencias.agregarObservador(this);
+
+            escalador = new Escalador(this);
         }
 
         public void inicializar()
@@ -76,7 +80,7 @@ namespace PlanillaAsistencia
             // Obtenemos la fecha seleccionada
             //DateTime fechaSeleccionada = dateTimePicker.Value.Date;
 
-            cargarDatosParaFechaSeleccionada();
+            
         }
 
         public void cargarDatosParaFechaSeleccionada()
@@ -182,10 +186,10 @@ namespace PlanillaAsistencia
         public void cargarDatosDeAsistencia(Asistencia asistencia)
         {
             //habilitarManejadoresDeEventos(false);
-            mktxtHoraEntradaEsperada.Text = asistencia.ComienzoClaseEsperado.TimeOfDay.ToString(); ;
-            mktxtHoraSalidaEsperada.Text = asistencia.FinClaseEsperado.TimeOfDay.ToString();
-            mktxtHoraEntradaReal.Text = asistencia.ComienzoClaseReal.TimeOfDay.ToString();
-            mktxtHoraSalidaReal.Text = asistencia.FinClaseReal.TimeOfDay.ToString();
+            mktxtHoraEntradaEsperada.Text = asistencia.ComienzoClaseEsperado.ToString(); ;
+            mktxtHoraSalidaEsperada.Text = asistencia.FinClaseEsperado.ToString();
+            mktxtHoraEntradaReal.Text = asistencia.ComienzoClaseReal.ToString();
+            mktxtHoraSalidaReal.Text = asistencia.FinClaseReal.ToString();
             txtObservaciones.Text = asistencia.Observaciones;
             numUpDownAlumnos.Value = asistencia.CantidadAlumnos;
 
@@ -295,7 +299,7 @@ namespace PlanillaAsistencia
         private string manejarCambioHoraEntradaFinReal(MaskedTextBox mask)
         {
             string textoCampo = mask.Text;
-            DateTime fecha = datePickerCargaAsistencia.Value.Date;
+            //DateTime fecha = datePickerCargaAsistencia.Value.Date;
             TimeSpan hora = new TimeSpan(0, 0, 0);
 
             if (textoCampo != null && textoCampo != "")
@@ -310,11 +314,11 @@ namespace PlanillaAsistencia
                 }
             }
 
-            fecha = fecha.Add(hora);
+            //fecha = fecha.Add(hora);
 
             foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
             {
-                observador.observarCambioHoraRealDeEntrada(fecha);
+                observador.observarCambioHoraRealDeEntrada(hora);
             }
 
             return textoCampo;
@@ -452,14 +456,43 @@ namespace PlanillaAsistencia
             return tripleGrillaAsistencias.IdAsistencia;
         }
 
-        public void cargarAsistenciasEnGrillas(List<Asistencia> asistencias)
+        public void cargarAsistenciasEnGrillas(List<AsistenciaDual> asistencias)
         {
             tripleGrillaAsistencias.mostrarAsistencias(asistencias);
         }
 
-        public void marcarAsistenciaComoModificada(Asistencia asistencia)
+        /*private void marcarAsistenciasComoModificada(Asistencia asistencia)
         {
              tripleGrillaAsistencias.marcarAsistenciaComoModificada(asistencia);
+        }*/
+
+        private void planillaAsistencia_Resize(object sender, EventArgs e)
+        {
+            cambiarTamanoControles(this);
         }
+
+        
+        private void cambiarTamanoControles(Control parent)
+        {
+            escalador.resize();
+        }
+
+        private void datePickerCargaAsistencia_CloseUp(object sender, EventArgs e)
+        {
+            cargarDatosParaFechaSeleccionada();
+        }
+
+        public void cargarDatosAsistenciaSeleccionada()
+        {
+            // TODO
+            habilitarCampos(false);
+            resetearCampos();
+        }
+
+        public int getIdAsistenciaSeleccionada()
+        {
+            return tripleGrillaAsistencias.getIdAsistenciaSeleccionada();
+        }
+
     }
 }

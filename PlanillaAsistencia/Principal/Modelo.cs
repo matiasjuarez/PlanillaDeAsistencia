@@ -11,17 +11,12 @@ namespace PlanillaAsistencia
 {
     public class Modelo
     {
-        //private List<IObservadorModelo> observadores = new List<IObservadorModelo>();
+        // Diccionario que mantiene en memoria las asistencias que ya se han buscado pero clasificadas por su id
+        private Dictionary<int, AsistenciaDual> asistenciasPorId = new Dictionary<int, AsistenciaDual>();
 
         // Este diccionario se usara para mantener en memoria las asistencias que ya se hayan buscado desde la base de datos ordenadas
         // en listas por fecha.
         private DiccionarioAsistenciasPorFecha diccionarioAsistenciasPorFecha = new DiccionarioAsistenciasPorFecha();
-        
-        // Diccionario que mantiene en memoria las asistencias que ya se han buscado pero clasificadas por su id
-        private Dictionary<int, Asistencia> diccionarioAsistencias = new Dictionary<int, Asistencia>();
-
-        // Las asistencias sobre las que el usuario ha realizado alguna modificacion
-        private Dictionary<int, Asistencia> asistenciasModificadas = new Dictionary<int,Asistencia>();
 
         private List<EstadoAsistencia> estadosAsistencia;
         private List<Asignatura> asignaturas;
@@ -43,20 +38,21 @@ namespace PlanillaAsistencia
 
         // Busca en el diccionario 'diccionarioAsistencias' si hay una entrada cargada para la fecha
         // pasada por parametro. Si la encuentra, devuelve el valor almacenado en dicha entrada
-        // que es un List<Asistencia>. Si no encuentra, busca en la base de datos las asistencias que esten
+        // que es un List<AsistenciaDual>. Si no encuentra, busca en la base de datos las asistencias que esten
         // en la misma semana correspondiente a la fecha pasada por parametro. Esto ultimo lo hace invocando
         // al metodo privado cargarAsistenciasDeSemanaAlDiccionario
-        public List<Asistencia> getAsistenciasParaFecha(DateTime fecha, bool tenerEnCuentaAsistenciasModificadas)
+        public List<AsistenciaDual> getAsistenciasParaFecha(DateTime fecha, bool tenerEnCuentaAsistenciasModificadas)
         {
-            List<Asistencia> asistenciasDeFecha = diccionarioAsistenciasPorFecha.obtenerAsistenciasParaFecha(fecha);
+            List<AsistenciaDual> asistenciasDeFecha = diccionarioAsistenciasPorFecha.obtenerAsistenciasParaFecha(fecha);
 
             if (asistenciasDeFecha == null)
             {
-                cargarAsistenciasDeSemanaADiccionarios(fecha);
+                buscarAsistenciasEnBaseDatos(fecha);
                 asistenciasDeFecha = diccionarioAsistenciasPorFecha.obtenerAsistenciasParaFecha(fecha);
             }
-             
-            if (tenerEnCuentaAsistenciasModificadas)
+
+            return asistenciasDeFecha;
+            /*if (tenerEnCuentaAsistenciasModificadas)
             {
                 // Nos fijamos en el diccionario de asistencias modificadas si es que
                 // hay una asistencia modificada para algun id que figure en la lista
@@ -82,11 +78,11 @@ namespace PlanillaAsistencia
             else
             {
                 return asistenciasDeFecha;
-            }
+            }*/
             
         }
 
-        public void combinarAsistenciasModificadasEnDiccionarios()
+        /*public void combinarAsistenciasModificadasEnDiccionarios()
         {
             foreach (Asistencia asistenciaModificada in asistenciasModificadas.Values)
             {
@@ -95,12 +91,12 @@ namespace PlanillaAsistencia
             }
 
             asistenciasModificadas.Clear();
-        }
+        }*/
 
         // Este metodo toma todas las asistencias de una semana que viene dada por la semana a la cual pertenece
         // la fecha pasada por parametro y las agrega en el diccionaro de asistencias. De esta forma no se tiene que
         // acceder a la base de datos dia por dia.
-        private void cargarAsistenciasDeSemanaADiccionarios(DateTime fecha)
+        private void buscarAsistenciasEnBaseDatos(DateTime fecha)
         {
             // Se obtienen las asistencias de una semana
             List<Asistencia> asistenciasDeSemana = DAOAsistencias.obtenerAsistenciasParaUnaSemana(fecha);
@@ -124,11 +120,11 @@ namespace PlanillaAsistencia
             for (int i = 0; i < 7; i++)
             {
                 fechaDeAsistenciaActual = inicioDeSemana.AddDays(i).Date.ToString("d");
-                List<Asistencia> asistenciasDeFecha = diccionarioAsistenciasPorFecha.obtenerAsistenciasParaFecha(fechaDeAsistenciaActual);
+                List<AsistenciaDual> asistenciasDeFecha = diccionarioAsistenciasPorFecha.obtenerAsistenciasParaFecha(fechaDeAsistenciaActual);
 
                 if (asistenciasDeFecha == null)
                 {
-                    diccionarioAsistenciasPorFecha.setearEntrada(fechaDeAsistenciaActual, new List<Asistencia>());
+                    diccionarioAsistenciasPorFecha.setearEntrada(fechaDeAsistenciaActual, new List<AsistenciaDual>());
                 }
                 /*if (!diccionarioAsistenciasPorFecha.ContainsKey(fechaDeAsistenciaActual))
                 {
@@ -137,21 +133,20 @@ namespace PlanillaAsistencia
             }
         }
 
-        // Agrega la asistencia en el diccionario de asistencias organizadas por id y en el que esta organizado por fecha.
-        // Si la asistencia ya exista, no hace nada y devuelve false. De lo contrario, la agrega a los diccionarios y
-        // devuelve true
+        // Crea una asistencia dual y la agrega a los diccionarios por id y por fecha
         public bool agregarAsistenciaEnDiccionarios(Asistencia asistencia)
         {
             // Si ya existe una asistencia con ese id agregada a los diccionarios, no hacemos nada
-            if(diccionarioAsistencias.ContainsKey(asistencia.Id)){
+            if(asistenciasPorId.ContainsKey(asistencia.Id)){
                 return false;
             }
 
+            AsistenciaDual asistenciaD = new AsistenciaDual(asistencia);
             // Se agrega al diccionario de ids
-            diccionarioAsistencias[asistencia.Id] = asistencia;
+            asistenciasPorId[asistencia.Id] = asistenciaD;
 
             // Se agrega al diccionario por fechas
-            diccionarioAsistenciasPorFecha.agregarAsistencia(asistencia);
+            diccionarioAsistenciasPorFecha.agregarAsistencia(asistenciaD);
 
             return true;
         }
@@ -160,67 +155,57 @@ namespace PlanillaAsistencia
         // pasada por parametro y se la quito del diccionario. Si no devuelve false
         public bool quitarAsistenciaDeDiccionarios(Asistencia asistencia)
         {
-            if (!diccionarioAsistencias.ContainsKey(asistencia.Id))
+            if (!asistenciasPorId.ContainsKey(asistencia.Id))
             {
                 return false;
             }
 
             // Quitamos del diccionario por id
-            diccionarioAsistencias.Remove(asistencia.Id);
+            asistenciasPorId.Remove(asistencia.Id);
 
             // Quitamos del diccionario por fecha
             return diccionarioAsistenciasPorFecha.quitarAsistencia(asistencia);
         }
 
+        public bool quitarAsistenciaDeDiccionarios(AsistenciaDual asistencia)
+        {
+            return quitarAsistenciaDeDiccionarios(asistencia.Original);
+        }
+
         public void limpiarAsistenciasDelModelo()
         {
-            diccionarioAsistencias.Clear();
+            asistenciasPorId.Clear();
             diccionarioAsistenciasPorFecha.limpiarDiccionario();
         }
 
-        public void quitarAsistenciaModificada(Asistencia asistencia)
-        {
-            asistenciasModificadas.Remove(asistencia.Id);
-        }
-
         // Devuelve el listado de asistencias que han sufrido una modificacion
-        public List<Asistencia> getAsistenciasModificadas()
+        public List<AsistenciaDual> getAsistenciasModificadas()
         {
-            List<Asistencia> asistencias = new List<Asistencia>();
-            asistencias.AddRange(asistenciasModificadas.Values);
+            List<AsistenciaDual> asistencias = new List<AsistenciaDual>();
+
+            foreach (AsistenciaDual asistenciaD in getAsistenciasEnMemoria())
+            {
+                if (asistenciaD.esModificada())
+                {
+                    asistencias.Add(asistenciaD);
+                }
+            }
 
             return asistencias;
         }
 
-        // Obtiene la asistencia con la id pasada por parametro. Si hay una asistencia modificada con ese id,
-        // se devolvera dicha asistencia. Si no la hay, se la buscar en el diccionario de asistencia. Si no encuentra
+        // Obtiene la asistencia con la id pasada por parametro. Si no encuentra
         // nada devuelve null
-        public Asistencia getAsistencia(int idAsistencia)
+        public AsistenciaDual getAsistencia(int idAsistencia)
         {
-            Asistencia asistenciaReturn = null;
-
-            if (asistenciasModificadas.TryGetValue(idAsistencia, out asistenciaReturn))
+            foreach (AsistenciaDual asistencia in getAsistenciasEnMemoria())
             {
-                asistenciaReturn = asistenciasModificadas[idAsistencia];
-                return asistenciaReturn;
-            }
-
-            foreach (Asistencia asistencia in diccionarioAsistencias.Values)
-            {
-                if (asistencia.Id == idAsistencia)
+                if (asistencia.Original.Id == idAsistencia)
                 {
-                    asistenciaReturn = asistencia;
-                    return asistenciaReturn;
+                    return asistencia;
                 }
             }
-
             return null;
-        }
-
-        // Limpia la lista de asistencias modificadas
-        public void limpiarAsistenciasModificadas()
-        {
-            asistenciasModificadas.Clear();
         }
 
         // Devuelve una List de asignaturas
@@ -246,11 +231,6 @@ namespace PlanillaAsistencia
             return docentes;
         }
 
-        public void agregarAsistenciaModificada(Asistencia asistencia)
-        {
-            asistenciasModificadas[asistencia.Id] = asistencia;
-        }
-
         public List<EstadoAsistencia> getEstadosAsistencia()
         {
             if (estadosAsistencia == null)
@@ -264,20 +244,23 @@ namespace PlanillaAsistencia
         // Guarda en la base de datos las asistencias que se encuentran en la lista de modificadas
         public bool guardarAsistenciasModificadas()
         {
-            bool seGuardo = DAOAsistencias.updateAsistencias(getAsistenciasModificadas());
+            List<Asistencia> asistenciasModificadas = new List<Asistencia>();
+            foreach (AsistenciaDual asistencia in getAsistenciasModificadas())
+            {
+                asistenciasModificadas.Add(asistencia.Clonada);
+            }
+
+            bool seGuardo = DAOAsistencias.updateAsistencias(asistenciasModificadas);
 
             if (seGuardo)
             {
-                limpiarAsistenciasModificadas();
+                foreach (AsistenciaDual asistencia in getAsistenciasModificadas())
+                {
+                    asistencia.Original = asistencia.Clonada;
+                }
             }
-            return seGuardo;
-        }
 
-        // Comprueba si hay que actualizar las asistencias que tiene en el diccionario de asistencias
-        public void actualizar()
-        {
-            ControladorSincronizacionModelo controlador = new ControladorSincronizacionModelo(this);
-            controlador.actualizarModelo();
+            return seGuardo;
         }
 
         public List<DateTime> getFechasDeAsistenciaCargadasEnDiccionario()
@@ -285,13 +268,20 @@ namespace PlanillaAsistencia
             return diccionarioAsistenciasPorFecha.getFechasAlmacenadasComoDateTime();
         }
 
-        public List<Asistencia> getAsistenciasEnMemoria()
+        public List<AsistenciaDual> getAsistenciasEnMemoria()
         {
-            List<Asistencia> asistencias = new List<Asistencia>();
-            asistencias.AddRange(diccionarioAsistencias.Values);
+            List<AsistenciaDual> asistencias = new List<AsistenciaDual>();
+            asistencias.AddRange(asistenciasPorId.Values);
             return asistencias;
         }
 
+        public void setearAsistenciasClonadasComoOriginales()
+        {
+            foreach (AsistenciaDual asistenciaD in getAsistenciasEnMemoria())
+            {
+                asistenciaD.Original = asistenciaD.Clonada;
+            }
+        }
        /* public void agregarObservador(IObservadorModelo observador)
         {
             if (!observadores.Contains(observador))

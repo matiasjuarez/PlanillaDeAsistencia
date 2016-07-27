@@ -14,8 +14,9 @@ namespace Entidades
             asistencia.AppointmentId = evento.AppointmentId;
             asistencia.EventId = evento.IDEvento;
 
-            asistencia.ComienzoClaseEsperado = evento.InicioEsperado;
-            asistencia.FinClaseEsperado = evento.FinEsperado;
+            asistencia.ComienzoClaseEsperado = evento.InicioEsperado.TimeOfDay;
+            asistencia.FinClaseEsperado = evento.FinEsperado.TimeOfDay;
+            asistencia.DiaDeAsistencia = evento.InicioEsperado.Date;
 
             asistencia.Docente = new Docente(evento.Docente);
 

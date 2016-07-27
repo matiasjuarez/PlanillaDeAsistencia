@@ -41,9 +41,9 @@ namespace PlanillaAsistencia.Sincronizacion
             sincronizarEventosContraAsignaturas(evento);
         }
 
-        public DiccionarioAsistenciasPorFecha obtenerAsistenciasDesdeEventosRapla(DateTime desde, DateTime hasta)
+        public DiccionarioAsistenciasPorFechaSimple obtenerAsistenciasDesdeEventosRapla(DateTime desde, DateTime hasta)
         {
-            DiccionarioAsistenciasPorFecha diccionario = new DiccionarioAsistenciasPorFecha();
+            DiccionarioAsistenciasPorFechaSimple diccionario = new DiccionarioAsistenciasPorFechaSimple();
 
             List<Evento> eventos = DAOEventosRapla.obtenerEventosEntreFechas(desde, hasta);
 
@@ -63,8 +63,8 @@ namespace PlanillaAsistencia.Sincronizacion
             asistencia.AppointmentId = evento.AppointmentId;
             asistencia.EventId = evento.IDEvento;
 
-            asistencia.ComienzoClaseEsperado = evento.InicioEsperado;
-            asistencia.FinClaseEsperado = evento.FinEsperado;
+            asistencia.ComienzoClaseEsperado = evento.InicioEsperado.TimeOfDay;
+            asistencia.FinClaseEsperado = evento.FinEsperado.TimeOfDay;
 
             while (true)
             {

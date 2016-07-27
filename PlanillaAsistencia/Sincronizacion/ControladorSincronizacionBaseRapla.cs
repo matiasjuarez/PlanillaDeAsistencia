@@ -20,31 +20,31 @@ namespace PlanillaAsistencia.Sincronizacion
 
         public void sincronizarAsistencias(DateTime fechaDesde, DateTime fechaHasta)
         {
-            DiccionarioAsistenciasPorFecha asistenciasPlanilla = obtenerAsistenciasBaseDatosPlanilla(fechaDesde, fechaHasta);
-            DiccionarioAsistenciasPorFecha asistenciasRapla = obtenerAsistenciasBaseDatosRapla(fechaDesde, fechaHasta);
+            DiccionarioAsistenciasPorFechaSimple asistenciasPlanilla = obtenerAsistenciasBaseDatosPlanilla(fechaDesde, fechaHasta);
+            DiccionarioAsistenciasPorFechaSimple asistenciasRapla = obtenerAsistenciasBaseDatosRapla(fechaDesde, fechaHasta);
 
             List<AsistenciaSincronizacion> asistenciasSincronizacion = compararDiccionariosAsistenciasPlanillaContraRapla(asistenciasPlanilla, asistenciasRapla);
 
             generarCambiosEnBaseDatosPlanilla(asistenciasSincronizacion);
         }
 
-        private DiccionarioAsistenciasPorFecha obtenerAsistenciasBaseDatosPlanilla(DateTime fechaDesde, DateTime fechaHasta)
+        private DiccionarioAsistenciasPorFechaSimple obtenerAsistenciasBaseDatosPlanilla(DateTime fechaDesde, DateTime fechaHasta)
         {
-            DiccionarioAsistenciasPorFecha diccionarioAsistencias = new DiccionarioAsistenciasPorFecha();
+            DiccionarioAsistenciasPorFechaSimple diccionarioAsistencias = new DiccionarioAsistenciasPorFechaSimple();
 
             diccionarioAsistencias.agregarListAsistencias(DAOAsistencias.obtenerAsistenciasEntreFechas(fechaDesde, fechaHasta));
 
             return diccionarioAsistencias;
         }
 
-        private DiccionarioAsistenciasPorFecha obtenerAsistenciasBaseDatosRapla(DateTime fechaDesde, DateTime fechaHasta)
+        private DiccionarioAsistenciasPorFechaSimple obtenerAsistenciasBaseDatosRapla(DateTime fechaDesde, DateTime fechaHasta)
         {
             AuxiliarSincronizacionContraEventos auxiliar = AuxiliarSincronizacionContraEventos.getInstance();
             return auxiliar.obtenerAsistenciasDesdeEventosRapla(fechaDesde, fechaHasta);
         }
 
         private List<AsistenciaSincronizacion> compararDiccionariosAsistenciasPlanillaContraRapla(
-            DiccionarioAsistenciasPorFecha asistenciasPlanilla, DiccionarioAsistenciasPorFecha asistenciasRapla)
+            DiccionarioAsistenciasPorFechaSimple asistenciasPlanilla, DiccionarioAsistenciasPorFechaSimple asistenciasRapla)
         {
             List<AsistenciaSincronizacion> asistenciasSincronizacion = new List<AsistenciaSincronizacion>();
 
