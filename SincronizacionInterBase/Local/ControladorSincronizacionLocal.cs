@@ -6,12 +6,12 @@ using System.Text;
 using Entidades;
 using AccesoDatos;
 
-namespace PlanillaAsistencia
+namespace Sincronozacion.Local
 {
-    public class ControladorSincronizacionModelo
+    public class ControladorSincronizacionLocal
     {
-        private Modelo modelo;
-        private Controlador referenciaControladorPadre;
+        
+        public ControladorSincronizacionLocal()
         private bool seActualizoModelo = false;
         public bool SeActualizoModelo
         {

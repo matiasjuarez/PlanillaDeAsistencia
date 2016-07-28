@@ -84,5 +84,35 @@ namespace Entidades
             get { return materia; }
             set { materia = value; }
         }
+
+        public Asistencia convertirEnAsistencia()
+        {
+            Asistencia asistencia = new Asistencia();
+
+            asistencia.AppointmentId = this.AppointmentId;
+            asistencia.EventId = this.IDEvento;
+
+            asistencia.ComienzoClaseEsperado = this.InicioEsperado.TimeOfDay;
+            asistencia.FinClaseEsperado = this.FinEsperado.TimeOfDay;
+            asistencia.DiaDeAsistencia = this.InicioEsperado.Date;
+
+            asistencia.Docente = new Docente(this.Docente);
+
+            asistencia.Asignatura = new Asignatura();
+            asistencia.Asignatura.Nombre = this.Materia;
+
+            string[] aulasNombres = this.Aula.Split(',');
+            foreach (string aulaNombre in aulasNombres)
+            {
+                Aula aula = new Aula();
+                aula.Nombre = aulaNombre;
+                asistencia.agregarAula(aula);
+            }
+
+            asistencia.Curso = new Curso();
+            asistencia.Curso.Nombre = this.Curso;
+
+            return asistencia;
+        }
     }
 }

@@ -8,12 +8,15 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace Entidades
 {
     /*
-     * Esta case representa cada uno de los cursos que se van a dictar
-     * en un dia determinado
+     * Esta clase representa una clase que se dicta en un dia determinado
      */
     [Serializable]
     public class Asistencia
     {
+        // La idea es guardar el estado original en esta variable para luego poder saber
+        // si la asistencia fue o no modificada
+        private AsistenciaMemento estadoGuardado;
+
         private TimeSpan comienzoClaseEsperado;
         private TimeSpan finClaseEsperado;
         private TimeSpan comienzoClaseReal;
@@ -115,46 +118,31 @@ namespace Entidades
         
         public Docente Docente
         {
-            get 
-            {
-                return docente; 
-            }
+            get { return docente; }
             set { docente = value; }
         }
         
         public Asignatura Asignatura
         {
-            get 
-            {
-                return asignatura; 
-            }
+            get { return asignatura; }
             set { asignatura = value; }
         }
         
         public Encargado Encargado
         {
-            get 
-            {
-                return encargado; 
-            }
+            get { return encargado; }
             set { encargado = value; }
         }
         
         public Curso Curso
         {
-            get 
-            {
-                return curso; 
-            }
+            get { return curso; }
             set { curso = value; }
         }
         
         public EstadoAsistencia EstadoAsistencia
         {
-            get 
-            {
-                return estadoAsistencia; 
-            }
+            get { return estadoAsistencia; }
             set { estadoAsistencia = value; }
         }
         
@@ -177,67 +165,35 @@ namespace Entidades
             }
         }
 
-        public bool poseeLosMismosDatosQueEstaAsistencia(Asistencia otra)
+        public bool Equals(Asistencia otra)
         {
-            if (otra == null)
-            {
-                return false;
-            }
+            if (otra == null) return false;
 
-            if (this.Id != otra.Id)
-            {
-                return false;
-            }
+            if (this.Id != otra.Id) return false;
 
-            if (this.ComienzoClaseEsperado != otra.ComienzoClaseEsperado)
-            {
-                return false;
-            }
+            if (this.EventId != otra.EventId) return false;
 
-            if (this.FinClaseEsperado != otra.FinClaseEsperado)
-            {
-                return false;
-            }
+            if (this.AppointmentId != otra.AppointmentId) return false;
 
-            if(this.ComienzoClaseReal != otra.ComienzoClaseReal)
-            {
-                return false;
-            }
+            if (this.ComienzoClaseEsperado != otra.ComienzoClaseEsperado) return false;
 
-            if (this.FinClaseReal != otra.FinClaseReal)
-            {
-                return false;
-            }
+            if (this.FinClaseEsperado != otra.FinClaseEsperado) return false;
 
-            if (this.CantidadAlumnos != otra.CantidadAlumnos)
-            {
-                return false;
-            }
+            if(this.ComienzoClaseReal != otra.ComienzoClaseReal) return false;
 
-            if (!this.Docente.Equals(otra.Docente))
-            {
-                return false;
-            }
+            if (this.FinClaseReal != otra.FinClaseReal) return false;
 
-            if (!this.Asignatura.Equals(otra.Asignatura))
-            {
-                return false;
-            }
+            if (this.CantidadAlumnos != otra.CantidadAlumnos) return false;
 
-            if (!this.Curso.Equals(otra.Curso))
-            {
-                return false;
-            }
+            if (!this.Docente.Equals(otra.Docente)) return false;
 
-            if (!this.EstadoAsistencia.Equals(otra.EstadoAsistencia))
-            {
-                return false;
-            }
+            if (!this.Asignatura.Equals(otra.Asignatura)) return false;
 
-            if (this.Observaciones != otra.Observaciones)
-            {
-                return false;
-            }
+            if (!this.Curso.Equals(otra.Curso)) return false;
+
+            if (!this.EstadoAsistencia.Equals(otra.EstadoAsistencia)) return false;
+
+            if (this.Observaciones != otra.Observaciones) return false;
 
             if (this.Aulas.Count != otra.Aulas.Count) return false;
             foreach (Aula aulaO in this.Aulas)
@@ -258,22 +214,17 @@ namespace Entidades
             return true;
         }
 
-        private void compararDosHoras(DateTime fecha, DateTime otra)
+        public void guardarEstado()
         {
-
+            estadoGuardado = new AsistenciaMemento(this);
         }
 
-        // Toma los datos de la asistencia pasada por paremtro que solo pueden ser generados por 
-        //los usuarios(datos que no pueden ser tomados del rapla) y se los setea a si misma
-        public void clonarDatosGeneradosPorUsuario(Asistencia otraAsistencia)
+        public bool estaModificada()
         {
-            this.finClaseReal = otraAsistencia.finClaseReal;
-            this.comienzoClaseReal = otraAsistencia.comienzoClaseReal;
-            this.cantidadAlumnos = otraAsistencia.cantidadAlumnos;
-            this.observaciones = otraAsistencia.observaciones;
-            this.id = otraAsistencia.id;
-            this.encargado = otraAsistencia.encargado;
-            this.estadoAsistencia = otraAsistencia.estadoAsistencia;
+            Asistencia aux = new Asistencia();
+            estadoGuardado.restaurarEstado(aux);
+
+            return aux.Equals(this);
         }
 
         public Asistencia Clone()
@@ -288,10 +239,61 @@ namespace Entidades
                     object miObjeto = formatter.Deserialize(stream);
                     return (Asistencia)miObjeto;
                 }
-
                 return null;
             }
         }
 
+        private class AsistenciaMemento
+        {
+            private TimeSpan comienzoClaseEsperado;
+            private TimeSpan finClaseEsperado;
+            private TimeSpan comienzoClaseReal;
+            private TimeSpan finClaseReal;
+            private DateTime diaDeAsistencia;
+            private int cantidadAlumnos;
+            private Docente docente;
+            private Asignatura asignatura;
+            private Encargado encargado;
+            private Curso curso;
+            private EstadoAsistencia estadoAsistencia;
+            private List<Aula> aulas;
+            private string observaciones;
+
+            public AsistenciaMemento(Asistencia asistencia)
+            {
+                Asistencia clon = asistencia.Clone();
+
+                this.comienzoClaseEsperado = clon.ComienzoClaseEsperado;
+                this.finClaseEsperado = clon.FinClaseEsperado;
+                this.comienzoClaseReal = clon.ComienzoClaseReal;
+                this.finClaseReal = clon.FinClaseReal;
+                this.diaDeAsistencia = clon.DiaDeAsistencia;
+                this.cantidadAlumnos = clon.CantidadAlumnos;
+                this.docente = clon.Docente;
+                this.asignatura = clon.Asignatura;
+                this.encargado = clon.Encargado;
+                this.curso = clon.Curso;
+                this.estadoAsistencia = clon.EstadoAsistencia;
+                this.aulas = clon.Aulas;
+                this.observaciones = clon.Observaciones;
+            }
+
+            public void restaurarEstado(Asistencia asistencia)
+            {
+                asistencia.ComienzoClaseEsperado = this.comienzoClaseEsperado;
+                asistencia.FinClaseEsperado = this.finClaseEsperado;
+                asistencia.ComienzoClaseReal = this.comienzoClaseReal;
+                asistencia.FinClaseReal = this.finClaseReal;
+                asistencia.DiaDeAsistencia = this.diaDeAsistencia;
+                asistencia.CantidadAlumnos = this.cantidadAlumnos;
+                asistencia.Docente = this.docente;
+                asistencia.Asignatura = this.asignatura;
+                asistencia.Encargado = this.encargado;
+                asistencia.Curso = this.curso;
+                asistencia.EstadoAsistencia = this.estadoAsistencia;
+                asistencia.Aulas = this.aulas;
+                asistencia.Observaciones = this.observaciones;
+            }
+        }
     }
 }

@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanillaAsistencia", "Plani
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuracion", "Configuracion\Configuracion.csproj", "{71941B97-E905-4BE2-82AB-8114F57BE27C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sincronizacion", "SincronizacionInterBase\Sincronizacion.csproj", "{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,16 @@ Global
 		{71941B97-E905-4BE2-82AB-8114F57BE27C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{71941B97-E905-4BE2-82AB-8114F57BE27C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{71941B97-E905-4BE2-82AB-8114F57BE27C}.Release|x86.ActiveCfg = Release|Any CPU
+		{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,10 +5,11 @@ using System.Text;
 
 using Entidades;
 using AccesoDatos;
+using Entidades.Clases_auxiliares;
 
 namespace PlanillaAsistencia.Sincronizacion
 {
-    public class ControladorSincronizacionBaseRapla
+    public class ControladorSincronizacionInterBase
     {
         public void sincronizarAsistencias(string fechaDesde, string fechaHasta)
         {
@@ -20,33 +21,42 @@ namespace PlanillaAsistencia.Sincronizacion
 
         public void sincronizarAsistencias(DateTime fechaDesde, DateTime fechaHasta)
         {
-            DiccionarioAsistenciasPorFechaSimple asistenciasPlanilla = obtenerAsistenciasBaseDatosPlanilla(fechaDesde, fechaHasta);
-            DiccionarioAsistenciasPorFechaSimple asistenciasRapla = obtenerAsistenciasBaseDatosRapla(fechaDesde, fechaHasta);
+            ContenedorAsistencias asistenciasPlanilla = obtenerAsistenciasBaseDatosPlanilla(fechaDesde, fechaHasta);
+            ContenedorAsistencias asistenciasRapla = obtenerAsistenciasBaseDatosRapla(fechaDesde, fechaHasta);
 
-            List<AsistenciaSincronizacion> asistenciasSincronizacion = compararDiccionariosAsistenciasPlanillaContraRapla(asistenciasPlanilla, asistenciasRapla);
+            List<ComparadorContenedoresAsistencia> asistenciasSincronizacion = compararDiccionariosAsistenciasPlanillaContraRapla(asistenciasPlanilla, asistenciasRapla);
 
             generarCambiosEnBaseDatosPlanilla(asistenciasSincronizacion);
         }
 
-        private DiccionarioAsistenciasPorFechaSimple obtenerAsistenciasBaseDatosPlanilla(DateTime fechaDesde, DateTime fechaHasta)
+        private ContenedorAsistencias obtenerAsistenciasBaseDatosPlanilla(DateTime fechaDesde, DateTime fechaHasta)
         {
-            DiccionarioAsistenciasPorFechaSimple diccionarioAsistencias = new DiccionarioAsistenciasPorFechaSimple();
+            ContenedorAsistencias asistencias = new ContenedorAsistencias();
 
-            diccionarioAsistencias.agregarListAsistencias(DAOAsistencias.obtenerAsistenciasEntreFechas(fechaDesde, fechaHasta));
+            asistencias.agregarListaAsistencias(DAOAsistencias.obtenerAsistenciasEntreFechas(fechaDesde, fechaHasta));
 
-            return diccionarioAsistencias;
+            return asistencias;
         }
 
-        private DiccionarioAsistenciasPorFechaSimple obtenerAsistenciasBaseDatosRapla(DateTime fechaDesde, DateTime fechaHasta)
+        private ContenedorAsistencias obtenerAsistenciasBaseDatosRapla(DateTime fechaDesde, DateTime fechaHasta)
         {
-            AuxiliarSincronizacionContraEventos auxiliar = AuxiliarSincronizacionContraEventos.getInstance();
-            return auxiliar.obtenerAsistenciasDesdeEventosRapla(fechaDesde, fechaHasta);
+            ContenedorAsistencias asistencias = new ContenedorAsistencias();
+
+            List<Evento> eventos = DAOEventosRapla.obtenerEventosEntreFechas(fechaDesde, fechaHasta);
+
+            foreach (Evento evento in eventos)
+            {
+                Asistencia asistencia = evento.convertirEnAsistencia();
+                asistencias.agregarAsistencia(asistencia);
+            }
+
+            return asistencias;
         }
 
-        private List<AsistenciaSincronizacion> compararDiccionariosAsistenciasPlanillaContraRapla(
-            DiccionarioAsistenciasPorFechaSimple asistenciasPlanilla, DiccionarioAsistenciasPorFechaSimple asistenciasRapla)
+        private List<ComparadorContenedoresAsistencia> compararAsistenciasPlanillaContraRapla(
+            ContenedorAsistencias asistenciasPlanilla, ContenedorAsistencias asistenciasRapla)
         {
-            List<AsistenciaSincronizacion> asistenciasSincronizacion = new List<AsistenciaSincronizacion>();
+            List<ComparadorContenedoresAsistencia> asistenciasSincronizacion = new List<ComparadorContenedoresAsistencia>();
 
             List<string> keysPlanilla = asistenciasPlanilla.getFechasAlmacenadasComoString();
             List<string> keysRapla = asistenciasRapla.getFechasAlmacenadasComoString();
@@ -64,7 +74,7 @@ namespace PlanillaAsistencia.Sincronizacion
 
             foreach (string key in keysCombinadas)
             {
-                AsistenciaSincronizacion asistenciaSincronizacion =
+                ComparadorContenedoresAsistencia asistenciaSincronizacion =
                     compararListasAsistenciasPlanillaContraRapla(asistenciasPlanilla.obtenerAsistenciasParaFecha(key),
                     asistenciasRapla.obtenerAsistenciasParaFecha(key));
 
@@ -74,17 +84,17 @@ namespace PlanillaAsistencia.Sincronizacion
             return asistenciasSincronizacion;
         }
 
-        private AsistenciaSincronizacion compararListasAsistenciasPlanillaContraRapla(
+        private ComparadorContenedoresAsistencia compararListasAsistenciasPlanillaContraRapla(
             List<Asistencia> asistenciasPlanilla, List<Asistencia> asistenciasRapla)
         {
-            AsistenciaSincronizacion asistenciaSincronizacion = new AsistenciaSincronizacion();
+            ComparadorContenedoresAsistencia asistenciaSincronizacion = new ComparadorContenedoresAsistencia();
             asistenciaSincronizacion.compararListasDeAsistencias(asistenciasPlanilla, asistenciasRapla);
             return asistenciaSincronizacion;
         }
 
-        private void generarCambiosEnBaseDatosPlanilla(List<AsistenciaSincronizacion> asistenciasSincronizacion)
+        private void generarCambiosEnBaseDatosPlanilla(List<ComparadorContenedoresAsistencia> asistenciasSincronizacion)
         {
-            foreach (AsistenciaSincronizacion asistenciaSincro in asistenciasSincronizacion)
+            foreach (ComparadorContenedoresAsistencia asistenciaSincro in asistenciasSincronizacion)
             {
                 foreach (Asistencia asistencia in asistenciaSincro.Agregar)
                 {

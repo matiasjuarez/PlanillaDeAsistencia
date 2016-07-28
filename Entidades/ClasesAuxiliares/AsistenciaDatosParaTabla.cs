@@ -8,10 +8,10 @@ namespace Entidades
     public class AsistenciaDatosParaTabla: IComparable<AsistenciaDatosParaTabla>
     {
         private string stringPorDefecto = "N/A";
-        private AsistenciaDual asistencia;
+        private Asistencia asistencia;
         private string formatoTimespan = @"hh\:mm";
 
-        public AsistenciaDatosParaTabla(AsistenciaDual asistencia)
+        public AsistenciaDatosParaTabla(Asistencia asistencia)
         {
             this.asistencia = asistencia;
 

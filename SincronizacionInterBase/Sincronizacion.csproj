@@ -1,16 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CB3A2234-2123-4E15-B58C-B7FF2A731204}</ProjectGuid>
+    <ProjectGuid>{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Entidades</RootNamespace>
-    <AssemblyName>Entidades</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>SincronizacionInterBase</RootNamespace>
+    <AssemblyName>SincronizacionInterBase</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -31,10 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,19 +39,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClasesAuxiliares\ContenedorAsistencias.cs" />
-    <Compile Include="Entidades\Asignatura.cs" />
-    <Compile Include="Entidades\Asistencia.cs" />
-    <Compile Include="ClasesAuxiliares\AsistenciaDatosParaTabla.cs" />
-    <Compile Include="Entidades\Aula.cs" />
-    <Compile Include="Entidades\Curso.cs" />
-    <Compile Include="Entidades\Docente.cs" />
-    <Compile Include="Entidades\Encargado.cs" />
-    <Compile Include="Entidades\Especialidad.cs" />
-    <Compile Include="Entidades\EstadoAsistencia.cs" />
-    <Compile Include="Entidades\Evento.cs" />
+    <Compile Include="Comun\ComparadorListasAsistencia.cs" />
+    <Compile Include="Comun\AuxiliarSincronizacionContraEventos.cs" />
+    <Compile Include="Comun\TimerActualizacion.cs" />
+    <Compile Include="InterBase\ControladorSincronizacionInterBase.cs" />
+    <Compile Include="Local\ControladorSincronizacionLocal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Entidades\RangoHorario.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AccesoDatos\AccesoDatos.csproj">
+      <Project>{beea5f26-3a6f-4a01-8d62-ef0c27e929bf}</Project>
+      <Name>AccesoDatos</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Entidades\Entidades.csproj">
+      <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
+      <Name>Entidades</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

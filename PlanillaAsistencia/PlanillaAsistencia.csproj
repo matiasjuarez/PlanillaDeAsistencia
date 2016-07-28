@@ -57,7 +57,6 @@
       <DependentUpon>TripleGrillaAsistencias.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlodaoresAuxiliares\ControladorEdicionAsistencia.cs" />
-    <Compile Include="Sincronizacion\ControladorSincronizacionBasePlanillaAsistencia.cs" />
     <Compile Include="Interfaces\IObservadorCamposPlanilla.cs" />
     <Compile Include="Interfaces\IObservadorModelo.cs" />
     <Compile Include="Interfaces\IObservadorTripleGrilla.cs" />
@@ -71,10 +70,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sincronizacion\AsistenciaSincronizacion.cs" />
-    <Compile Include="Sincronizacion\AuxiliarSincronizacionContraEventos.cs" />
-    <Compile Include="Sincronizacion\ControladorSincronizacionBaseRapla.cs" />
-    <Compile Include="Sincronizacion\TimerActualizacion.cs" />
     <EmbeddedResource Include="ControlesPersonalizados\LabelConEfectos.resx">
       <DependentUpon>LabelConEfectos.cs</DependentUpon>
     </EmbeddedResource>
@@ -122,6 +117,7 @@
       <Name>Utilidades</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -23,15 +23,12 @@ namespace Entidades
             set { id = value; }
         }
 
-        
-
         public bool Equals(Curso other)
         {
             if (other == null)
             {
                 return false;
             }
-
             return this.Id == other.Id;
         }
     }
