@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Entidades.ClasesAuxiliares
+using Entidades;
+using AccesoDatos;
+
+namespace DatosLocales.Contenedores
 {
     public class ContenedorAsistencias
     {
@@ -104,7 +107,7 @@ namespace Entidades.ClasesAuxiliares
             return false;
         }
 
-        public void limpiarDiccionario()
+        public void limpiarContenedor()
         {
             asistenciasPorId.Clear();
             asistenciasPorFecha.Clear();
