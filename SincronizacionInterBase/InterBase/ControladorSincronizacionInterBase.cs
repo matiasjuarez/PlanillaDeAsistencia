@@ -5,9 +5,10 @@ using System.Text;
 
 using Entidades;
 using AccesoDatos;
-using Entidades.Clases_auxiliares;
+using EstructurasDeDatos;
+using Sincronizacion.Comun;
 
-namespace PlanillaAsistencia.Sincronizacion
+namespace EstructurasDeDatos
 {
     public class ControladorSincronizacionInterBase
     {
@@ -24,9 +25,10 @@ namespace PlanillaAsistencia.Sincronizacion
             ContenedorAsistencias asistenciasPlanilla = obtenerAsistenciasBaseDatosPlanilla(fechaDesde, fechaHasta);
             ContenedorAsistencias asistenciasRapla = obtenerAsistenciasBaseDatosRapla(fechaDesde, fechaHasta);
 
-            List<ComparadorContenedoresAsistencia> asistenciasSincronizacion = compararDiccionariosAsistenciasPlanillaContraRapla(asistenciasPlanilla, asistenciasRapla);
+            ComparadorContenedoresAsistencias comparador = 
+                new ComparadorContenedoresAsistencias(asistenciasPlanilla, asistenciasRapla);
 
-            generarCambiosEnBaseDatosPlanilla(asistenciasSincronizacion);
+            generarCambiosEnBaseDatosPlanilla(comparador);
         }
 
         private ContenedorAsistencias obtenerAsistenciasBaseDatosPlanilla(DateTime fechaDesde, DateTime fechaHasta)
@@ -53,61 +55,23 @@ namespace PlanillaAsistencia.Sincronizacion
             return asistencias;
         }
 
-        private List<ComparadorContenedoresAsistencia> compararAsistenciasPlanillaContraRapla(
-            ContenedorAsistencias asistenciasPlanilla, ContenedorAsistencias asistenciasRapla)
+        private void generarCambiosEnBaseDatosPlanilla(ComparadorContenedoresAsistencias comparador)
         {
-            List<ComparadorContenedoresAsistencia> asistenciasSincronizacion = new List<ComparadorContenedoresAsistencia>();
+            List<Asistencia> asistenciasAgregar = comparador.Agregar.obtenerTodasLasAsistencias();
+            List<Asistencia> asistenciasModificar = comparador.Modificar.obtenerTodasLasAsistencias();
+            List<Asistencia> asistenciasEliminar = comparador.Eliminar.obtenerTodasLasAsistencias();
 
-            List<string> keysPlanilla = asistenciasPlanilla.getFechasAlmacenadasComoString();
-            List<string> keysRapla = asistenciasRapla.getFechasAlmacenadasComoString();
-            List<string> keysCombinadas = new List<string>();
-
-            keysCombinadas.AddRange(keysPlanilla);
-
-            foreach (string keyRapla in keysRapla)
+            foreach (Asistencia asistencia in asistenciasAgregar)
             {
-                if (!keysCombinadas.Contains(keyRapla))
-                {
-                    keysCombinadas.Add(keyRapla);
-                }
+                DAOAsistencias.insertarNuevaAsistencia(asistencia);
             }
 
-            foreach (string key in keysCombinadas)
+            foreach (Asistencia asistencia in asistenciasEliminar)
             {
-                ComparadorContenedoresAsistencia asistenciaSincronizacion =
-                    compararListasAsistenciasPlanillaContraRapla(asistenciasPlanilla.obtenerAsistenciasParaFecha(key),
-                    asistenciasRapla.obtenerAsistenciasParaFecha(key));
-
-                asistenciasSincronizacion.Add(asistenciaSincronizacion);
+                DAOAsistencias.eliminarAsistencia(asistencia);
             }
 
-            return asistenciasSincronizacion;
-        }
-
-        private ComparadorContenedoresAsistencia compararListasAsistenciasPlanillaContraRapla(
-            List<Asistencia> asistenciasPlanilla, List<Asistencia> asistenciasRapla)
-        {
-            ComparadorContenedoresAsistencia asistenciaSincronizacion = new ComparadorContenedoresAsistencia();
-            asistenciaSincronizacion.compararListasDeAsistencias(asistenciasPlanilla, asistenciasRapla);
-            return asistenciaSincronizacion;
-        }
-
-        private void generarCambiosEnBaseDatosPlanilla(List<ComparadorContenedoresAsistencia> asistenciasSincronizacion)
-        {
-            foreach (ComparadorContenedoresAsistencia asistenciaSincro in asistenciasSincronizacion)
-            {
-                foreach (Asistencia asistencia in asistenciaSincro.Agregar)
-                {
-                    DAOAsistencias.insertarNuevaAsistencia(asistencia);
-                }
-
-                foreach (Asistencia asistencia in asistenciaSincro.Eliminar)
-                {
-                    DAOAsistencias.eliminarAsistencia(asistencia);
-                }
-
-                DAOAsistencias.updateAsistencias(asistenciaSincro.Modificar);
-            }
+            DAOAsistencias.updateAsistencias(asistenciasModificar);
         }
     }
 }

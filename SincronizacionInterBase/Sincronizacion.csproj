@@ -51,9 +51,17 @@
       <Project>{beea5f26-3a6f-4a01-8d62-ef0c27e929bf}</Project>
       <Name>AccesoDatos</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DatosLocales\DatosLocales.csproj">
+      <Project>{eabcc520-164c-4698-943c-229bb153c608}</Project>
+      <Name>DatosLocales</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Entidades\Entidades.csproj">
       <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
       <Name>Entidades</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EstructurasDeDatos\EstructurasDeDatos.csproj">
+      <Project>{213f254e-ba77-4766-8bac-b641cb867e0f}</Project>
+      <Name>EstructurasDeDatos</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

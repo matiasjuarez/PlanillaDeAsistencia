@@ -19,11 +19,11 @@ namespace PlanillaAsistencia
 
         private List<IObservadorTripleGrilla> observadores;
         
-        private BindingList<AsistenciaDatosParaTabla> asistenciasTurnoManana;
-        private BindingList<AsistenciaDatosParaTabla> asistenciasTurnoTarde;
-        private BindingList<AsistenciaDatosParaTabla> asistenciasTurnoNoche;
+        private BindingList<AsistenciaTabla> asistenciasTurnoManana;
+        private BindingList<AsistenciaTabla> asistenciasTurnoTarde;
+        private BindingList<AsistenciaTabla> asistenciasTurnoNoche;
 
-        private AsistenciaDatosParaTabla asistenciaSeleccionada;
+        private AsistenciaTabla asistenciaSeleccionada;
         private DataGridView grillaSeleccionada;
 
         private RangoHorario rangoHorarioManana;
@@ -42,9 +42,9 @@ namespace PlanillaAsistencia
 
             observadores = new List<IObservadorTripleGrilla>();
 
-            asistenciasTurnoManana = new BindingList<AsistenciaDatosParaTabla>();
-            asistenciasTurnoTarde = new BindingList<AsistenciaDatosParaTabla>();
-            asistenciasTurnoNoche = new BindingList<AsistenciaDatosParaTabla>();
+            asistenciasTurnoManana = new BindingList<AsistenciaTabla>();
+            asistenciasTurnoTarde = new BindingList<AsistenciaTabla>();
+            asistenciasTurnoNoche = new BindingList<AsistenciaTabla>();
 
             bindearListaATabla(dgvTurnoManana, asistenciasTurnoManana);
             bindearListaATabla(dgvTurnoTarde, asistenciasTurnoTarde);
@@ -233,7 +233,7 @@ namespace PlanillaAsistencia
         {
             foreach (DataGridViewRow fila in dgvTurnoManana.Rows)
             {
-                AsistenciaDatosParaTabla asistencia = (AsistenciaDatosParaTabla)fila.DataBoundItem;
+                AsistenciaTabla asistencia = (AsistenciaTabla)fila.DataBoundItem;
                 if (asistencia.IdAsistencia == idAsistencia)
                 {
                     return fila;
@@ -242,7 +242,7 @@ namespace PlanillaAsistencia
 
             foreach (DataGridViewRow fila in dgvTurnoTarde.Rows)
             {
-                AsistenciaDatosParaTabla asistencia = (AsistenciaDatosParaTabla)fila.DataBoundItem;
+                AsistenciaTabla asistencia = (AsistenciaTabla)fila.DataBoundItem;
                 if (asistencia.IdAsistencia == idAsistencia)
                 {
                     return fila;
@@ -251,7 +251,7 @@ namespace PlanillaAsistencia
 
             foreach (DataGridViewRow fila in dgvTurnoNoche.Rows)
             {
-                AsistenciaDatosParaTabla asistencia = (AsistenciaDatosParaTabla)fila.DataBoundItem;
+                AsistenciaTabla asistencia = (AsistenciaTabla)fila.DataBoundItem;
                 if (asistencia.IdAsistencia == idAsistencia)
                 {
                     return fila;
@@ -261,7 +261,7 @@ namespace PlanillaAsistencia
             return null;
         }
 
-        private void bindearListaATabla(DataGridView tabla, BindingList<AsistenciaDatosParaTabla> asistencias)
+        private void bindearListaATabla(DataGridView tabla, BindingList<AsistenciaTabla> asistencias)
         {
             tabla.DataSource = asistencias;
         }
@@ -272,9 +272,9 @@ namespace PlanillaAsistencia
         // a cada una de las tablas
         private void ActualizarAsistencias(List<AsistenciaDual> asistencias)
         {
-            List<AsistenciaDatosParaTabla> auxManana = new List<AsistenciaDatosParaTabla>();
-            List<AsistenciaDatosParaTabla> auxTarde = new List<AsistenciaDatosParaTabla>();
-            List<AsistenciaDatosParaTabla> auxNoche = new List<AsistenciaDatosParaTabla>();
+            List<AsistenciaTabla> auxManana = new List<AsistenciaTabla>();
+            List<AsistenciaTabla> auxTarde = new List<AsistenciaTabla>();
+            List<AsistenciaTabla> auxNoche = new List<AsistenciaTabla>();
 
             if (asistencias != null)
             {
@@ -283,15 +283,15 @@ namespace PlanillaAsistencia
                     TimeSpan horaClase = asistencia.Clonada.ComienzoClaseEsperado;
                     if (rangoHorarioManana.estaDentroDelRangoHorario(horaClase))
                     {
-                        auxManana.Add(new AsistenciaDatosParaTabla(asistencia));
+                        auxManana.Add(new AsistenciaTabla(asistencia));
                     }
                     else if (rangoHorarioTarde.estaDentroDelRangoHorario(horaClase))
                     {
-                        auxTarde.Add(new AsistenciaDatosParaTabla(asistencia));
+                        auxTarde.Add(new AsistenciaTabla(asistencia));
                     }
                     else
                     {
-                        auxNoche.Add(new AsistenciaDatosParaTabla(asistencia));
+                        auxNoche.Add(new AsistenciaTabla(asistencia));
                     }
                 }
 
@@ -314,9 +314,9 @@ namespace PlanillaAsistencia
             controladorRecarga.restaurarSeleccion();
         }
 
-        private void agregarListABindingList(List<AsistenciaDatosParaTabla> asistencias, BindingList<AsistenciaDatosParaTabla> bindingList)
+        private void agregarListABindingList(List<AsistenciaTabla> asistencias, BindingList<AsistenciaTabla> bindingList)
         {
-            foreach (AsistenciaDatosParaTabla asistencia in asistencias)
+            foreach (AsistenciaTabla asistencia in asistencias)
             {
                 bindingList.Add(asistencia);
             }
@@ -331,7 +331,7 @@ namespace PlanillaAsistencia
             try
             {
                 // Esta linea obtiene el objeto AsistenciaDatosParaTabla que esta ligada a la fila de la grilla
-                asistenciaSeleccionada = (AsistenciaDatosParaTabla)grilla.SelectedRows[0].DataBoundItem;
+                asistenciaSeleccionada = (AsistenciaTabla)grilla.SelectedRows[0].DataBoundItem;
                 grillaSeleccionada = grilla;
 
                 foreach (IObservadorTripleGrilla observador in observadores)
@@ -365,9 +365,9 @@ namespace PlanillaAsistencia
         {
             private TripleGrillaAsistencias tga;
             // Se usan para restaurar la seleccion cuando se refresque la lista
-            private AsistenciaDatosParaTabla dgvMananaAsistenciaSeleccionada = null;
-            private AsistenciaDatosParaTabla dgvTardeAsistenciaSeleccionada = null;
-            private AsistenciaDatosParaTabla dgvNocheAsistenciaSeleccionada = null;
+            private AsistenciaTabla dgvMananaAsistenciaSeleccionada = null;
+            private AsistenciaTabla dgvTardeAsistenciaSeleccionada = null;
+            private AsistenciaTabla dgvNocheAsistenciaSeleccionada = null;
 
             public ControladorRecargaDeGrillas(TripleGrillaAsistencias tga)
             {
@@ -384,19 +384,19 @@ namespace PlanillaAsistencia
                 if (tga.dgvTurnoManana.SelectedRows.Count > 0)
                 {
                     dgvMananaAsistenciaSeleccionada =
-                        (AsistenciaDatosParaTabla)tga.dgvTurnoManana.SelectedRows[0].DataBoundItem;
+                        (AsistenciaTabla)tga.dgvTurnoManana.SelectedRows[0].DataBoundItem;
                 }
 
                 if (tga.dgvTurnoTarde.SelectedRows.Count > 0)
                 {
                     dgvTardeAsistenciaSeleccionada =
-                        (AsistenciaDatosParaTabla)tga.dgvTurnoTarde.SelectedRows[0].DataBoundItem;
+                        (AsistenciaTabla)tga.dgvTurnoTarde.SelectedRows[0].DataBoundItem;
                 }
 
                 if (tga.dgvTurnoNoche.SelectedRows.Count > 0)
                 {
                     dgvNocheAsistenciaSeleccionada =
-                        (AsistenciaDatosParaTabla)tga.dgvTurnoNoche.SelectedRows[0].DataBoundItem;
+                        (AsistenciaTabla)tga.dgvTurnoNoche.SelectedRows[0].DataBoundItem;
                 }
             }
 
@@ -409,14 +409,14 @@ namespace PlanillaAsistencia
                 buscarYseleccionarAsistenciaEnGrilla(tga.dgvTurnoNoche, dgvNocheAsistenciaSeleccionada);
             }
 
-            private void buscarYseleccionarAsistenciaEnGrilla(DataGridView grilla, AsistenciaDatosParaTabla asistencia)
+            private void buscarYseleccionarAsistenciaEnGrilla(DataGridView grilla, AsistenciaTabla asistencia)
             {
                 grilla.ClearSelection();
                 if (asistencia != null)
                 {
                     foreach (DataGridViewRow fila in grilla.Rows)
                     {
-                        AsistenciaDatosParaTabla asistenciaActual = (AsistenciaDatosParaTabla)fila.DataBoundItem;
+                        AsistenciaTabla asistenciaActual = (AsistenciaTabla)fila.DataBoundItem;
                         if (asistencia.IdAsistencia == asistenciaActual.IdAsistencia)
                         {
                             fila.Selected = true;

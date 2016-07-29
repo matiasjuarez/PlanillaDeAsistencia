@@ -5,13 +5,13 @@ using System.Text;
 
 namespace Entidades
 {
-    public class AsistenciaDatosParaTabla: IComparable<AsistenciaDatosParaTabla>
+    public class AsistenciaTabla: IComparable<AsistenciaTabla>
     {
         private string stringPorDefecto = "N/A";
         private Asistencia asistencia;
         private string formatoTimespan = @"hh\:mm";
 
-        public AsistenciaDatosParaTabla(Asistencia asistencia)
+        public AsistenciaTabla(Asistencia asistencia)
         {
             this.asistencia = asistencia;
 
@@ -181,7 +181,7 @@ namespace Entidades
             }
         }
 
-        public int CompareTo(AsistenciaDatosParaTabla otraAsistencia)
+        public int CompareTo(AsistenciaTabla otraAsistencia)
         {
             DateTime estaFecha = DateTime.Parse(ComienzoClaseEsperado);
             DateTime otraFecha = DateTime.Parse(otraAsistencia.ComienzoClaseEsperado);

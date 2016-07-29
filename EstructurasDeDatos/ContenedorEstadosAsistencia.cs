@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Entidades;
 using AccesoDatos;
 
-namespace DatosLocales.Contenedores
+namespace EstructurasDeDatos
 {
     public class ContenedorEstadosAsistencia : Contenedor<int, EstadoAsistencia>
     {

@@ -4,55 +4,59 @@ using System.Linq;
 using System.Text;
 
 using Entidades;
-using Entidades.ClasesAuxiliares;
+using EstructurasDeDatos;
 
 namespace Sincronizacion.Comun
 {
 
     /*
-     * Esta clase se utiliza para comparar dos listas de asistencias. Como resultado de esta comparacion
-     * se obtienen tres List<Asistencia> que indican que asistencias se deberian agregar, modificar y eliminar de la
-     * primera lista para obtener la segunda lista
+     * Esta clase se utiliza para comparar dos contenedores de asistencias. Como resultado de esta comparacion
+     * se obtienen tres ContenedoresAsistencia que indican que asistencias se deberian agregar, modificar y eliminar del
+     * primer contenedor para obtener el segundo contenedor
      * */
-    public class ComparadorListasAsistencia
+    public class ComparadorContenedoresAsistencias
     {
-        private List<Asistencia> agregar = new List<Asistencia>();
-        public List<Asistencia> Agregar
+        private ContenedorAsistencias agregar = new ContenedorAsistencias();
+        public ContenedorAsistencias Agregar
         {
             get { return agregar; }
         }
 
-        private List<Asistencia> eliminar = new List<Asistencia>();
-        public List<Asistencia> Eliminar
+        private ContenedorAsistencias eliminar = new ContenedorAsistencias();
+        public ContenedorAsistencias Eliminar
         {
             get { return eliminar; }
         }
 
-        private List<Asistencia> modificar = new List<Asistencia>();
-        public List<Asistencia> Modificar
+        private ContenedorAsistencias modificar = new ContenedorAsistencias();
+        public ContenedorAsistencias Modificar
         {
             get { return modificar; }
         }
 
         /*
-         * La primera lista es la principal la cual compararemos contra la segunda lista
+         * El primer contenedor lo comporamos contra el segundo. Lo que hay que agregar, modificar y eliminar se
+         * deberia hacer sobre el primer contenedor
          * */
-        public ComparadorListasAsistencia(List<Asistencia> principal, List<Asistencia> comparacion)
+        public ComparadorContenedoresAsistencias(ContenedorAsistencias principal, ContenedorAsistencias comparacion)
         {
-            compararListas(principal, comparacion);
+            compararContenedores(principal, comparacion);
         }
 
-        private void compararListas(List<Asistencia> listaPrincipal, List<Asistencia> listaComparacion)
+        private void compararContenedores(ContenedorAsistencias contenedorPrincipal, ContenedorAsistencias contenedorComparacion)
         {
-            if (listaPrincipal == null)
+            if (contenedorPrincipal == null)
             {
-                listaPrincipal = new List<Asistencia>();
+                contenedorPrincipal = new ContenedorAsistencias();
             }
 
-            if (listaComparacion == null)
+            if (contenedorComparacion == null)
             {
-                listaComparacion = new List<Asistencia>();
-            }     
+                contenedorComparacion = new ContenedorAsistencias();
+            }
+
+            List<Asistencia> listaPrincipal = contenedorPrincipal.obtenerTodasLasAsistencias();
+            List<Asistencia> listaComparacion = contenedorComparacion.obtenerTodasLasAsistencias();
 
             for (int i = 0; i < listaPrincipal.Count; i++)
             {
@@ -62,7 +66,7 @@ namespace Sincronizacion.Comun
                 bool seEncontroAsistenciaDeComparacion = false;
                 Asistencia asistenciaPrincipal = listaPrincipal.ElementAt(i);
 
-                for (int j = 0; j < listaComparacion.Count; j++)
+                for (int j = 0; j < contenedorComparacion.Count; j++)
                 {
                     Asistencia asistenciaComparacion = listaComparacion.ElementAt(j);
 
@@ -73,7 +77,7 @@ namespace Sincronizacion.Comun
 
                         if (!asistenciaPrincipal.Equals(asistenciaComparacion))
                         {
-                            modificar.Add(asistenciaComparacion);
+                            modificar.agregarAsistencia(asistenciaComparacion);
                         }
 
                         listaComparacion.RemoveAt(j);
@@ -83,7 +87,7 @@ namespace Sincronizacion.Comun
 
                 if (!seEncontroAsistenciaDeComparacion)
                 {
-                    eliminar.Add(asistenciaPrincipal);
+                    eliminar.agregarAsistencia(asistenciaPrincipal);
                 }
             }
 
@@ -92,9 +96,9 @@ namespace Sincronizacion.Comun
             // compararse (valga la redundancia :] ). Esto se interpreta como que las asistenciasDeComparacion que quedaron
             // en la lista son asistencias que deberian agregarse a la lista principal para parecerse a la lista de comparacion
 
-            if (listaComparacion.Count > 0)
+            if (contenedorComparacion.Count > 0)
             {
-                agregar.AddRange(listaComparacion);
+                agregar.agregarListaAsistencias(listaComparacion);
             }
         }
 

@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sincronizacion", "Sincroniz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatosLocales", "DatosLocales\DatosLocales.csproj", "{EABCC520-164C-4698-943C-229BB153C608}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstructurasDeDatos", "EstructurasDeDatos\EstructurasDeDatos.csproj", "{213F254E-BA77-4766-8BAC-B641CB867E0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,16 @@ Global
 		{EABCC520-164C-4698-943C-229BB153C608}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EABCC520-164C-4698-943C-229BB153C608}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EABCC520-164C-4698-943C-229BB153C608}.Release|x86.ActiveCfg = Release|Any CPU
+		{213F254E-BA77-4766-8BAC-B641CB867E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{213F254E-BA77-4766-8BAC-B641CB867E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{213F254E-BA77-4766-8BAC-B641CB867E0F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{213F254E-BA77-4766-8BAC-B641CB867E0F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{213F254E-BA77-4766-8BAC-B641CB867E0F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{213F254E-BA77-4766-8BAC-B641CB867E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{213F254E-BA77-4766-8BAC-B641CB867E0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{213F254E-BA77-4766-8BAC-B641CB867E0F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{213F254E-BA77-4766-8BAC-B641CB867E0F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{213F254E-BA77-4766-8BAC-B641CB867E0F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

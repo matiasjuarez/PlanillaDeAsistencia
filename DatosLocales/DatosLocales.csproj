@@ -39,14 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Contenedores\ContenedorAsistencias.cs" />
-    <Compile Include="Contenedores\ContenedorAulas.cs" />
-    <Compile Include="Contenedores\ContenedorCursos.cs" />
-    <Compile Include="Contenedores\ContenedorDocentes.cs" />
-    <Compile Include="Contenedores\ContenedorEstadosAsistencia.cs" />
-    <Compile Include="DatosLocales.cs" />
-    <Compile Include="Contenedores\Contenedor.cs" />
-    <Compile Include="Contenedores\ContenedorAsignaturas.cs" />
+    <Compile Include="DatosSoporte.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,7 +51,12 @@
       <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
       <Name>Entidades</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EstructurasDeDatos\EstructurasDeDatos.csproj">
+      <Project>{213f254e-ba77-4766-8bac-b641cb867e0f}</Project>
+      <Name>EstructurasDeDatos</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

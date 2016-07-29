@@ -6,7 +6,7 @@ using System.Text;
 using Entidades;
 using AccesoDatos;
 
-namespace DatosLocales.Contenedores
+namespace EstructurasDeDatos
 {
     public class ContenedorAsistencias
     {
