@@ -39,7 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DatosSoporte.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -51,9 +50,9 @@
       <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
       <Name>Entidades</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EstructurasDeDatos\EstructurasDeDatos.csproj">
+    <ProjectReference Include="..\EstructurasDeDatos\ContenedoresDeDatos.csproj">
       <Project>{213f254e-ba77-4766-8bac-b641cb867e0f}</Project>
-      <Name>EstructurasDeDatos</Name>
+      <Name>ContenedoresDeDatos</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

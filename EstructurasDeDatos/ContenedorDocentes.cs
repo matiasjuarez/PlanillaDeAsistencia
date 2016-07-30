@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using Entidades;
 using AccesoDatos;
 
-namespace EstructurasDeDatos
+namespace ContenedoresDeDatos
 {
     public class ContenedorDocentes : Contenedor<int, Docente>
     {
         public override void refrescarDatos()
         {
+            limpiarContenedor();
+
             List<Docente> docentes = DAODocentes.obtenerTodosLosDocentes();
             foreach (Docente docente in docentes)
             {

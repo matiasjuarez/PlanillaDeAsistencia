@@ -7,27 +7,26 @@ using System.Threading.Tasks;
 using Entidades;
 using AccesoDatos;
 
-using EstructurasDeDatos;
-
-namespace DatosLocales
+namespace ContenedoresDeDatos
 {
-    public class DatosSoporte
+    public class DatosLocales
     {
         //**********IMPLEMENTACION SINGLETON
-        private static DatosSoporte datosLocales;
+        private static DatosLocales datosLocales;
 
-        private DatosSoporte()
+        private DatosLocales()
         {
             asignaturas = new ContenedorAsignaturas();
+            asistencias = new ContenedorAsistencias();
             aulas = new ContenedorAulas();
             cursos = new ContenedorCursos();
             docentes = new ContenedorDocentes();
             estadosAsistencia = new ContenedorEstadosAsistencia();
         }
 
-        public DatosSoporte getInstance()
+        public DatosLocales getInstance()
         {
-            if (datosLocales == null) datosLocales = new DatosSoporte();
+            if (datosLocales == null) datosLocales = new DatosLocales();
             return datosLocales;
         }
 
@@ -36,6 +35,12 @@ namespace DatosLocales
         public ContenedorAsignaturas Asignaturas
         {
             get { return asignaturas; }
+        }
+
+        private ContenedorAsistencias asistencias;
+        public ContenedorAsistencias Asistencias
+        {
+            get { return asistencias; }
         }
 
         private ContenedorAulas aulas;
@@ -62,7 +67,7 @@ namespace DatosLocales
             get { return estadosAsistencia; }
         }
 
-        public void refrescarContenedor()
+        public void refrescarDatosSoporte()
         {
             asignaturas.refrescarDatos();
             aulas.refrescarDatos();

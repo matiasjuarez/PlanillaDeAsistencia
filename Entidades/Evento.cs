@@ -85,6 +85,9 @@ namespace Entidades
             set { materia = value; }
         }
 
+        // NOTA: la asistencia que se obtiene tendra todos los objetos que la componen
+        // de forma incompleta. Por ejemplo, el evento solo trae el nombre del docente. Por lo tanto
+        // el objeto docente de la asistencia no va a tener la id correspondiente.
         public Asistencia convertirEnAsistencia()
         {
             Asistencia asistencia = new Asistencia();

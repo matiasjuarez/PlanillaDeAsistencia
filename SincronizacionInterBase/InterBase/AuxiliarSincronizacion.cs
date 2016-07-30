@@ -6,7 +6,7 @@ using System.Text;
 using Entidades;
 using AccesoDatos;
 
-namespace PlanillaAsistencia.Sincronizacion
+namespace Sincronizacion
 {
     // Esta clase se encarga de hacer la sincronizacion necesaria entre la base de datos del rapla y
     // la base de datos que guarda la planilla de asistencia

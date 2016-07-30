@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using Entidades;
 using AccesoDatos;
 
-namespace EstructurasDeDatos
+namespace ContenedoresDeDatos
 {
     public class ContenedorEstadosAsistencia : Contenedor<int, EstadoAsistencia>
     {
         public override void refrescarDatos()
         {
+            limpiarContenedor();
+
             List<EstadoAsistencia> estadosAsistencia = DAOEstadoAsistencia.obtenerTodosLosEstadosAsistencia();
             foreach (EstadoAsistencia estadoAsistencia in estadosAsistencia)
             {

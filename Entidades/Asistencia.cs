@@ -76,7 +76,7 @@ namespace Entidades
 
         public DateTime DiaDeAsistencia
         {
-            get { return diaDeAsistencia; }
+            get { return diaDeAsistencia.Date; }
             set { diaDeAsistencia = value; }
         }
 
@@ -168,8 +168,6 @@ namespace Entidades
         public bool Equals(Asistencia otra)
         {
             if (otra == null) return false;
-
-            if (this.Id != otra.Id) return false;
 
             if (this.EventId != otra.EventId) return false;
 

@@ -8,7 +8,6 @@ using EstructurasDeDatos;
 
 namespace Sincronizacion.Comun
 {
-
     /*
      * Esta clase se utiliza para comparar dos contenedores de asistencias. Como resultado de esta comparacion
      * se obtienen tres ContenedoresAsistencia que indican que asistencias se deberian agregar, modificar y eliminar del
@@ -77,6 +76,9 @@ namespace Sincronizacion.Comun
 
                         if (!asistenciaPrincipal.Equals(asistenciaComparacion))
                         {
+                            // Esto se hace por si se llega a mandar una Asistencia que sea haya creado
+                            // desde un evento (no va a tener id)
+                            comprobarValorId(asistenciaPrincipal, asistenciaComparacion);
                             modificar.agregarAsistencia(asistenciaComparacion);
                         }
 
@@ -100,6 +102,14 @@ namespace Sincronizacion.Comun
             {
                 agregar.agregarListaAsistencias(listaComparacion);
             }
+        }
+
+        // Este metodo se va a usar para verificar que no se vaya a mandar una asistencia con id 0
+        // a la base de datos
+        private void comprobarValorId(Asistencia una, Asistencia otra)
+        {
+            if (una.Id <= 0) una.Id = otra.Id;
+            if (otra.Id <= 0) otra.Id = una.Id;
         }
 
         // Indica si tras haber llamado al metodo compararListasDeAsistencias se ha cargado algo en alguna

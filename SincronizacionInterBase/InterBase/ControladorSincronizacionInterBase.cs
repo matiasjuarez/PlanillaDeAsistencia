@@ -8,7 +8,7 @@ using AccesoDatos;
 using EstructurasDeDatos;
 using Sincronizacion.Comun;
 
-namespace EstructurasDeDatos
+namespace Sincronizacion
 {
     public class ControladorSincronizacionInterBase
     {

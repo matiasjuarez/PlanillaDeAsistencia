@@ -6,140 +6,85 @@ using System.Text;
 using Entidades;
 using AccesoDatos;
 
-namespace EstructurasDeDatos
+namespace ContenedoresDeDatos
 {
-    public class ContenedorAsistencias
+    public class ContenedorAsistencias : Contenedor<int, Asistencia>
     {
-        private Dictionary<int, Asistencia> asistenciasPorId = new Dictionary<int, Asistencia>();
-        private Dictionary<string, List<Asistencia>> asistenciasPorFecha = new Dictionary<string, List<Asistencia>>();
-        private bool noPermitirAsistenciasRepetidas = true;
-
-        public int Count
-        {
-            get { return asistenciasPorId.Count; }
-        }
-
-        public void agregarAsistencia(Asistencia asistencia)
-        {
-            if (noPermitirAsistenciasRepetidas)
-            {
-                if (existeAsistencia(asistencia)) return;
-            }
-
-            asistenciasPorId.Add(asistencia.Id, asistencia);
-
-            // Se agrega al diccionario por fechas
-            string fechaAsistencia = asistencia.DiaDeAsistencia.Date.ToString("d");
-            List<Asistencia> listaAsistenciasDeFecha;
-
-            if (!asistenciasPorFecha.TryGetValue(fechaAsistencia, out listaAsistenciasDeFecha))
-            {
-                listaAsistenciasDeFecha = new List<Asistencia>();
-                asistenciasPorFecha[fechaAsistencia] = listaAsistenciasDeFecha;
-            }
-
-            listaAsistenciasDeFecha.Add(asistencia);
-        }
-
-        public void agregarListaAsistencias(List<Asistencia> asistencias)
-        {
-            foreach (Asistencia asistencia in asistencias)
-            {
-                agregarAsistencia(asistencia);
-            }
-        }
-
         public List<Asistencia> obtenerAsistenciasDeFecha(DateTime fecha)
         {
-            // Esto obtiene la parte de la fecha sin la hora
-            String fechaDeBusqueda = fecha.Date.ToString("d");
+            List<Asistencia> listaAsistenciasDeFecha = new List<Asistencia>();
 
-            return obtenerAsistenciasDeFecha(fechaDeBusqueda);
-        }
-
-        public List<Asistencia> obtenerAsistenciasDeFecha(string fecha)
-        {
-            List<Asistencia> asistenciasDeFecha;
-
-            if (asistenciasPorFecha.TryGetValue(fecha, out asistenciasDeFecha))
+            foreach (Asistencia asistencia in obtenerDatos())
             {
-                asistenciasDeFecha = asistenciasPorFecha[fecha];
-                return asistenciasDeFecha;
-            }
-            else
-            {
-                return null;
-            }
-        }
+                //string fechaAsistencia = asistencia.DiaDeAsistencia.Date.ToString("d");
 
-        public List<Asistencia> obtenerTodasLasAsistencias()
-        {
-            List<Asistencia> asistencias = new List<Asistencia>(asistenciasPorId.Values);
-            return asistencias;
-        }
-
-        public bool quitarAsistencia(Asistencia asistencia)
-        {
-            if (!existeAsistencia(asistencia))
-            {
-                return false;
-            }
-            // Se elimina la asistencia del diccionario por id
-            asistenciasPorId.Remove(asistencia.Id);
-
-            // Se elimina la asistencia del diccionario por fecha
-            string fechaAsistencia = asistencia.DiaDeAsistencia.Date.ToString("d");
-            List<Asistencia> asistenciasParaFecha;
-
-            if (asistenciasPorFecha.TryGetValue(fechaAsistencia, out asistenciasParaFecha))
-            {
-                for (int i = 0; i < asistenciasParaFecha.Count; i++)
+                if (asistencia.DiaDeAsistencia.Equals(fecha.Date))
                 {
-                    Asistencia asistenciaEnLista = asistenciasParaFecha.ElementAt(i);
-
-                    if (asistenciaEnLista.Id == asistencia.Id)
-                    {
-                        asistenciasParaFecha.RemoveAt(i);
-                        return true;
-                    }
+                    listaAsistenciasDeFecha.Add(asistencia);
                 }
             }
-            return false;
+            return listaAsistenciasDeFecha;
         }
 
-        public void limpiarContenedor()
+        public Dictionary<DateTime, List<Asistencia>> obtenerAsistenciasAgrupadasPorFecha()
         {
-            asistenciasPorId.Clear();
-            asistenciasPorFecha.Clear();
-        }
+            Dictionary<DateTime, List<Asistencia>> asistencias = new Dictionary<DateTime, List<Asistencia>>();
 
-        public List<string> getFechasAlmacenadasString()
-        {
-            List<string> fechas = new List<string>();
-
-            foreach (string fechaKey in asistenciasPorFecha.Keys)
+            foreach (Asistencia asistencia in obtenerDatos())
             {
-                fechas.Add(fechaKey);
+                //string fechaAsistencia = asistencia.DiaDeAsistencia.Date.ToString("d");
+                DateTime fechaAsistencia = asistencia.DiaDeAsistencia;
+
+                List<Asistencia> listaAsistenciasDeFecha;
+
+                if (!asistencias.TryGetValue(fechaAsistencia, out listaAsistenciasDeFecha))
+                {
+                    listaAsistenciasDeFecha = new List<Asistencia>();
+                    asistencias.Add(fechaAsistencia, listaAsistenciasDeFecha);
+                }
+
+                listaAsistenciasDeFecha.Add(asistencia);
             }
 
-            return fechas;
+            return asistencias;
+        }
+        
+        public Asistencia obtenerAsistenciaSegunEvento(Evento evento)
+        {
+            foreach (Asistencia asistencia in obtenerDatos())
+            {
+                if (asistencia.EventId == evento.IDEvento && asistencia.AppointmentId == evento.AppointmentId)
+                {
+                    return asistencia;
+                }
+            }
+            return null;
         }
 
-        public List<DateTime> getFechasAlmacenadasDatetime()
+        public List<DateTime> obtenerFechasDeAsistenciasAlmacenadas()
         {
-            List<DateTime> fechas = new List<DateTime>();
+            HashSet<DateTime> fechas = new HashSet<DateTime>();
 
-            foreach (string fechaKey in getFechasAlmacenadasString())
+            foreach (Asistencia asistencia in obtenerDatos())
             {
-                fechas.Add(DateTime.Parse(fechaKey));
+                fechas.Add(asistencia.DiaDeAsistencia);
             }
 
-            return fechas;
+            return fechas.ToList<DateTime>();
         }
 
-        private bool existeAsistencia(Asistencia asistencia)
+        public override void refrescarDatos()
         {
-            return asistenciasPorId.ContainsKey(asistencia.Id);
+            List<DateTime> fechasDeAsistencias = obtenerFechasDeAsistenciasAlmacenadas();
+
+            List<Asistencia> asistenciasBaseDatos = DAOAsistencias.obtenerAsistenciasParaListadoDeFechas(fechasDeAsistencias);
+
+            limpiarContenedor();
+
+            foreach (Asistencia asistencia in asistenciasBaseDatos)
+            {
+                guardarDato(asistencia.Id, asistencia);
+            }
         }
     }
 }
