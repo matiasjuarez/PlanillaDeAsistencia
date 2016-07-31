@@ -252,7 +252,7 @@ namespace AccesoDatos
                 evento.Materia = ValidadorValoresNull.getString(reader, "Materia");
                 evento.InicioEsperado = ValidadorValoresNull.getDateTime(reader, "Inicio");
                 evento.FinEsperado = ValidadorValoresNull.getDateTime(reader, "Fin");
-                evento.Aula = ValidadorValoresNull.getString(reader, "Aulas");
+                evento.Aulas = ValidadorValoresNull.getString(reader, "Aulas");
                 evento.Docente = ValidadorValoresNull.getString(reader, "Docente");
                 evento.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra");
                 evento.Curso = ValidadorValoresNull.getString(reader, "Curso");

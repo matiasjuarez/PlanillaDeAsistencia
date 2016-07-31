@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanillaAsistencia", "Plani
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuracion", "Configuracion\Configuracion.csproj", "{71941B97-E905-4BE2-82AB-8114F57BE27C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sincronizacion", "SincronizacionInterBase\Sincronizacion.csproj", "{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SincronizacionInterBase", "SincronizacionInterBase\SincronizacionInterBase.csproj", "{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContenedoresDeDatos", "EstructurasDeDatos\ContenedoresDeDatos.csproj", "{213F254E-BA77-4766-8BAC-B641CB867E0F}"
 EndProject

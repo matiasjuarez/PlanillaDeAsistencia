@@ -169,6 +169,8 @@ namespace Entidades
         {
             if (otra == null) return false;
 
+            if (this.Id != otra.Id) return false;
+
             if (this.EventId != otra.EventId) return false;
 
             if (this.AppointmentId != otra.AppointmentId) return false;

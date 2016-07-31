@@ -74,7 +74,7 @@
             this.tabABMDocente = new System.Windows.Forms.TabPage();
             this.tabVistaGeneralDocentes = new System.Windows.Forms.TabPage();
             this.lbleMensajes = new PlanillaAsistencia.ControlesPersonalizados.LabelConEfectos();
-            this.tripleGrillaAsistencias = new PlanillaAsistencia.TripleGrillaAsistencias();
+            this.tripleGrillaAsistencias = new PlanillaAsistencia.ControlesPersonalizados.TripleGrillaAsistencias();
             this.tabCargaAsistencia.SuspendLayout();
             this.tabAsistencia.SuspendLayout();
             this.grpBoxGeneral.SuspendLayout();
@@ -695,7 +695,7 @@
         private System.Windows.Forms.DataGridView dgvListaCursos;
         private System.Windows.Forms.ComboBox cmbDocente;
         private System.Windows.Forms.Button btnGuardar;
-        private TripleGrillaAsistencias tripleGrillaAsistencias;
+        private PlanillaAsistencia.ControlesPersonalizados.TripleGrillaAsistencias tripleGrillaAsistencias;
         private ControlesPersonalizados.LabelConEfectos lbleMensajes;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace PlanillaAsistencia
+﻿namespace PlanillaAsistencia.ControlesPersonalizados
 {
     partial class TripleGrillaAsistencias
     {

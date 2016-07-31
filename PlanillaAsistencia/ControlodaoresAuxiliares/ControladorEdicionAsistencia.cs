@@ -10,7 +10,7 @@ namespace PlanillaAsistencia
 {
     public class ControladorEdicionAsistencia : IObservadorCamposPlanilla
     {
-        private planillaAsistencia vista;
+        /*private planillaAsistencia vista;
         private Modelo modelo;
 
         // La asistencia sobre la que vamos a hacer cambios
@@ -67,7 +67,7 @@ namespace PlanillaAsistencia
             }
 
             return resultado;
-        }
+        }*/
 
         // ****************************************************************************
         // ******************IMPLEMENTACION IObservadorCamposPlanilla******************

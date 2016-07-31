@@ -174,7 +174,7 @@ namespace AccesoDatos
 
 
 
-        public static void insertarNuevaAula(Aula aula)
+        public static void insertarAula(Aula aula)
         {
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
@@ -218,6 +218,14 @@ namespace AccesoDatos
                 gestorConexion.cerrarConexion();
             }
            
+        }
+
+        public static void insertarAulas(List<Aula> aulas)
+        {
+            foreach (Aula aula in aulas)
+            {
+                insertarAula(aula);
+            }
         }
         
 

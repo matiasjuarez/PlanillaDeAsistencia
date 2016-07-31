@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-using PlanillaAsistencia.Sincronizacion;
+using PlanillaAsistencia;
 
 namespace PlanillaAsistencia
 {
@@ -23,12 +23,12 @@ namespace PlanillaAsistencia
             Modelo modelo = new Modelo();
             Controlador controlador = new Controlador(planilla, modelo);
 
-            modelo.setControlador(controlador);
+            modelo.Controlador = controlador;
             planilla.setControlador(controlador);
 
             //modelo.agregarObservador(controlador);
 
-            TimerActualizacion actualizadorModelo = new TimerActualizacion(7, controlador);
+            //TimerActualizacion actualizadorModelo = new TimerActualizacion(7, controlador);
 
             /*ControladorSincronizacionBaseRapla con = new ControladorSincronizacionBaseRapla();
             con.sincronizarAsistencias("2016-01-01", "2016-12-12");*/

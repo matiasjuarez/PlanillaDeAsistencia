@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using PlanillaAsistencia.Sincronizacion;
+using PlanillaAsistencia;
 using Entidades;
 //using System.Windows.Forms;
 //using System.Drawing;

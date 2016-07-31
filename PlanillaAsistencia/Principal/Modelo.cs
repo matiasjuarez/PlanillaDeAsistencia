@@ -13,6 +13,10 @@ namespace PlanillaAsistencia
     public class Modelo
     {
         private Controlador controlador;
+        public Controlador Controlador
+        {
+            set { controlador = value; }
+        }
 
         private HashSet<DateTime> fechasSinAsistencias;
 
@@ -23,10 +27,8 @@ namespace PlanillaAsistencia
         private ContenedorDocentes docentes;
         private ContenedorEstadosAsistencia estadosAsistencia;
         
-        public Modelo(Controlador controlador)
+        public Modelo()
         {
-            this.controlador = controlador;
-
             fechasSinAsistencias = new HashSet<DateTime>();
 
             asignaturas = new ContenedorAsignaturas();
@@ -55,6 +57,8 @@ namespace PlanillaAsistencia
          * al hashSet 'fechasSinAsistencias' para que en el futuro no sea necesario hacer una nueva
          * busqueda para las fechas que figuran en este hashSet.
          * */
+
+        // Falta ver como trabajar con el hashSet 'fechasSinAsistencias'
         public List<Asistencia> obtenerAsistenciasParaFecha(DateTime fecha)
         {
             List<Asistencia> asistenciasDeFecha = asistencias.obtenerAsistenciasDeFecha(fecha);
@@ -79,155 +83,46 @@ namespace PlanillaAsistencia
             return asistenciasDeFecha;
         }
 
-        // Crea una asistencia dual y la agrega a los diccionarios por id y por fecha
-        public bool agregarAsistenciaEnDiccionarios(Asistencia asistencia)
+        public List<Asistencia> obtenerAsistencias()
         {
-            // Si ya existe una asistencia con ese id agregada a los diccionarios, no hacemos nada
-            if(asistenciasPorId.ContainsKey(asistencia.Id)){
-                return false;
-            }
-
-            AsistenciaDual asistenciaD = new AsistenciaDual(asistencia);
-            // Se agrega al diccionario de ids
-            asistenciasPorId[asistencia.Id] = asistenciaD;
-
-            // Se agrega al diccionario por fechas
-            diccionarioAsistenciasPorFecha.agregarAsistencia(asistenciaD);
-
-            return true;
+            return asistencias.obtenerDatos();
         }
 
-        // Devuelve true si existia una asistencia en el diccionario con el id de la asistencia
-        // pasada por parametro y se la quito del diccionario. Si no devuelve false
-        public bool quitarAsistenciaDeDiccionarios(Asistencia asistencia)
+        public void guardarAsistencia(Asistencia asistencia)
         {
-            if (!asistenciasPorId.ContainsKey(asistencia.Id))
-            {
-                return false;
-            }
-
-            // Quitamos del diccionario por id
-            asistenciasPorId.Remove(asistencia.Id);
-
-            // Quitamos del diccionario por fecha
-            return diccionarioAsistenciasPorFecha.quitarAsistencia(asistencia);
+            asistencias.guardarDato(asistencia.Id, asistencia);
         }
 
-        public bool quitarAsistenciaDeDiccionarios(AsistenciaDual asistencia)
+        public bool eliminarAsistencia(Asistencia asistencia)
         {
-            return quitarAsistenciaDeDiccionarios(asistencia.Original);
+            return asistencias.eliminarDato(asistencia.Id);
         }
 
-        public void limpiarAsistenciasDelModelo()
+        public void eliminarAsistencias()
         {
-            asistenciasPorId.Clear();
-            diccionarioAsistenciasPorFecha.limpiarDiccionario();
+            asistencias.limpiarContenedor();
         }
 
-        // Devuelve el listado de asistencias que han sufrido una modificacion
-        public List<AsistenciaDual> getAsistenciasModificadas()
+        public Asistencia obtenerAsistencia(int idAsistencia)
         {
-            List<AsistenciaDual> asistencias = new List<AsistenciaDual>();
-
-            foreach (AsistenciaDual asistenciaD in getAsistenciasEnMemoria())
-            {
-                if (asistenciaD.esModificada())
-                {
-                    asistencias.Add(asistenciaD);
-                }
-            }
-
-            return asistencias;
+            return asistencias.obtenerDato(idAsistencia);
         }
 
-        // Obtiene la asistencia con la id pasada por parametro. Si no encuentra
-        // nada devuelve null
-        public AsistenciaDual getAsistencia(int idAsistencia)
+        public List<Asignatura> obtenerAsignaturas()
         {
-            foreach (AsistenciaDual asistencia in getAsistenciasEnMemoria())
-            {
-                if (asistencia.Original.Id == idAsistencia)
-                {
-                    return asistencia;
-                }
-            }
-            return null;
+            return asignaturas.obtenerDatos();
         }
 
-        // Devuelve una List de asignaturas
-        public List<Asignatura> getAsignaturas()
-        {
-            // Solo iremos a la base de datos la primera vez
-            if (asignaturas == null)
-            {
-                asignaturas = DAOAsignaturas.obtenerTodasLasAsignaturas();
-            }
-            
-            return asignaturas;
-        }
-
-        // Devuelve un List de docentes
         public List<Docente> getDocentes()
         {
-            if (docentes == null)
-            {
-                docentes = DAODocentes.obtenerTodosLosDocentes();
-            }
-
-            return docentes;
+            return docentes.obtenerDatos();
         }
 
         public List<EstadoAsistencia> getEstadosAsistencia()
         {
-            if (estadosAsistencia == null)
-            {
-                estadosAsistencia = DAOEstadoAsistencia.obtenerTodosLosEstadosAsistencia();
-            }
-
-            return estadosAsistencia;
+            return estadosAsistencia.obtenerDatos();
         }
 
-        // Guarda en la base de datos las asistencias que se encuentran en la lista de modificadas
-        public bool guardarAsistenciasModificadas()
-        {
-            List<Asistencia> asistenciasModificadas = new List<Asistencia>();
-            foreach (AsistenciaDual asistencia in getAsistenciasModificadas())
-            {
-                asistenciasModificadas.Add(asistencia.Clonada);
-            }
-
-            bool seGuardo = DAOAsistencias.updateAsistencias(asistenciasModificadas);
-
-            if (seGuardo)
-            {
-                foreach (AsistenciaDual asistencia in getAsistenciasModificadas())
-                {
-                    asistencia.Original = asistencia.Clonada;
-                }
-            }
-
-            return seGuardo;
-        }
-
-        public List<DateTime> getFechasDeAsistenciaCargadasEnDiccionario()
-        {
-            return diccionarioAsistenciasPorFecha.getFechasAlmacenadasComoDateTime();
-        }
-
-        public List<AsistenciaDual> getAsistenciasEnMemoria()
-        {
-            List<AsistenciaDual> asistencias = new List<AsistenciaDual>();
-            asistencias.AddRange(asistenciasPorId.Values);
-            return asistencias;
-        }
-
-        public void setearAsistenciasClonadasComoOriginales()
-        {
-            foreach (AsistenciaDual asistenciaD in getAsistenciasEnMemoria())
-            {
-                asistenciaD.Original = asistenciaD.Clonada;
-            }
-        }
        /* public void agregarObservador(IObservadorModelo observador)
         {
             if (!observadores.Contains(observador))

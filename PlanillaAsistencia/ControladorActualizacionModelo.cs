@@ -6,12 +6,12 @@ using System.Text;
 using Entidades;
 using AccesoDatos;
 
-namespace Sincronozacion.Local
+namespace PlanillaAsistencia
 {
-    public class ControladorSincronizacionLocal
+    public class ControladorSincronizacionModelo
     {
-        
-        public ControladorSincronizacionLocal()
+        private Modelo modelo;
+        private Controlador controladorPrincipal;
         private bool seActualizoModelo = false;
         public bool SeActualizoModelo
         {
@@ -25,10 +25,10 @@ namespace Sincronozacion.Local
         public ControladorSincronizacionModelo(Modelo modelo, Controlador controlador)
         {
             this.modelo = modelo;
-            this.referenciaControladorPadre = controlador;
+            this.controladorPrincipal = controlador;
         }
 
-        public void actualizarModelo()
+       /* public void actualizarModelo()
         {
             List<DateTime> fechasCargadasEnDiccionario = modelo.getFechasDeAsistenciaCargadasEnDiccionario();
 
@@ -72,7 +72,7 @@ namespace Sincronozacion.Local
                     
                    // modelo.notificarCambiosEnModelo();
                 }*/
-            }
+      /*      }
         }
 
         private bool modeloRequiereActualizarse(List<Asistencia> asistenciasBaseDatos)
@@ -110,7 +110,7 @@ namespace Sincronozacion.Local
 
             return false;
         }
-
+        */
         // La idea es que las asistencias que figuran como modificadas en el modelo se marquen como sin modificar si es necesario.
         // Se debe marcar una asistencia como no modificada cuando dicha asistencia no figure en la lista de asistencias traidas
         // de la base de datos ya que esto significa que dicha asistencia fue eliminada de la base de datos. 

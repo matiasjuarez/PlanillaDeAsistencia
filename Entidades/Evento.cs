@@ -12,9 +12,10 @@ namespace Entidades
         private String docente;
         private String jefeCatedra;
         private String curso;
-        private DateTime inicioEsperado;
-        private DateTime finEsperado;
-        private string aula;
+        private TimeSpan inicioEsperado;
+        private TimeSpan finEsperado;
+        private DateTime fechaEvento;
+        private string aulas;
         private string materia;
         private bool esParcial;
         private bool esExamen;
@@ -61,61 +62,35 @@ namespace Entidades
             set { curso = value; }
         }
 
-        public DateTime InicioEsperado
+        public TimeSpan InicioEsperado
         {
             get { return inicioEsperado; }
             set { inicioEsperado = value; }
         }
 
-        public DateTime FinEsperado
+        public TimeSpan FinEsperado
         {
             get { return finEsperado; }
             set { finEsperado = value; }
         }
 
-        public string Aula
+
+        public DateTime FechaEvento
         {
-            get { return aula; }
-            set { aula = value; }
+            get { return fechaEvento; }
+            set { fechaEvento = value; }
+        }
+
+        public string Aulas
+        {
+            get { return aulas; }
+            set { aulas = value; }
         }
 
         public string Materia
         {
             get { return materia; }
             set { materia = value; }
-        }
-
-        // NOTA: la asistencia que se obtiene tendra todos los objetos que la componen
-        // de forma incompleta. Por ejemplo, el evento solo trae el nombre del docente. Por lo tanto
-        // el objeto docente de la asistencia no va a tener la id correspondiente.
-        public Asistencia convertirEnAsistencia()
-        {
-            Asistencia asistencia = new Asistencia();
-
-            asistencia.AppointmentId = this.AppointmentId;
-            asistencia.EventId = this.IDEvento;
-
-            asistencia.ComienzoClaseEsperado = this.InicioEsperado.TimeOfDay;
-            asistencia.FinClaseEsperado = this.FinEsperado.TimeOfDay;
-            asistencia.DiaDeAsistencia = this.InicioEsperado.Date;
-
-            asistencia.Docente = new Docente(this.Docente);
-
-            asistencia.Asignatura = new Asignatura();
-            asistencia.Asignatura.Nombre = this.Materia;
-
-            string[] aulasNombres = this.Aula.Split(',');
-            foreach (string aulaNombre in aulasNombres)
-            {
-                Aula aula = new Aula();
-                aula.Nombre = aulaNombre;
-                asistencia.agregarAula(aula);
-            }
-
-            asistencia.Curso = new Curso();
-            asistencia.Curso.Nombre = this.Curso;
-
-            return asistencia;
         }
     }
 }

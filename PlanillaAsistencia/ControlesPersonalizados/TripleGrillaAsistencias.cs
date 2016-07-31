@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using Utilidades;
 using Entidades;
 
-namespace PlanillaAsistencia
+namespace PlanillaAsistencia.ControlesPersonalizados
 {
     public partial class TripleGrillaAsistencias : UserControl
     {
@@ -55,7 +55,7 @@ namespace PlanillaAsistencia
             rangoHorarioNoche = new RangoHorario("18:00:00", "23:59:59");
         }
 
-        public void mostrarAsistencias(List<AsistenciaDual> asistencias)
+        public void mostrarAsistencias(List<Asistencia> asistencias)
         {
             asistenciaSeleccionada = null;
 
@@ -270,7 +270,7 @@ namespace PlanillaAsistencia
         //uno para la manana, otro para la tarde y otro para la noche.
         // Luego de separar las asistencias, las coloca en la bindinglist correspondiente
         // a cada una de las tablas
-        private void ActualizarAsistencias(List<AsistenciaDual> asistencias)
+        private void ActualizarAsistencias(List<Asistencia> asistencias)
         {
             List<AsistenciaTabla> auxManana = new List<AsistenciaTabla>();
             List<AsistenciaTabla> auxTarde = new List<AsistenciaTabla>();
@@ -278,9 +278,9 @@ namespace PlanillaAsistencia
 
             if (asistencias != null)
             {
-                foreach (AsistenciaDual asistencia in asistencias)
+                foreach (Asistencia asistencia in asistencias)
                 {
-                    TimeSpan horaClase = asistencia.Clonada.ComienzoClaseEsperado;
+                    TimeSpan horaClase = asistencia.ComienzoClaseEsperado;
                     if (rangoHorarioManana.estaDentroDelRangoHorario(horaClase))
                     {
                         auxManana.Add(new AsistenciaTabla(asistencia));

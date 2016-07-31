@@ -181,7 +181,7 @@ namespace AccesoDatos
 
 
         // Inserta la asignatura pasada como parametro en la base de datos
-        public static void insertarNuevaAsignatura(Asignatura asignatura)
+        public static void insertarAsignatura(Asignatura asignatura)
         {
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
@@ -222,7 +222,14 @@ namespace AccesoDatos
             {
                 gestorConexion.cerrarConexion();
             }
-           
+        }
+
+        public static void insertarAsignaturas(List<Asignatura> asignaturas)
+        {
+            foreach (Asignatura asignatura in asignaturas)
+            {
+                insertarAsignatura(asignatura);
+            }
         }
 
         public static void actualizarAsignatura(Asignatura asignatura)
@@ -270,6 +277,14 @@ namespace AccesoDatos
             finally
             {
                 gestorConexion.cerrarConexion();
+            }
+        }
+
+        public static void actualizarAsignaturas(List<Asignatura> asignaturas)
+        {
+            foreach (Asignatura asignatura in asignaturas)
+            {
+                actualizarAsignatura(asignatura);
             }
         }
     }

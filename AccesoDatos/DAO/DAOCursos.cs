@@ -149,6 +149,14 @@ namespace AccesoDatos
             }
         }
 
+        public static void insertarCursos(List<Curso> cursos)
+        {
+            foreach (Curso curso in cursos)
+            {
+                insertarCurso(curso);
+            }
+        }
+
     }
 
 

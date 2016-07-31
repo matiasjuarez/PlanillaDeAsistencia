@@ -39,11 +39,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Comun\ComparadorListasAsistencia.cs" />
-    <Compile Include="InterBase\AuxiliarSincronizacion.cs" />
-    <Compile Include="Comun\TimerActualizacion.cs" />
-    <Compile Include="InterBase\ControladorSincronizacionInterBase.cs" />
-    <Compile Include="Local\ControladorSincronizacionLocal.cs" />
+    <Compile Include="ComparadorAsistenciasEventos.cs" />
+    <Compile Include="ContenedorDatosSoporte.cs" />
+    <Compile Include="ContenedorCambios.cs" />
+    <Compile Include="ControladorSincronizacionInterBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

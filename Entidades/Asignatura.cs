@@ -42,10 +42,7 @@ namespace Entidades
             id = 0;
             nombre = "";
             jefeCatedra = new Docente();
-            jefeCatedra.Nombre = "Desconocido";
-
             especialidad = new Especialidad();
-            especialidad.Nombre = "Ingenieria en sistemas";
         }
 
         public bool Equals(Asignatura other)

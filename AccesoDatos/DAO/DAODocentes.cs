@@ -229,7 +229,7 @@ namespace AccesoDatos
 
 
         // Inserta el docente pasado como parametro en la base de datos
-        public static void insertarNuevoDocente(Docente docente)
+        public static void insertarDocente(Docente docente)
         {
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
@@ -269,6 +269,13 @@ namespace AccesoDatos
 
         }
 
+        public static void insertarDocentes(List<Docente> docentes)
+        {
+            foreach (Docente docente in docentes)
+            {
+                insertarDocente(docente);
+            }
+        }
 
     }
 }

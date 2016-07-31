@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControladorActualizacionModelo.cs" />
     <Compile Include="ControlesPersonalizados\LabelConEfectos.cs">
       <SubType>UserControl</SubType>
     </Compile>
