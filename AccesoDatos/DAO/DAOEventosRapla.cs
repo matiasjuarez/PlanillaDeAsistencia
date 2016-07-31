@@ -250,12 +250,19 @@ namespace AccesoDatos
                 evento.IDEvento = ValidadorValoresNull.getInt(reader, "EVENTO");
                 evento.AppointmentId = ValidadorValoresNull.getInt(reader, "IDAP");
                 evento.Materia = ValidadorValoresNull.getString(reader, "Materia");
-                evento.InicioEsperado = ValidadorValoresNull.getDateTime(reader, "Inicio");
-                evento.FinEsperado = ValidadorValoresNull.getDateTime(reader, "Fin");
                 evento.Aulas = ValidadorValoresNull.getString(reader, "Aulas");
                 evento.Docente = ValidadorValoresNull.getString(reader, "Docente");
                 evento.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra");
                 evento.Curso = ValidadorValoresNull.getString(reader, "Curso");
+
+                string fechaEvento = ValidadorValoresNull.getString(reader, "Inicio");
+                evento.FechaEvento = DateTime.Parse(fechaEvento).Date;
+
+                string inicioEsperado = ValidadorValoresNull.getString(reader, "Inicio");
+                evento.InicioEsperado = DateTime.Parse(inicioEsperado).TimeOfDay;
+
+                string finEsperado = ValidadorValoresNull.getString(reader, "Fin");
+                evento.FinEsperado = DateTime.Parse(finEsperado).TimeOfDay;
 
                 int esExamen = ValidadorValoresNull.getInt(reader, "esExamen");
                 int esParcial = ValidadorValoresNull.getInt(reader, "esParcial");

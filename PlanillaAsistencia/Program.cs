@@ -24,7 +24,7 @@ namespace PlanillaAsistencia
             Controlador controlador = new Controlador(planilla, modelo);
 
             modelo.Controlador = controlador;
-            planilla.setControlador(controlador);
+            planilla.Controlador = controlador;
 
             //modelo.agregarObservador(controlador);
 

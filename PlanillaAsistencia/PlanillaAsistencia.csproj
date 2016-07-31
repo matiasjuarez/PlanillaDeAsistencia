@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControladorActualizacionModelo.cs" />
     <Compile Include="ControlesPersonalizados\LabelConEfectos.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -57,7 +56,6 @@
     <Compile Include="ControlesPersonalizados\TripleGrillaAsistencias.Designer.cs">
       <DependentUpon>TripleGrillaAsistencias.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlodaoresAuxiliares\ControladorEdicionAsistencia.cs" />
     <Compile Include="Interfaces\IObservadorCamposPlanilla.cs" />
     <Compile Include="Interfaces\IObservadorModelo.cs" />
     <Compile Include="Interfaces\IObservadorTripleGrilla.cs" />

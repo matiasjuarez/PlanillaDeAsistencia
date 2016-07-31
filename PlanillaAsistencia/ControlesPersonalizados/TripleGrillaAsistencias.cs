@@ -16,200 +16,52 @@ namespace PlanillaAsistencia.ControlesPersonalizados
     {
         private Presentador presentador;
         private ControladorRecargaDeGrillas controladorRecarga;
+        private ManejadorBindings manejadorBindings;
 
         private List<IObservadorTripleGrilla> observadores;
         
-        private BindingList<AsistenciaTabla> asistenciasTurnoManana;
-        private BindingList<AsistenciaTabla> asistenciasTurnoTarde;
-        private BindingList<AsistenciaTabla> asistenciasTurnoNoche;
-
-        private AsistenciaTabla asistenciaSeleccionada;
-        private DataGridView grillaSeleccionada;
-
-        private RangoHorario rangoHorarioManana;
-        private RangoHorario rangoHorarioTarde;
-        private RangoHorario rangoHorarioNoche;
-
-        private DateTime fechaDeLasAsistencias;
-
         public TripleGrillaAsistencias()
         {
             InitializeComponent();
+
             presentador = new Presentador(this);
             presentador.configurarPresentacionGrillas();
 
             controladorRecarga = new ControladorRecargaDeGrillas(this);
 
+            manejadorBindings = new ManejadorBindings(this);
+
             observadores = new List<IObservadorTripleGrilla>();
-
-            asistenciasTurnoManana = new BindingList<AsistenciaTabla>();
-            asistenciasTurnoTarde = new BindingList<AsistenciaTabla>();
-            asistenciasTurnoNoche = new BindingList<AsistenciaTabla>();
-
-            bindearListaATabla(dgvTurnoManana, asistenciasTurnoManana);
-            bindearListaATabla(dgvTurnoTarde, asistenciasTurnoTarde);
-            bindearListaATabla(dgvTurnoNoche, asistenciasTurnoNoche);
-
-            rangoHorarioManana = new RangoHorario("00:00:00", "12:00:00");
-            rangoHorarioTarde = new RangoHorario("12:00:00", "18:00:00");
-            rangoHorarioNoche = new RangoHorario("18:00:00", "23:59:59");
         }
 
-        public void mostrarAsistencias(List<Asistencia> asistencias)
+        public void cargarAsistenciasTurnoManana(List<Asistencia> asistencias)
         {
-            asistenciaSeleccionada = null;
-
-            ActualizarAsistencias(asistencias);
+            manejadorBindings.actualizarBindingList(
+                convertirEnAsistenciasParaTabla(asistencias), manejadorBindings.AsistenciasTurnoManana);
         }
 
-        public string NombreAsignatura
+        public void cargarAsistenciasTurnoTarde(List<Asistencia> asistencias)
         {
-            get
-            {
-                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.NombreAsignatura;
-                return "";
-            }
-            set
-            {
-                if (asistenciaSeleccionada != null) asistenciaSeleccionada.NombreAsignatura = value;
-            }
+            manejadorBindings.actualizarBindingList(
+                convertirEnAsistenciasParaTabla(asistencias), manejadorBindings.AsistenciasTurnoTarde);
         }
 
-        public string ComienzoClaseEsperado
+        public void cargarAsistenciasTurnoNoche(List<Asistencia> asistencias)
         {
-            get
-            {
-                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.ComienzoClaseEsperado;
-                return "";
-            }
-            set
-            {
-                if (asistenciaSeleccionada != null) asistenciaSeleccionada.ComienzoClaseEsperado = value;
-            }
+            manejadorBindings.actualizarBindingList(
+                convertirEnAsistenciasParaTabla(asistencias), manejadorBindings.AsistenciasTurnoNoche);
         }
 
-        public string FinClaseEsperado
+        private List<AsistenciaTabla> convertirEnAsistenciasParaTabla(List<Asistencia> asistencias)
         {
-            get
+            List<AsistenciaTabla> asistenciasParaTabla = new List<AsistenciaTabla>();
+            foreach (Asistencia asistencia in asistencias)
             {
-                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.FinClaseEsperado;
-                return "";
+                AsistenciaTabla asistenciaTabla = new AsistenciaTabla(asistencia);
+                asistenciasParaTabla.Add(asistenciaTabla);
             }
-            set
-            {
-                if (asistenciaSeleccionada != null) asistenciaSeleccionada.FinClaseEsperado = value;
-            }
-        }
 
-        public string ComienzoClaseReal
-        {
-            get
-            {
-                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.ComienzoClaseReal;
-                return "";
-            }
-            set
-            {
-                if (asistenciaSeleccionada != null) asistenciaSeleccionada.ComienzoClaseReal = value;
-            }
-        }
-
-        public string FinClaseReal
-        {
-            get
-            {
-                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.FinClaseReal;
-                return "";
-            }
-            set
-            {
-                if(asistenciaSeleccionada != null) asistenciaSeleccionada.FinClaseReal = value;
-            }
-        }
-
-        public string NombreProfesor
-        {
-            get
-            {
-                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.NombreProfesor;
-                return "";
-            }
-            set
-            {
-                if (asistenciaSeleccionada != null) asistenciaSeleccionada.NombreProfesor = value;
-            }
-        }
-
-        public string EstadoAsistencia
-        {
-            get
-            {
-                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.EstadoAsistencia;
-                return "";
-            }
-            set
-            {
-                if (asistenciaSeleccionada != null) asistenciaSeleccionada.EstadoAsistencia = value;
-            }
-        }
-
-        public int CantidadAlumnos
-        {
-            get
-            {
-                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.CantidadAlumnos;
-                return -1;
-            }
-            set
-            {
-                if (asistenciaSeleccionada != null) asistenciaSeleccionada.CantidadAlumnos = value;
-            }
-        }
-
-        public string Encargado
-        {
-            get
-            {
-                if (asistenciaSeleccionada != null)
-                {
-                    return asistenciaSeleccionada.Encargados;
-                }
-                return "";
-            }
-            set
-            {
-                if (asistenciaSeleccionada != null) asistenciaSeleccionada.Encargados = value;
-            }
-        }
-
-        public string Observaciones
-        {
-            get
-            {
-                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.Observaciones;
-                return "";
-            }
-            set
-            {
-                if (asistenciaSeleccionada != null) asistenciaSeleccionada.Observaciones = value;
-            }
-        }
-
-        public int IdAsistencia
-        {
-            get
-            {
-                if (asistenciaSeleccionada != null) return asistenciaSeleccionada.IdAsistencia;
-                return -1;
-            }
-        }
-
-        public void marcarAsistenciaComoModificada(Asistencia asistencia)
-        {
-            if (asistencia != null)
-            {
-                presentador.pintarFilaComoModificada(buscarFilaDeAsistencia(asistencia.Id));
-            }
+            return asistenciasParaTabla;
         }
 
         public void agregarObservador(IObservadorTripleGrilla observador)
@@ -261,102 +113,72 @@ namespace PlanillaAsistencia.ControlesPersonalizados
             return null;
         }
 
-        private void bindearListaATabla(DataGridView tabla, BindingList<AsistenciaTabla> asistencias)
-        {
-            tabla.DataSource = asistencias;
-        }
-
-        // Separa las asistencias pasadas por parametro en 3 grupos: 
-        //uno para la manana, otro para la tarde y otro para la noche.
-        // Luego de separar las asistencias, las coloca en la bindinglist correspondiente
-        // a cada una de las tablas
-        private void ActualizarAsistencias(List<Asistencia> asistencias)
-        {
-            List<AsistenciaTabla> auxManana = new List<AsistenciaTabla>();
-            List<AsistenciaTabla> auxTarde = new List<AsistenciaTabla>();
-            List<AsistenciaTabla> auxNoche = new List<AsistenciaTabla>();
-
-            if (asistencias != null)
-            {
-                foreach (Asistencia asistencia in asistencias)
-                {
-                    TimeSpan horaClase = asistencia.ComienzoClaseEsperado;
-                    if (rangoHorarioManana.estaDentroDelRangoHorario(horaClase))
-                    {
-                        auxManana.Add(new AsistenciaTabla(asistencia));
-                    }
-                    else if (rangoHorarioTarde.estaDentroDelRangoHorario(horaClase))
-                    {
-                        auxTarde.Add(new AsistenciaTabla(asistencia));
-                    }
-                    else
-                    {
-                        auxNoche.Add(new AsistenciaTabla(asistencia));
-                    }
-                }
-
-                auxManana.Sort();
-                auxTarde.Sort();
-                auxNoche.Sort();
-            }
-            
-
-            controladorRecarga.guardarSeleccionActual();
-
-            asistenciasTurnoManana.Clear();
-            agregarListABindingList(auxManana, asistenciasTurnoManana);
-            asistenciasTurnoTarde.Clear();
-            agregarListABindingList(auxTarde, asistenciasTurnoTarde);
-            asistenciasTurnoNoche.Clear();
-            agregarListABindingList(auxNoche, asistenciasTurnoNoche);
-            refrescarGrillas();
-
-            controladorRecarga.restaurarSeleccion();
-        }
-
-        private void agregarListABindingList(List<AsistenciaTabla> asistencias, BindingList<AsistenciaTabla> bindingList)
-        {
-            foreach (AsistenciaTabla asistencia in asistencias)
-            {
-                bindingList.Add(asistencia);
-            }
-        }
-
-        
-
         private void dgv_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             DataGridView grilla = (DataGridView)sender;
-
+            AsistenciaTabla asistenciaSeleccionada;
             try
             {
                 // Esta linea obtiene el objeto AsistenciaDatosParaTabla que esta ligada a la fila de la grilla
                 asistenciaSeleccionada = (AsistenciaTabla)grilla.SelectedRows[0].DataBoundItem;
-                grillaSeleccionada = grilla;
 
                 foreach (IObservadorTripleGrilla observador in observadores)
                 {
-                    observador.recibirNotificacionFilaSeleccionada();
+                    observador.recibirNotificacionFilaSeleccionada(asistenciaSeleccionada);
                 }
             }
             catch (Exception ex)
             {
                 GestorExcepciones.mostrarExcepcion(ex);
             }
-            
         }
 
-        private void dgvTurnoNoche_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        private void dgv_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             DataGridView dgv = (DataGridView)sender;
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
             dgv.Columns[dgv.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
-        public int getIdAsistenciaSeleccionada()
+        private class ManejadorBindings
         {
-            // Cuando modifica la asistencia
-            return asistenciaSeleccionada.IdAsistencia;
+            private BindingList<AsistenciaTabla> asistenciasTurnoManana;
+            public BindingList<AsistenciaTabla> AsistenciasTurnoManana { get; private set; }
+
+            private BindingList<AsistenciaTabla> asistenciasTurnoTarde;
+            public BindingList<AsistenciaTabla> AsistenciasTurnoTarde { get; private set; }
+
+            private BindingList<AsistenciaTabla> asistenciasTurnoNoche;
+            public BindingList<AsistenciaTabla> AsistenciasTurnoNoche { get; private set; }
+
+            private TripleGrillaAsistencias tripleGrilla;
+
+            public ManejadorBindings(TripleGrillaAsistencias tripleGrilla)
+            {
+                this.tripleGrilla = tripleGrilla;
+
+                asistenciasTurnoManana = new BindingList<AsistenciaTabla>();
+                asistenciasTurnoTarde = new BindingList<AsistenciaTabla>();
+                asistenciasTurnoNoche = new BindingList<AsistenciaTabla>();
+
+                bindearListaATabla(tripleGrilla.dgvTurnoManana, asistenciasTurnoManana);
+                bindearListaATabla(tripleGrilla.dgvTurnoTarde, asistenciasTurnoTarde);
+                bindearListaATabla(tripleGrilla.dgvTurnoNoche, asistenciasTurnoNoche);
+            }
+
+            private void bindearListaATabla(DataGridView tabla, BindingList<AsistenciaTabla> asistencias)
+            {
+                tabla.DataSource = asistencias;
+            }
+
+            public void actualizarBindingList(List<AsistenciaTabla> asistencias, BindingList<AsistenciaTabla> bindingList)
+            {
+                bindingList.Clear();
+                foreach (AsistenciaTabla asistencia in asistencias)
+                {
+                    bindingList.Add(asistencia);
+                }
+            }
         }
 
         // Esta clase se encarga de controlar la logica que se debe hacer cuando

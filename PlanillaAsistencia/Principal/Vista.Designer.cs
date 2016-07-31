@@ -229,7 +229,7 @@
             this.cmbAsignatura.Size = new System.Drawing.Size(352, 24);
             this.cmbAsignatura.TabIndex = 2;
             this.cmbAsignatura.SelectionChangeCommitted += new System.EventHandler(this.cmbAsignatura_SelectionChangeCommitted);
-            this.cmbAsignatura.MouseClick += new System.Windows.Forms.MouseEventHandler(this.cmbAsignatura_MouseClick);
+            this.cmbAsignatura.MouseClick += new System.Windows.Forms.MouseEventHandler(this.cmb_MouseClick);
             // 
             // grpBoxDocente
             // 

@@ -39,6 +39,11 @@ namespace PlanillaAsistencia
             estadosAsistencia = new ContenedorEstadosAsistencia();
         }
 
+        public void inicializar()
+        {
+            refrescarDatosSoporte();
+        }
+
         public void refrescarDatosSoporte()
         {
             asignaturas.refrescarDatos();
@@ -46,6 +51,11 @@ namespace PlanillaAsistencia
             cursos.refrescarDatos();
             docentes.refrescarDatos();
             estadosAsistencia.refrescarDatos();
+        }
+
+        public void refrescarAsistencias()
+        {
+            asistencias.refrescarDatos();
         }
 
         /*
@@ -113,37 +123,14 @@ namespace PlanillaAsistencia
             return asignaturas.obtenerDatos();
         }
 
-        public List<Docente> getDocentes()
+        public List<Docente> obtenerDocentes()
         {
             return docentes.obtenerDatos();
         }
 
-        public List<EstadoAsistencia> getEstadosAsistencia()
+        public List<EstadoAsistencia> obtenerEstadosAsistencia()
         {
             return estadosAsistencia.obtenerDatos();
         }
-
-       /* public void agregarObservador(IObservadorModelo observador)
-        {
-            if (!observadores.Contains(observador))
-            {
-                observadores.Add(observador);
-            }
-        }
-
-        public void notificarCambiosEnModelo(){
-            foreach (IObservadorModelo observador in observadores)
-            {
-                observador.observarCambioDatosModelo();
-            }
-        }
-
-        public void notificarVaciadoAsistenciasModificadas()
-        {
-            foreach (IObservadorModelo observador in observadores)
-            {
-                observador.observarVaciadoDeAsistenciasModificadas();
-            }
-        }*/
     }
 }

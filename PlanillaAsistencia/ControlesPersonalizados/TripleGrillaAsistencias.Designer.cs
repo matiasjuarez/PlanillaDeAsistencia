@@ -276,7 +276,7 @@
             this.dgvTurnoNoche.Size = new System.Drawing.Size(766, 211);
             this.dgvTurnoNoche.TabIndex = 2;
             this.dgvTurnoNoche.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellClick);
-            this.dgvTurnoNoche.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgvTurnoNoche_DataBindingComplete);
+            this.dgvTurnoNoche.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgv_DataBindingComplete);
             // 
             // asignatura
             // 

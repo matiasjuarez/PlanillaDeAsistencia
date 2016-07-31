@@ -7,8 +7,10 @@ namespace Entidades
 {
     public class AsistenciaTabla: IComparable<AsistenciaTabla>
     {
-        private string stringPorDefecto = "N/A";
         private Asistencia asistencia;
+        public Asistencia Asistencia { get; private set; }
+
+        private string stringPorDefecto = "N/A";
         private string formatoTimespan = @"hh\:mm";
 
         public AsistenciaTabla(Asistencia asistencia)

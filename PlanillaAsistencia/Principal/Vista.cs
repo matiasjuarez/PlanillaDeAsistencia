@@ -17,43 +17,51 @@ namespace PlanillaAsistencia
     public partial class planillaAsistencia : Form, IObservadorTripleGrilla
     {
         private Controlador controlador;
+        public Controlador Controlador
+        {
+            set { controlador = value; }
+        }
+
+        private ManejadorControles manejadorControles;
+        private ProcesadorEventos procesadorEventos;
+        private MostradorDatos mostradorDatos;
+        private ManejadorCambiosEstado manejadorCambiosEstado;
 
         private List<IObservadorCamposPlanilla> observadoresCamposEditables;
 
         public Escalador escalador;
-        // Inicializa la planilla
+
+        public const int ESTADO_NOCAMBIO_NOSELECCION = 0;
+        public const int ESTADO_NOCAMBIO_SISELECCION = 1;
+        public const int ESTADO_SICAMBIO_NOSELECCION = 2;
+        public const int ESTADO_SICAMBIO_SISELECCION = 3;
+
         public planillaAsistencia()
         {
             InitializeComponent();
 
             observadoresCamposEditables = new List<IObservadorCamposPlanilla>();
-
             tripleGrillaAsistencias.agregarObservador(this);
+
+            manejadorControles = new ManejadorControles(this);
+            procesadorEventos = new ProcesadorEventos(this);
+            mostradorDatos = new MostradorDatos(this);
+            manejadorCambiosEstado = new ManejadorCambiosEstado(this);
 
             escalador = new Escalador(this);
         }
 
         public void inicializar()
         {
-            cargarCombo(cmbDocente, controlador.obtenerDocentes(), "nombre", "id");
-            cargarCombo(cmbAsignatura, controlador.obtenerAsignaturas(), "nombre", "id");
-            cargarCombo(cmbEstadoAsistencia, controlador.obtenerEstadosDeAsistencia(), "nombre", "id");
-        }
+            procesadorEventos.ProcesarEventosCamposEditables = false;
 
-        private void cargarCombo<T>(ComboBox combo, List<T> data, string displayMember, string valueMember)
-        {
-            BindingSource source = new BindingSource();
-            source.DataSource = data;
+            mostradorDatos.cargarCombos();
 
-            combo.DataSource = source;
-            combo.DisplayMember = displayMember;
-            combo.ValueMember = valueMember;
-        }
+            manejadorControles.habilitarBotonGuardado(false);
+            manejadorControles.habilitarCampos(false);
+            manejadorControles.resetearCampos();
 
-        // Setea el controlador que manejara los eventos que se produzcan en la vista y en el modelo
-        public void setControlador(Controlador controlador)
-        {
-            this.controlador = controlador;
+            procesadorEventos.ProcesarEventosCamposEditables = true;
         }
 
         public void agregarObservadorCamposEditables(IObservadorCamposPlanilla observador)
@@ -69,29 +77,14 @@ namespace PlanillaAsistencia
             observadoresCamposEditables.Remove(observador);
         }
 
-        // Evento que se dispara cuando el usuario seleccionada una fecha del datePicker
-        private void datePickerCargaAsistencia_ValueChanged(object sender, EventArgs e)
+        public void IObservadorTripleGrilla.recibirNotificacionFilaSeleccionada(AsistenciaTabla asistencia)
         {
-            /*
-             * Casteamos el sender que es el datePicker que desencadeno el evento
-             */
-            //DateTimePicker dateTimePicker = (DateTimePicker)sender;
-
-            // Obtenemos la fecha seleccionada
-            //DateTime fechaSeleccionada = dateTimePicker.Value.Date;
-
-            
+            controlador.manejarSeleccionDeAsistenciaDesdeGrilla(asistencia);
         }
 
-        public void cargarDatosParaFechaSeleccionada()
+        public void ponerEnEstado(int ESTADO)
         {
-            DateTime fechaSeleccionada = datePickerCargaAsistencia.Value.Date;
-
-            habilitarManejadoresDeEventos(false);
-
-            controlador.manejarCambioFechaSeleccionada(fechaSeleccionada);
-
-            habilitarManejadoresDeEventos(true);
+            manejadorCambiosEstado.EstadoActual = ESTADO;
         }
 
         public DateTime obtenerFechaSeleccionada()
@@ -100,158 +93,9 @@ namespace PlanillaAsistencia
             return fechaSeleccionada;
         }
 
-        // Limpias los campos de texto, deselecciona los combo box. Para hacer eso se pasa un valor true o false
-        // dependiendo de si queremos o no resetear un cierto campo
-        public void resetearCampos(bool docentes, bool asignaturas, bool horaEntradaEsperada,
-            bool horaSalidaEsperada, bool horaEntradaReal, bool horaSalidaReal,
-            bool cantidadAlumnos, bool asistencia, bool observaciones)
+        public void mostrarDatosDeAsistencia(Asistencia asistencia)
         {
-            habilitarManejadoresDeEventos(false);
-            if (docentes) cmbDocente.SelectedIndex = -1;
-            if (asignaturas) cmbAsignatura.SelectedIndex = -1;
-            if (horaEntradaEsperada) mktxtHoraEntradaEsperada.ResetText();
-            if (horaSalidaEsperada) mktxtHoraSalidaEsperada.ResetText();
-            if (horaEntradaReal) mktxtHoraEntradaReal.ResetText();
-            if (horaSalidaReal) mktxtHoraSalidaReal.ResetText();
-            if (cantidadAlumnos) numUpDownAlumnos.ResetText();
-            if (asistencia) cmbEstadoAsistencia.SelectedIndex = -1;
-            if (observaciones) txtObservaciones.ResetText();
-            habilitarManejadoresDeEventos(true);
-        }
-
-        public void habilitarBotonGuardado(bool habilitar)
-        {
-            this.btnGuardar.Enabled = habilitar;
-        }
-
-        // Resetea todos los campos del formulario
-        public void resetearCampos()
-        {
-            resetearCampos(true, true, true, true, true, true, true, true, true);
-        }
-
-        // Habilita o deshabilita un cierto campo a traves de las bandearas pasadas por parametro
-        public void habilitarCampos(bool docentes, bool asignaturas, bool horaEntradaEsperada,
-            bool horaSalidaEsperada, bool horaEntradaReal, bool horaSalidaReal,
-            bool cantidadAlumnos, bool asistencia, bool observaciones)
-        {
-
-            cmbDocente.Enabled = docentes;
-            cmbAsignatura.Enabled = asignaturas;
-            mktxtHoraEntradaEsperada.Enabled = horaEntradaEsperada;
-            mktxtHoraSalidaEsperada.Enabled = horaSalidaEsperada;
-            mktxtHoraEntradaReal.Enabled = horaEntradaReal;
-            mktxtHoraSalidaReal.Enabled = horaSalidaReal;
-            numUpDownAlumnos.Enabled = cantidadAlumnos;
-            cmbEstadoAsistencia.Enabled = asistencia;
-            txtObservaciones.Enabled = observaciones;
-            
-        }
-
-        // Habilita o deshabilita todos los campos con excepcion de las fechas del formulario
-        public void habilitarCampos(bool habilitar)
-        {
-            habilitarCampos(habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar);
-        }
-
-        // Este evento se dispara cuando se crea la planilla. Aca deberiamos pedirle al controlador
-        // que deshabilite todos los campos de la planilla ya que no hay una asistencia seleccionada.
-        private void planillaAsistencia_Load(object sender, EventArgs e)
-        {
-            controlador.manejarEventoLoad();
-        }
-
-        
-
-        // Recibe como parametro los datos correspondientes a una asistencia dada y los carga
-        // en los campos correspondientes
-        public void cargarDatosDeAsistenciaSeleccionada(string horaEntradaEsperada, string horaSalidaEsperada,
-            string horaEntradaReal, string horaSalidaReal, int cantidadAlumnos, 
-            int idAsistencia, int idDocente, int idAsignatura, string observaciones, Asistencia asistencia) 
-        {
-            //habilitarManejadoresDeEventos(false);
-            mktxtHoraEntradaEsperada.Text = horaEntradaEsperada;
-            mktxtHoraSalidaEsperada.Text = horaSalidaEsperada;
-            mktxtHoraEntradaReal.Text = horaEntradaReal;
-            mktxtHoraSalidaReal.Text = horaSalidaReal;
-            txtObservaciones.Text = observaciones;
-            numUpDownAlumnos.Value = cantidadAlumnos;
-
-            seleccionarEstadoAsistencia(idAsistencia);
-            seleccionarDocente(idDocente);
-            seleccionarAsignatura(idAsignatura);
-            //habilitarManejadoresDeEventos(true);
-        }
-
-        public void cargarDatosDeAsistencia(Asistencia asistencia)
-        {
-            //habilitarManejadoresDeEventos(false);
-            mktxtHoraEntradaEsperada.Text = asistencia.ComienzoClaseEsperado.ToString(); ;
-            mktxtHoraSalidaEsperada.Text = asistencia.FinClaseEsperado.ToString();
-            mktxtHoraEntradaReal.Text = asistencia.ComienzoClaseReal.ToString();
-            mktxtHoraSalidaReal.Text = asistencia.FinClaseReal.ToString();
-            txtObservaciones.Text = asistencia.Observaciones;
-            numUpDownAlumnos.Value = asistencia.CantidadAlumnos;
-
-            seleccionarEstadoAsistencia(asistencia.EstadoAsistencia.Id);
-            seleccionarDocente(asistencia.Docente.Id);
-            seleccionarAsignatura(asistencia.Asignatura.Id);
-            //habilitarManejadoresDeEventos(true);
-        }
-
-        // Recibe como parametro el id correspondiente a un estadoAsistencia y basandose en ese
-        // id seleccionada el estadoAsistencia que corresponda del comboBox
-        private void seleccionarEstadoAsistencia(int idEstadoAsistencia)
-        {
-            int length = cmbEstadoAsistencia.Items.Count;
-            EstadoAsistencia estadoAsistencia = null;
-
-            for (int i = 0; i < length; i++)
-            {
-                estadoAsistencia = (EstadoAsistencia)cmbEstadoAsistencia.Items[i];
-
-                if (estadoAsistencia.Id == idEstadoAsistencia)
-                {
-                    cmbEstadoAsistencia.SelectedIndex = i;
-                    break;
-                }
-            }
-        }
-
-        // Recibe como parametro el id correspondiente a un docente y basandose en ese
-        // id seleccionada el docente que corresponda del comboBox
-        private void seleccionarDocente(int idDocente)
-        {
-            int length = cmbDocente.Items.Count;
-            Docente docente = null;
-
-            for (int i = 0; i < length; i++)
-            {
-                docente = (Docente)cmbDocente.Items[i];
-
-                if (docente.Id == idDocente)
-                {
-                    cmbDocente.SelectedIndex = i;
-                }
-            }
-        }
-
-        // Recibe como parametro el id correspondiente a una asignatura(materia) y basandose en ese
-        // id seleccionada la asignatura que corresponda del comboBox
-        private void seleccionarAsignatura(int idAsignatura)
-        {
-            int length = cmbAsignatura.Items.Count;
-            Asignatura asignatura = null;
-
-            for (int i = 0; i < length; i++)
-            {
-                asignatura = (Asignatura)cmbAsignatura.Items[i];
-
-                if (asignatura.Id == idAsignatura)
-                {
-                    cmbAsignatura.SelectedIndex = i;
-                }
-            }
+            mostradorDatos.mostrarDatosAsistencia(asistencia);
         }
 
         // *************************************************************************************
@@ -259,163 +103,50 @@ namespace PlanillaAsistencia
         // *************************************************************************************
         private void cmbDocente_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            ComboBox combo = (ComboBox)sender;
-            Docente docenteSeleccionado = (Docente)combo.SelectedItem;
-
-            tripleGrillaAsistencias.NombreProfesor = docenteSeleccionado.Nombre;
-
-            foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
-            {
-                observador.observarCambioDocente(docenteSeleccionado);
-            }
+            procesadorEventos.procesarCambioSeleccionDocente(sender, e);
         }
 
         private void cmbAsignatura_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            ComboBox combo = (ComboBox)sender;
-            Asignatura asignaturaSeleccionada = (Asignatura)combo.SelectedItem;
-
-            tripleGrillaAsistencias.NombreAsignatura = asignaturaSeleccionada.Nombre;
-
-            foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
-            {
-                observador.observarCambioAsignatura(asignaturaSeleccionada);
-            }
+            procesadorEventos.procesarCambioSeleccionAsignatura(sender, e);
         }
 
         private void cmbEstadoAsistencia_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            ComboBox combo = (ComboBox)sender;
-            EstadoAsistencia estadoAsistenciaSeleccionado = (EstadoAsistencia)combo.SelectedItem;
-
-            tripleGrillaAsistencias.EstadoAsistencia = estadoAsistenciaSeleccionado.Nombre;
-
-            foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
-            {
-                observador.observarCambioEstadoAsistencia(estadoAsistenciaSeleccionado);
-            }
-        }
-
-        private string manejarCambioHoraEntradaFinReal(MaskedTextBox mask)
-        {
-            string textoCampo = mask.Text;
-            //DateTime fecha = datePickerCargaAsistencia.Value.Date;
-            TimeSpan hora = new TimeSpan(0, 0, 0);
-
-            if (textoCampo != null && textoCampo != "")
-            {
-                try
-                {
-                    hora = TimeSpan.Parse(textoCampo);
-                }
-                catch
-                {
-                    hora = new TimeSpan(0, 0, 0);
-                }
-            }
-
-            //fecha = fecha.Add(hora);
-
-            foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
-            {
-                observador.observarCambioHoraRealDeEntrada(hora);
-            }
-
-            return textoCampo;
+            procesadorEventos.procesarCambioSeleccionEstadoAsistencia(sender, e);
         }
 
         private void mktxtHoraEntradaReal_TextChanged(object sender, EventArgs e)
         {
-            MaskedTextBox mask = (MaskedTextBox)sender;
-            tripleGrillaAsistencias.ComienzoClaseReal = manejarCambioHoraEntradaFinReal(mask);
+            procesadorEventos.procesarCambioHoraEntradaReal(sender, e);
         }
 
         private void mktxtHoraSalidaReal_TextChanged(object sender, EventArgs e)
         {
-            MaskedTextBox mask = (MaskedTextBox)sender;
-            tripleGrillaAsistencias.FinClaseReal = manejarCambioHoraEntradaFinReal(mask);
+            procesadorEventos.procesarCambioHoraSalidaReal(sender, e);
         }
 
         private void numUpDownAlumnos_ValueChanged(object sender, EventArgs e)
         {
-            NumericUpDown spinner = (NumericUpDown)sender;
-            int valor = (int)spinner.Value;
-            tripleGrillaAsistencias.CantidadAlumnos = valor;
-
-            foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
-            {
-                observador.observarCambioCantidadAlumnos(valor);
-            }
+            procesadorEventos.procesarCambioCantidadAlumnos(sender, e);
         }
 
         private void txtObservaciones_TextChanged(object sender, EventArgs e)
         {
-            TextBox txt = (TextBox)sender;
-            string texto = txt.Text;
-
-            tripleGrillaAsistencias.Observaciones = texto;
-
-            foreach (IObservadorCamposPlanilla observador in observadoresCamposEditables)
-            {
-                observador.observarCambioObservaciones(texto);
-            }
+            procesadorEventos.procesarCambioObservaciones(sender, e);
         }
 
-        private void cmbAsignatura_MouseClick(object sender, MouseEventArgs e)
+        private void cmb_MouseClick(object sender, MouseEventArgs e)
         {
             ComboBox combo = (ComboBox)sender;
 
-            // Este metodo 'selectAll' tan mal llamado, selecciona todo el texto que aparece
-            // en el combo box cuando seleccionas un elemento. La idea es que el usuario pueda empezar
-            // a escribir directamente sin tener que hacer doble click sobre el texto para seleccionarlo
-            // y luego borrarlo.
+            // Este metodo selecciona todo el texto del comboBox
             combo.SelectAll();
         }
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            if (controlador.guardarAsistenciasModificadas())
-            {
-                //tripleGrillaAsistencias.limpiarFilasModificadas();
-                habilitarBotonGuardado(false);
-                habilitarCampos(false);
-                resetearCampos();
-                mostrarMensaje("Los datos fueron guardados", Color.Green, 3000);
-            }
-            else
-            {
-                
-            }
-        }
-
-        // Permite habilitar o deshabilitar los manejadores de eventos de los componentes de la plantilla.
-        // Los vamos a deshabilitar cuando el usuario quiera seleccionar una asistencia de la grilla ya que
-        // al seleccionar una asistencia, los datos de la misma se cargan en los campos correspondientes de
-        // la planilla de asistencia y esto provoca que se disparen los eventos de cambio. Queremos evitar
-        // justamente que eso pase, asi que los deshabilitamos, cargamos los datos y rehabilitamos los manejadores
-        public void habilitarManejadoresDeEventos(bool habilitar)
-        {
-            if (habilitar)
-            {
-                habilitarManejadoresDeEventos(false);
-                cmbDocente.SelectionChangeCommitted += cmbDocente_SelectionChangeCommitted;
-                cmbAsignatura.SelectionChangeCommitted += cmbAsignatura_SelectionChangeCommitted;
-                cmbEstadoAsistencia.SelectionChangeCommitted += cmbEstadoAsistencia_SelectionChangeCommitted;
-                mktxtHoraEntradaReal.TextChanged += mktxtHoraEntradaReal_TextChanged;
-                mktxtHoraSalidaReal.TextChanged += mktxtHoraSalidaReal_TextChanged;
-                numUpDownAlumnos.ValueChanged += numUpDownAlumnos_ValueChanged;
-                txtObservaciones.TextChanged += txtObservaciones_TextChanged;
-            }
-            else
-            {
-                cmbDocente.SelectionChangeCommitted -= cmbDocente_SelectionChangeCommitted;
-                cmbAsignatura.SelectionChangeCommitted -= cmbAsignatura_SelectionChangeCommitted;
-                cmbEstadoAsistencia.SelectionChangeCommitted -= cmbEstadoAsistencia_SelectionChangeCommitted;
-                mktxtHoraEntradaReal.TextChanged -= mktxtHoraEntradaReal_TextChanged;
-                mktxtHoraSalidaReal.TextChanged -= mktxtHoraSalidaReal_TextChanged;
-                numUpDownAlumnos.ValueChanged -= numUpDownAlumnos_ValueChanged;
-                txtObservaciones.TextChanged -= txtObservaciones_TextChanged;
-            }
+            controlador.manejarGuardarCambios();
         }
 
         // ****************************************************************************************
@@ -446,25 +177,20 @@ namespace PlanillaAsistencia
         // ****************************************************************************************
         // ****************************************************************************************
 
-        public void recibirNotificacionFilaSeleccionada()
+        public void cargarAsistenciasTurnoManana(List<Asistencia> asistencias)
         {
-            controlador.manejarSeleccionDeAsistenciaDesdeGrilla();
+            tripleGrillaAsistencias.cargarAsistenciasTurnoManana(asistencias);
         }
 
-        public int obtenerIdAsistenciaSeleccionada()
+        public void cargarAsistenciasTurnoTarde(List<Asistencia> asistencias)
         {
-            return tripleGrillaAsistencias.IdAsistencia;
+            tripleGrillaAsistencias.cargarAsistenciasTurnoTarde(asistencias);
         }
 
-        public void cargarAsistenciasEnGrillas(List<AsistenciaDual> asistencias)
+        public void cargarAsistenciasTurnoNoche(List<Asistencia> asistencias)
         {
-            tripleGrillaAsistencias.mostrarAsistencias(asistencias);
+            tripleGrillaAsistencias.cargarAsistenciasTurnoNoche(asistencias);
         }
-
-        /*private void marcarAsistenciasComoModificada(Asistencia asistencia)
-        {
-             tripleGrillaAsistencias.marcarAsistenciaComoModificada(asistencia);
-        }*/
 
         private void planillaAsistencia_Resize(object sender, EventArgs e)
         {
@@ -479,20 +205,353 @@ namespace PlanillaAsistencia
 
         private void datePickerCargaAsistencia_CloseUp(object sender, EventArgs e)
         {
-            cargarDatosParaFechaSeleccionada();
+            controlador.manejarCambioFechaSeleccionada(obtenerFechaSeleccionada());
         }
 
-        public void cargarDatosAsistenciaSeleccionada()
+        private class ManejadorCambiosEstado
         {
-            // TODO
-            habilitarCampos(false);
-            resetearCampos();
+            private int estadoActual;
+            public int EstadoActual
+            {
+                get { return estadoActual; }
+                set 
+                {
+                    manejarCambioEstado(value);
+                }
+            }
+
+            private planillaAsistencia planilla;
+
+            public ManejadorCambiosEstado(planillaAsistencia planilla)
+            {
+                this.planilla = planilla;
+            }
+
+            private void manejarCambioEstado(int estado)
+            {
+                int estadoAux = this.estadoActual;
+                this.estadoActual = estado;
+
+                if (estado == planillaAsistencia.ESTADO_NOCAMBIO_NOSELECCION)
+                {
+                    planilla.manejadorControles.habilitarBotonGuardado(false);
+                    planilla.manejadorControles.habilitarCampos(false);
+                    planilla.manejadorControles.resetearCampos();
+                }
+                else if (estado == planillaAsistencia.ESTADO_NOCAMBIO_SISELECCION)
+                {
+                    planilla.manejadorControles.habilitarBotonGuardado(false);
+                    planilla.manejadorControles.habilitarCampos(true);
+                }
+                else if (estado == planillaAsistencia.ESTADO_SICAMBIO_NOSELECCION)
+                {
+                    planilla.manejadorControles.habilitarBotonGuardado(true);
+                    planilla.manejadorControles.habilitarCampos(true);
+                    planilla.manejadorControles.resetearCampos();
+                }
+                else if (estado == planillaAsistencia.ESTADO_SICAMBIO_SISELECCION)
+                {
+                    planilla.manejadorControles.habilitarBotonGuardado(true);
+                    planilla.manejadorControles.habilitarCampos(true);
+                }
+                else
+                {
+                    this.estadoActual = estadoAux;
+                }
+            }
         }
 
-        public int getIdAsistenciaSeleccionada()
+        private class MostradorDatos
         {
-            return tripleGrillaAsistencias.getIdAsistenciaSeleccionada();
+            private planillaAsistencia planilla;
+
+            public MostradorDatos(planillaAsistencia planilla)
+            {
+                this.planilla = planilla;
+            }
+
+            public void cargarCombos()
+            {
+                cargarCombo(planilla.cmbDocente, planilla.controlador.obtenerDocentes(), "nombre", "id");
+                cargarCombo(planilla.cmbAsignatura, planilla.controlador.obtenerAsignaturas(), "nombre", "id");
+                cargarCombo(planilla.cmbEstadoAsistencia, planilla.controlador.obtenerEstadosDeAsistencia(), "nombre", "id");
+            }
+
+            public void mostrarDatosAsistencia(Asistencia asistencia)
+            {
+                planilla.procesadorEventos.ProcesarEventosCamposEditables = false;
+
+                planilla.mktxtHoraEntradaEsperada.Text = asistencia.ComienzoClaseEsperado.ToString();
+                planilla.mktxtHoraSalidaEsperada.Text = asistencia.FinClaseEsperado.ToString();
+                planilla.mktxtHoraEntradaReal.Text = asistencia.ComienzoClaseReal.ToString();
+                planilla.mktxtHoraSalidaReal.Text = asistencia.FinClaseReal.ToString();
+                planilla.txtObservaciones.Text = asistencia.Observaciones;
+                planilla.numUpDownAlumnos.Value = asistencia.CantidadAlumnos;
+
+                seleccionarEstadoAsistencia(asistencia.EstadoAsistencia.Id);
+                seleccionarDocente(asistencia.Docente.Id);
+                seleccionarAsignatura(asistencia.Asignatura.Id);
+
+                planilla.procesadorEventos.ProcesarEventosCamposEditables = true;
+            }
+
+            // Recibe como parametro el id correspondiente a un estadoAsistencia y basandose en ese
+            // id seleccionada el estadoAsistencia que corresponda del comboBox
+            private void seleccionarEstadoAsistencia(int idEstadoAsistencia)
+            {
+                int length = planilla.cmbEstadoAsistencia.Items.Count;
+                EstadoAsistencia estadoAsistencia = null;
+
+                for (int i = 0; i < length; i++)
+                {
+                    estadoAsistencia = (EstadoAsistencia)planilla.cmbEstadoAsistencia.Items[i];
+
+                    if (estadoAsistencia.Id == idEstadoAsistencia)
+                    {
+                        planilla.cmbEstadoAsistencia.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // Recibe como parametro el id correspondiente a un docente y basandose en ese
+            // id seleccionada el docente que corresponda del comboBox
+            private void seleccionarDocente(int idDocente)
+            {
+                int length = planilla.cmbDocente.Items.Count;
+                Docente docente = null;
+
+                for (int i = 0; i < length; i++)
+                {
+                    docente = (Docente)planilla.cmbDocente.Items[i];
+
+                    if (docente.Id == idDocente)
+                    {
+                        planilla.cmbDocente.SelectedIndex = i;
+                    }
+                }
+            }
+
+            // Recibe como parametro el id correspondiente a una asignatura(materia) y basandose en ese
+            // id seleccionada la asignatura que corresponda del comboBox
+            private void seleccionarAsignatura(int idAsignatura)
+            {
+                int length = planilla.cmbAsignatura.Items.Count;
+                Asignatura asignatura = null;
+
+                for (int i = 0; i < length; i++)
+                {
+                    asignatura = (Asignatura)planilla.cmbAsignatura.Items[i];
+
+                    if (asignatura.Id == idAsignatura)
+                    {
+                        planilla.cmbAsignatura.SelectedIndex = i;
+                    }
+                }
+            }
+
+            private void cargarCombo<T>(ComboBox combo, List<T> data, string displayMember, string valueMember)
+            {
+                BindingSource source = new BindingSource();
+                source.DataSource = data;
+
+                combo.DataSource = source;
+                combo.DisplayMember = displayMember;
+                combo.ValueMember = valueMember;
+            }
         }
 
+        private class ProcesadorEventos
+        {
+            private planillaAsistencia planilla;
+
+            private bool procesarEventosCamposEditables = true;
+            public bool ProcesarEventosCamposEditables
+            {
+                get { return procesarEventosCamposEditables; }
+                set { procesarEventosCamposEditables = value; }
+            }
+
+            public ProcesadorEventos(planillaAsistencia planilla)
+            {
+                this.planilla = planilla;
+            }
+
+            public void procesarCambioSeleccionDocente(Object sender, EventArgs e)
+            {
+                if (!procesarEventosCamposEditables) return;
+
+                ComboBox combo = (ComboBox)sender;
+                Docente docenteSeleccionado = (Docente)combo.SelectedItem;
+
+                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                {
+                    observador.observarCambioDocente(docenteSeleccionado);
+                }
+            }
+
+            public void procesarCambioSeleccionAsignatura(Object sender, EventArgs e)
+            {
+                if (!procesarEventosCamposEditables) return;
+
+                ComboBox combo = (ComboBox)sender;
+                Asignatura asignaturaSeleccionada = (Asignatura)combo.SelectedItem;
+
+                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                {
+                    observador.observarCambioAsignatura(asignaturaSeleccionada);
+                }
+            }
+
+            public void procesarCambioSeleccionEstadoAsistencia(Object sender, EventArgs e)
+            {
+                if (!procesarEventosCamposEditables) return;
+
+                ComboBox combo = (ComboBox)sender;
+                EstadoAsistencia estadoAsistenciaSeleccionado = (EstadoAsistencia)combo.SelectedItem;
+
+                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                {
+                    observador.observarCambioEstadoAsistencia(estadoAsistenciaSeleccionado);
+                }
+            }
+
+            public void procesarCambioHoraEntradaReal(object sender, EventArgs e)
+            {
+                if (!procesarEventosCamposEditables) return;
+
+                MaskedTextBox mask = (MaskedTextBox)sender;
+
+                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                {
+                    TimeSpan horaProcesada = procesarTextoHoraEntradaSalidaReal(mask);
+                    observador.observarCambioHoraRealDeEntrada(horaProcesada);
+                }
+            }
+
+            public void procesarCambioHoraSalidaReal(object sender, EventArgs e)
+            {
+                if (!procesarEventosCamposEditables) return;
+
+                MaskedTextBox mask = (MaskedTextBox)sender;
+
+                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                {
+                    TimeSpan horaProcesada = procesarTextoHoraEntradaSalidaReal(mask);
+                    observador.observarCambioHoraRealDeSalida(horaProcesada);
+                }
+            }
+
+            public void procesarCambioCantidadAlumnos(object sender, EventArgs e)
+            {
+                if (!procesarEventosCamposEditables) return;
+
+                NumericUpDown spinner = (NumericUpDown)sender;
+                int valor = (int)spinner.Value;
+
+                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                {
+                    observador.observarCambioCantidadAlumnos(valor);
+                }
+            }
+
+            public void procesarCambioObservaciones(object sender, EventArgs e)
+            {
+                if (!procesarEventosCamposEditables) return;
+
+                TextBox txt = (TextBox)sender;
+                string texto = txt.Text;
+
+                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                {
+                    observador.observarCambioObservaciones(texto);
+                }
+            }
+
+            private TimeSpan procesarTextoHoraEntradaSalidaReal(MaskedTextBox masked)
+            {
+                string textoCampo = masked.Text;
+
+                TimeSpan hora = new TimeSpan(0, 0, 0);
+
+                if (textoCampo != null && textoCampo != "")
+                {
+                    try
+                    {
+                        hora = TimeSpan.Parse(textoCampo);
+                    }
+                    catch
+                    {
+                        hora = new TimeSpan(0, 0, 0);
+                    }
+                }
+
+                return hora;
+            }
+        }
+
+        private class ManejadorControles
+        {
+            private planillaAsistencia planilla;
+
+            public ManejadorControles(planillaAsistencia planilla)
+            {
+                this.planilla = planilla;
+            }
+
+            // Limpias los campos de texto, deselecciona los combo box. Para hacer eso se pasa un valor true o false
+            // dependiendo de si queremos o no resetear un cierto campo
+            public void resetearCampos(bool docentes, bool asignaturas, bool horaEntradaEsperada,
+                bool horaSalidaEsperada, bool horaEntradaReal, bool horaSalidaReal,
+                bool cantidadAlumnos, bool asistencia, bool observaciones)
+            {
+                planilla.procesadorEventos.ProcesarEventosCamposEditables = false;
+
+                if (docentes) planilla.cmbDocente.SelectedIndex = -1;
+                if (asignaturas) planilla.cmbAsignatura.SelectedIndex = -1;
+                if (horaEntradaEsperada) planilla.mktxtHoraEntradaEsperada.ResetText();
+                if (horaSalidaEsperada) planilla.mktxtHoraSalidaEsperada.ResetText();
+                if (horaEntradaReal) planilla.mktxtHoraEntradaReal.ResetText();
+                if (horaSalidaReal) planilla.mktxtHoraSalidaReal.ResetText();
+                if (cantidadAlumnos) planilla.numUpDownAlumnos.ResetText();
+                if (asistencia) planilla.cmbEstadoAsistencia.SelectedIndex = -1;
+                if (observaciones) planilla.txtObservaciones.ResetText();
+
+                planilla.procesadorEventos.ProcesarEventosCamposEditables = true;
+            }
+
+            // Resetea todos los campos del formulario
+            public void resetearCampos()
+            {
+                resetearCampos(true, true, true, true, true, true, true, true, true);
+            }
+
+            public void habilitarBotonGuardado(bool habilitar)
+            {
+                planilla.btnGuardar.Enabled = habilitar;
+            }
+
+            // Habilita o deshabilita un cierto campo a traves de las bandearas pasadas por parametro
+            public void habilitarCampos(bool docentes, bool asignaturas, bool horaEntradaEsperada,
+                bool horaSalidaEsperada, bool horaEntradaReal, bool horaSalidaReal,
+                bool cantidadAlumnos, bool asistencia, bool observaciones)
+            {
+                planilla.cmbDocente.Enabled = docentes;
+                planilla.cmbAsignatura.Enabled = asignaturas;
+                planilla.mktxtHoraEntradaEsperada.Enabled = horaEntradaEsperada;
+                planilla.mktxtHoraSalidaEsperada.Enabled = horaSalidaEsperada;
+                planilla.mktxtHoraEntradaReal.Enabled = horaEntradaReal;
+                planilla.mktxtHoraSalidaReal.Enabled = horaSalidaReal;
+                planilla.numUpDownAlumnos.Enabled = cantidadAlumnos;
+                planilla.cmbEstadoAsistencia.Enabled = asistencia;
+                planilla.txtObservaciones.Enabled = observaciones;
+            }
+
+            // Habilita o deshabilita todos los campos con excepcion de las fechas del formulario
+            public void habilitarCampos(bool habilitar)
+            {
+                habilitarCampos(habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar);
+            }
+        }
     }
 }
