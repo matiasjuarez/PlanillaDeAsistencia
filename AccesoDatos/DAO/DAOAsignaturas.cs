@@ -43,8 +43,9 @@ namespace AccesoDatos
                     Asignatura asignatura = new Asignatura();
 
                     asignatura.Id = reader.GetInt32("id");
-                    asignatura.Nombre = reader.GetString("nombre");
-                    asignatura.JefeCatedra = DAODocentes.obtenerDocentePorID(reader.GetInt32("idJefeCatedra"));
+                    asignatura.Nombre = reader.GetString("nombre"); 
+                    asignatura.JefeCatedra = DAODocentes.obtenerDocentePorID(ValidadorValoresNull.getInt(reader, "idJefeCatedra"));
+                    if (asignatura.JefeCatedra == null) asignatura.JefeCatedra = new Docente();
 
                     asignaturas.Add(asignatura);
                 }
@@ -237,7 +238,7 @@ namespace AccesoDatos
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             StringBuilder consultaBuilder = new StringBuilder(
-                              "UPDATE asignatura set nombre=@nombre, idJefeCatedra=@idJefeCatedra) " +
+                              "UPDATE asignatura set nombre=@nombre, idJefeCatedra=@idJefeCatedra " +
                               "where id = @id"
                               );
 

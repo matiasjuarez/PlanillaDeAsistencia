@@ -98,7 +98,7 @@ namespace PlanillaAsistencia
         // alguna fila de alguna grilla. 
         public void manejarSeleccionDeAsistenciaDesdeGrilla(AsistenciaTabla asistencia)
         {
-            this.asistenciaSeleccionada = asistencia.Asistencia;
+            this.asistenciaSeleccionada = asistencia.obtenerAsistencia();
             vista.ponerEnEstado(planillaAsistencia.ESTADO_NOCAMBIO_SISELECCION);
             vista.mostrarDatosDeAsistencia(this.asistenciaSeleccionada);
         }
@@ -136,7 +136,7 @@ namespace PlanillaAsistencia
             {
                 foreach (Asistencia asistencia in asistenciasDeFecha)
                 {
-                    TimeSpan horaClase = asistencia.ComienzoClaseEsperado;
+                    TimeSpan horaClase = asistencia.HoraEntradaEsperada;
                     if (rangoHorarioManana.estaDentroDelRangoHorario(horaClase))
                     {
                         asistenciasManana.Add(asistencia);
@@ -151,15 +151,23 @@ namespace PlanillaAsistencia
                     }
                 }
 
-                asistenciasManana.Sort();
-                asistenciasTarde.Sort();
-                asistenciasNoche.Sort();
+                OrdenadorAsistencias sorter = new OrdenadorAsistencias(ordenadorAsistenciaPorHoraEntradaEsperada);
+                
+                asistenciasManana.Sort((a1, a2) => sorter(a1, a2));
+                asistenciasTarde.Sort((a1, a2) => sorter(a1, a2));
+                asistenciasNoche.Sort((a1, a2) => sorter(a1, a2));
             }
 
             vista.cargarAsistenciasTurnoManana(asistenciasManana);
             vista.cargarAsistenciasTurnoTarde(asistenciasTarde);
             vista.cargarAsistenciasTurnoNoche(asistenciasNoche);
-        }        
+        }
+
+        private delegate int OrdenadorAsistencias(Asistencia a1, Asistencia a2);
+        private int ordenadorAsistenciaPorHoraEntradaEsperada(Asistencia a1, Asistencia a2)
+        {
+            return a1.obtenerEntradaEsperada().CompareTo(a2.obtenerEntradaEsperada());
+        }
 
         private void actualizarModelo()
         {
@@ -167,42 +175,42 @@ namespace PlanillaAsistencia
             modelo.refrescarAsistencias();
         }
 
-        public void IObservadorCamposPlanilla.observarCambioDocente(Docente docente)
+        void IObservadorCamposPlanilla.observarCambioDocente(Docente docente)
         {
-            throw new NotImplementedException();
+            asistenciaSeleccionada.Docente = docente;
         }
 
-        public void IObservadorCamposPlanilla.observarCambioAsignatura(Asignatura Asignatura)
+        void IObservadorCamposPlanilla.observarCambioAsignatura(Asignatura Asignatura)
         {
-            throw new NotImplementedException();
+            asistenciaSeleccionada.Asignatura = Asignatura;
         }
 
-        public void IObservadorCamposPlanilla.observarCambioHoraRealDeSalida(TimeSpan horaSalida)
+        void IObservadorCamposPlanilla.observarCambioHoraRealDeSalida(TimeSpan horaSalida)
         {
-            throw new NotImplementedException();
+            asistenciaSeleccionada.HoraSalidaReal = horaSalida;
         }
 
-        public void IObservadorCamposPlanilla.observarCambioHoraRealDeEntrada(TimeSpan horaEntrada)
+        void IObservadorCamposPlanilla.observarCambioHoraRealDeEntrada(TimeSpan horaEntrada)
         {
-            throw new NotImplementedException();
+            asistenciaSeleccionada.HoraEntradaReal = horaEntrada;
         }
 
-        public void IObservadorCamposPlanilla.observarCambioEstadoAsistencia(EstadoAsistencia estadoAsistencia)
+        void IObservadorCamposPlanilla.observarCambioEstadoAsistencia(EstadoAsistencia estadoAsistencia)
         {
-            throw new NotImplementedException();
+            asistenciaSeleccionada.EstadoAsistencia = estadoAsistencia;
         }
 
-        public void IObservadorCamposPlanilla.observarCambioObservaciones(string observaciones)
+        void IObservadorCamposPlanilla.observarCambioObservaciones(string observaciones)
         {
-            throw new NotImplementedException();
+            asistenciaSeleccionada.Observaciones = observaciones;
         }
 
-        public void IObservadorCamposPlanilla.observarCambioCantidadAlumnos(int cantidadAlumnos)
+        void IObservadorCamposPlanilla.observarCambioCantidadAlumnos(int cantidadAlumnos)
         {
-            throw new NotImplementedException();
+            asistenciaSeleccionada.CantidadAlumnos = cantidadAlumnos;
         }
 
-        private void Temporizador.ITemporizable.procesarTick()
+        void Temporizador.ITemporizable.procesarTick()
         {
             actualizarModelo();
         }

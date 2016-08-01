@@ -8,7 +8,10 @@ namespace Entidades
     public class AsistenciaTabla: IComparable<AsistenciaTabla>
     {
         private Asistencia asistencia;
-        public Asistencia Asistencia { get; private set; }
+        public Asistencia obtenerAsistencia()
+        {
+            return asistencia;
+        }
 
         private string stringPorDefecto = "N/A";
         private string formatoTimespan = @"hh\:mm";
@@ -17,9 +20,9 @@ namespace Entidades
         {
             this.asistencia = asistencia;
 
-            FinClaseEsperado = asistencia.FinClaseEsperado.ToString(formatoTimespan);
-            ComienzoClaseReal = asistencia.ComienzoClaseReal.ToString(formatoTimespan);
-            FinClaseReal = asistencia.FinClaseReal.ToString();
+            FinClaseEsperado = asistencia.HoraSalidaEsperada.ToString(formatoTimespan);
+            ComienzoClaseReal = asistencia.HoraEntradaReal.ToString(formatoTimespan);
+            FinClaseReal = asistencia.HoraSalidaReal.ToString();
 
             if (asistencia.Docente != null) NombreProfesor = asistencia.Docente.Nombre;
             else NombreProfesor = stringPorDefecto;
@@ -49,51 +52,51 @@ namespace Entidades
         public String ComienzoClaseEsperado
         {
             get {
-                string hora = asistencia.ComienzoClaseEsperado.ToString(formatoTimespan);
+                string hora = asistencia.HoraEntradaEsperada.ToString(formatoTimespan);
                 return hora;
             }
             set
             {
                 string horaFormateada =  formatearHora(value);
-                asistencia.ComienzoClaseEsperado = TimeSpan.Parse(horaFormateada);
+                asistencia.HoraEntradaEsperada = TimeSpan.Parse(horaFormateada);
             }
         }
 
         public String FinClaseEsperado
         {
             get {
-                string hora = asistencia.FinClaseEsperado.ToString(formatoTimespan);
+                string hora = asistencia.HoraSalidaEsperada.ToString(formatoTimespan);
                 return hora;
             }
             set
             {
                 string horaFormateada = formatearHora(value);
-                asistencia.FinClaseEsperado = TimeSpan.Parse(horaFormateada);
+                asistencia.HoraSalidaEsperada = TimeSpan.Parse(horaFormateada);
             }
         }
 
         public String ComienzoClaseReal
         {
             get {
-                string hora = asistencia.ComienzoClaseReal.ToString(formatoTimespan);
+                string hora = asistencia.HoraEntradaReal.ToString(formatoTimespan);
                 return hora;
             }
             set {
                 string horaFormateada = formatearHora(value);
-                asistencia.ComienzoClaseReal = TimeSpan.Parse(horaFormateada);
+                asistencia.HoraEntradaReal = TimeSpan.Parse(horaFormateada);
             }
         }
 
         public String FinClaseReal
         {
             get {
-                string hora = asistencia.FinClaseReal.ToString(formatoTimespan);
+                string hora = asistencia.HoraSalidaReal.ToString(formatoTimespan);
                 return hora;
             }
             set
             {
                 string horaFormateada = formatearHora(value);
-                asistencia.FinClaseReal = TimeSpan.Parse(horaFormateada);
+                asistencia.HoraSalidaReal = TimeSpan.Parse(horaFormateada);
             }
         }
 

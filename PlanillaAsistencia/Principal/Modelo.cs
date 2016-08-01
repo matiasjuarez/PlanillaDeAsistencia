@@ -81,12 +81,16 @@ namespace PlanillaAsistencia
                 foreach (Asistencia asistencia in asistenciasDeSemana)
                 {
                     asistencias.guardarDato(asistencia.Id, asistencia);
-                    fechasConAsistencias.Add(asistencia.DiaDeAsistencia);
+                    fechasConAsistencias.Add(asistencia.Fecha);
                 }
 
                 if (!fechasConAsistencias.Contains(fecha.Date))
                 {
                     this.fechasSinAsistencias.Add(fecha.Date);
+                }
+                else
+                {
+                    asistenciasDeFecha = asistencias.obtenerAsistenciasDeFecha(fecha);
                 }
             }
 

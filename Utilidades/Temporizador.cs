@@ -47,7 +47,7 @@ namespace Utilidades
 
         public interface ITemporizable
         {
-            public void procesarTick();
+            void procesarTick();
         }
     }
 }

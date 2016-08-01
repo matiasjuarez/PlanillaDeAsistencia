@@ -18,7 +18,7 @@ namespace ContenedoresDeDatos
             {
                 //string fechaAsistencia = asistencia.DiaDeAsistencia.Date.ToString("d");
 
-                if (asistencia.DiaDeAsistencia.Equals(fecha.Date))
+                if (asistencia.Fecha.Equals(fecha.Date))
                 {
                     listaAsistenciasDeFecha.Add(asistencia);
                 }
@@ -33,7 +33,7 @@ namespace ContenedoresDeDatos
             foreach (Asistencia asistencia in obtenerDatos())
             {
                 //string fechaAsistencia = asistencia.DiaDeAsistencia.Date.ToString("d");
-                DateTime fechaAsistencia = asistencia.DiaDeAsistencia;
+                DateTime fechaAsistencia = asistencia.Fecha;
 
                 List<Asistencia> listaAsistenciasDeFecha;
 
@@ -67,7 +67,7 @@ namespace ContenedoresDeDatos
 
             foreach (Asistencia asistencia in obtenerDatos())
             {
-                fechas.Add(asistencia.DiaDeAsistencia);
+                fechas.Add(asistencia.Fecha);
             }
 
             return fechas.ToList<DateTime>();

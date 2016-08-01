@@ -143,13 +143,22 @@ namespace PlanillaAsistencia.ControlesPersonalizados
         private class ManejadorBindings
         {
             private BindingList<AsistenciaTabla> asistenciasTurnoManana;
-            public BindingList<AsistenciaTabla> AsistenciasTurnoManana { get; private set; }
+            public BindingList<AsistenciaTabla> AsistenciasTurnoManana 
+            {
+                get { return asistenciasTurnoManana; }
+            }
 
             private BindingList<AsistenciaTabla> asistenciasTurnoTarde;
-            public BindingList<AsistenciaTabla> AsistenciasTurnoTarde { get; private set; }
+            public BindingList<AsistenciaTabla> AsistenciasTurnoTarde
+            {
+                get { return asistenciasTurnoTarde; }
+            }
 
             private BindingList<AsistenciaTabla> asistenciasTurnoNoche;
-            public BindingList<AsistenciaTabla> AsistenciasTurnoNoche { get; private set; }
+            public BindingList<AsistenciaTabla> AsistenciasTurnoNoche
+            {
+                get { return asistenciasTurnoNoche; }
+            }
 
             private TripleGrillaAsistencias tripleGrilla;
 

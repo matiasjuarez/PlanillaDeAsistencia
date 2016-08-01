@@ -17,11 +17,11 @@ namespace Entidades
         // si la asistencia fue o no modificada
         private AsistenciaMemento estadoGuardado;
 
-        private TimeSpan comienzoClaseEsperado;
-        private TimeSpan finClaseEsperado;
-        private TimeSpan comienzoClaseReal;
-        private TimeSpan finClaseReal;
-        private DateTime diaDeAsistencia;
+        private TimeSpan horaEntradaEsperada;
+        private TimeSpan horaSalidaEsperada;
+        private TimeSpan horaEntradaReal;
+        private TimeSpan horaSalidaReal;
+        private DateTime fecha;
         private int cantidadAlumnos;
         private Docente docente;
         private Asignatura asignatura;
@@ -33,15 +33,13 @@ namespace Entidades
         private int eventId;    
         private int appointmentId;
         private string observaciones;
-        private bool comienzoClaseEsperadoSeteado = false;
-        private bool finClaseEsperadoSeteado = false;
 
         public Asistencia()
         {
-            comienzoClaseEsperado = new TimeSpan(0, 0, 0);
-            finClaseEsperado = new TimeSpan(0, 0, 0);
-            comienzoClaseReal = new TimeSpan(0, 0, 0);
-            finClaseReal = new TimeSpan(0, 0, 0);
+            horaEntradaEsperada = new TimeSpan(0, 0, 0);
+            horaSalidaEsperada = new TimeSpan(0, 0, 0);
+            horaEntradaReal = new TimeSpan(0, 0, 0);
+            horaSalidaReal = new TimeSpan(0, 0, 0);
             docente = new Docente();
             asignatura = new Asignatura();
             encargado = new Encargado();
@@ -74,34 +72,34 @@ namespace Entidades
             set { id = value; }
         }
 
-        public DateTime DiaDeAsistencia
+        public DateTime Fecha
         {
-            get { return diaDeAsistencia.Date; }
-            set { diaDeAsistencia = value; }
+            get { return fecha.Date; }
+            set { fecha = value; }
         }
 
-        public TimeSpan ComienzoClaseEsperado
+        public TimeSpan HoraEntradaEsperada
         {
-            get { return comienzoClaseEsperado; }
-            set { comienzoClaseEsperado = value; }
+            get { return horaEntradaEsperada; }
+            set { horaEntradaEsperada = value; }
         }
 
-        public TimeSpan FinClaseEsperado
+        public TimeSpan HoraSalidaEsperada
         {
-            get { return finClaseEsperado; }
-            set { finClaseEsperado = value; }
+            get { return horaSalidaEsperada; }
+            set { horaSalidaEsperada = value; }
         }
 
-        public TimeSpan ComienzoClaseReal
+        public TimeSpan HoraEntradaReal
         {
-            get { return comienzoClaseReal; }
-            set { comienzoClaseReal = value; }
+            get { return horaEntradaReal; }
+            set { horaEntradaReal = value; }
         }
 
-        public TimeSpan FinClaseReal
+        public TimeSpan HoraSalidaReal
         {
-            get { return finClaseReal; }
-            set { finClaseReal = value; }
+            get { return horaSalidaReal; }
+            set { horaSalidaReal = value; }
         }
         
         public int CantidadAlumnos
@@ -165,6 +163,26 @@ namespace Entidades
             }
         }
 
+        public DateTime obtenerEntradaEsperada()
+        {
+            return this.fecha.Add(this.horaEntradaEsperada);
+        }
+
+        public DateTime obtenerSalidaEsperada()
+        {
+            return this.fecha.Add(this.horaSalidaEsperada);
+        }
+
+        public DateTime obtenerEntradaReal()
+        {
+            return this.fecha.Add(this.horaEntradaReal);
+        }
+
+        public DateTime obtenerSalidaReal()
+        {
+            return this.fecha.Add(this.horaSalidaReal);
+        }
+
         public bool Equals(Asistencia otra)
         {
             if (otra == null) return false;
@@ -175,13 +193,13 @@ namespace Entidades
 
             if (this.AppointmentId != otra.AppointmentId) return false;
 
-            if (this.ComienzoClaseEsperado != otra.ComienzoClaseEsperado) return false;
+            if (this.HoraEntradaEsperada != otra.HoraEntradaEsperada) return false;
 
-            if (this.FinClaseEsperado != otra.FinClaseEsperado) return false;
+            if (this.HoraSalidaEsperada != otra.HoraSalidaEsperada) return false;
 
-            if(this.ComienzoClaseReal != otra.ComienzoClaseReal) return false;
+            if(this.HoraEntradaReal != otra.HoraEntradaReal) return false;
 
-            if (this.FinClaseReal != otra.FinClaseReal) return false;
+            if (this.HoraSalidaReal != otra.HoraSalidaReal) return false;
 
             if (this.CantidadAlumnos != otra.CantidadAlumnos) return false;
 
@@ -263,11 +281,11 @@ namespace Entidades
             {
                 Asistencia clon = asistencia.Clone();
 
-                this.comienzoClaseEsperado = clon.ComienzoClaseEsperado;
-                this.finClaseEsperado = clon.FinClaseEsperado;
-                this.comienzoClaseReal = clon.ComienzoClaseReal;
-                this.finClaseReal = clon.FinClaseReal;
-                this.diaDeAsistencia = clon.DiaDeAsistencia;
+                this.comienzoClaseEsperado = clon.HoraEntradaEsperada;
+                this.finClaseEsperado = clon.HoraSalidaEsperada;
+                this.comienzoClaseReal = clon.HoraEntradaReal;
+                this.finClaseReal = clon.HoraSalidaReal;
+                this.diaDeAsistencia = clon.Fecha;
                 this.cantidadAlumnos = clon.CantidadAlumnos;
                 this.docente = clon.Docente;
                 this.asignatura = clon.Asignatura;
@@ -280,11 +298,11 @@ namespace Entidades
 
             public void restaurarEstado(Asistencia asistencia)
             {
-                asistencia.ComienzoClaseEsperado = this.comienzoClaseEsperado;
-                asistencia.FinClaseEsperado = this.finClaseEsperado;
-                asistencia.ComienzoClaseReal = this.comienzoClaseReal;
-                asistencia.FinClaseReal = this.finClaseReal;
-                asistencia.DiaDeAsistencia = this.diaDeAsistencia;
+                asistencia.HoraEntradaEsperada = this.comienzoClaseEsperado;
+                asistencia.HoraSalidaEsperada = this.finClaseEsperado;
+                asistencia.HoraEntradaReal = this.comienzoClaseReal;
+                asistencia.HoraSalidaReal = this.finClaseReal;
+                asistencia.Fecha = this.diaDeAsistencia;
                 asistencia.CantidadAlumnos = this.cantidadAlumnos;
                 asistencia.Docente = this.docente;
                 asistencia.Asignatura = this.asignatura;

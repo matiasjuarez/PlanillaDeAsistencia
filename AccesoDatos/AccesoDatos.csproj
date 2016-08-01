@@ -55,11 +55,16 @@
     <Compile Include="DAO\DAOEventosRapla.cs" />
     <Compile Include="DAO\DAODocentes.cs" />
     <Compile Include="DAO\GestorConexion.cs" />
+    <Compile Include="Utilidades\Campo.cs" />
     <Compile Include="Utilidades\IRestriccion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilidades\ItemConsulta.cs" />
+    <Compile Include="Utilidades\MultiUpdateBuilder.cs" />
     <Compile Include="Utilidades\restriccionBetween.cs" />
     <Compile Include="Utilidades\RestriccionIN.cs" />
+    <Compile Include="Utilidades\UpdateBuilder.cs" />
     <Compile Include="Utilidades\ValidadorValoresNull.cs" />
+    <Compile Include="Utilidades\Where.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Configuracion\Configuracion.csproj">

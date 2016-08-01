@@ -592,19 +592,8 @@
             // 
             this.tripleGrillaAsistencias.AutoSize = true;
             this.tripleGrillaAsistencias.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tripleGrillaAsistencias.CantidadAlumnos = -1;
-            this.tripleGrillaAsistencias.ComienzoClaseEsperado = "";
-            this.tripleGrillaAsistencias.ComienzoClaseReal = "";
-            this.tripleGrillaAsistencias.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tripleGrillaAsistencias.Encargado = "";
-            this.tripleGrillaAsistencias.EstadoAsistencia = "";
-            this.tripleGrillaAsistencias.FinClaseEsperado = "";
-            this.tripleGrillaAsistencias.FinClaseReal = "";
             this.tripleGrillaAsistencias.Location = new System.Drawing.Point(3, 241);
             this.tripleGrillaAsistencias.Name = "tripleGrillaAsistencias";
-            this.tripleGrillaAsistencias.NombreAsignatura = "";
-            this.tripleGrillaAsistencias.NombreProfesor = "";
-            this.tripleGrillaAsistencias.Observaciones = "";
             this.tripleGrillaAsistencias.Size = new System.Drawing.Size(781, 243);
             this.tripleGrillaAsistencias.TabIndex = 19;
             // 
@@ -618,7 +607,6 @@
             this.Name = "planillaAsistencia";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Planilla de asistencia";
-            this.Load += new System.EventHandler(this.planillaAsistencia_Load);
             this.Resize += new System.EventHandler(this.planillaAsistencia_Resize);
             this.tabCargaAsistencia.ResumeLayout(false);
             this.tabAsistencia.ResumeLayout(false);

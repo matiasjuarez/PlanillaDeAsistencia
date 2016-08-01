@@ -109,7 +109,14 @@ namespace SincronizacionInterBase
                         nombresAsignaturasNuevas.Add(asignaturaRapla);
                         Asignatura nuevaAsignatura = new Asignatura();
                         nuevaAsignatura.Nombre = asignaturaRapla;
-                        nuevaAsignatura.JefeCatedra.Nombre = evento.JefeCatedra;
+
+                        foreach (Docente docente in docentesPlanilla.obtenerDatos())
+                        {
+                            if(docente.Nombre == evento.JefeCatedra){
+                                nuevaAsignatura.JefeCatedra = docente;
+                            }
+                        }
+
                         cambios.agregarValor(nuevaAsignatura);
                     }
                 }

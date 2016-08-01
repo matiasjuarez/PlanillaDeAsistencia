@@ -26,13 +26,10 @@ namespace PlanillaAsistencia
             modelo.Controlador = controlador;
             planilla.Controlador = controlador;
 
-            //modelo.agregarObservador(controlador);
-
-            //TimerActualizacion actualizadorModelo = new TimerActualizacion(7, controlador);
-
-            /*ControladorSincronizacionBaseRapla con = new ControladorSincronizacionBaseRapla();
-            con.sincronizarAsistencias("2016-01-01", "2016-12-12");*/
-
+            DateTime inicio = DateTime.Parse("2016-01-01");
+            DateTime fin = DateTime.Parse("2016-12-12");
+            SincronizacionInterBase.ControladorSincronizacionInterBase.sincronizar(inicio, fin);
+            
             Application.Run(planilla);
         }
     }

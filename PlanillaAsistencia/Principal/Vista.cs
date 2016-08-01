@@ -77,7 +77,7 @@ namespace PlanillaAsistencia
             observadoresCamposEditables.Remove(observador);
         }
 
-        public void IObservadorTripleGrilla.recibirNotificacionFilaSeleccionada(AsistenciaTabla asistencia)
+        void IObservadorTripleGrilla.recibirNotificacionFilaSeleccionada(AsistenciaTabla asistencia)
         {
             controlador.manejarSeleccionDeAsistenciaDesdeGrilla(asistencia);
         }
@@ -281,10 +281,10 @@ namespace PlanillaAsistencia
             {
                 planilla.procesadorEventos.ProcesarEventosCamposEditables = false;
 
-                planilla.mktxtHoraEntradaEsperada.Text = asistencia.ComienzoClaseEsperado.ToString();
-                planilla.mktxtHoraSalidaEsperada.Text = asistencia.FinClaseEsperado.ToString();
-                planilla.mktxtHoraEntradaReal.Text = asistencia.ComienzoClaseReal.ToString();
-                planilla.mktxtHoraSalidaReal.Text = asistencia.FinClaseReal.ToString();
+                planilla.mktxtHoraEntradaEsperada.Text = asistencia.HoraEntradaEsperada.ToString();
+                planilla.mktxtHoraSalidaEsperada.Text = asistencia.HoraSalidaEsperada.ToString();
+                planilla.mktxtHoraEntradaReal.Text = asistencia.HoraEntradaReal.ToString();
+                planilla.mktxtHoraSalidaReal.Text = asistencia.HoraSalidaReal.ToString();
                 planilla.txtObservaciones.Text = asistencia.Observaciones;
                 planilla.numUpDownAlumnos.Value = asistencia.CantidadAlumnos;
 
