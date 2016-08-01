@@ -12,11 +12,12 @@ using Entidades;
 
 namespace PlanillaAsistencia.ControlesPersonalizados
 {
-    public partial class TripleGrillaAsistencias : UserControl
+    public partial class TripleGrillaAsistencias : UserControl, IObservadorCamposPlanilla
     {
         private Presentador presentador;
         private ControladorRecargaDeGrillas controladorRecarga;
         private ManejadorBindings manejadorBindings;
+        private ManejadorGrillas manejadorGrillas;
 
         private List<IObservadorTripleGrilla> observadores;
         
@@ -31,37 +32,24 @@ namespace PlanillaAsistencia.ControlesPersonalizados
 
             manejadorBindings = new ManejadorBindings(this);
 
+            manejadorGrillas = new ManejadorGrillas(this);
+
             observadores = new List<IObservadorTripleGrilla>();
         }
 
-        public void cargarAsistenciasTurnoManana(List<Asistencia> asistencias)
+        public void cargarAsistenciasTurnoManana(List<AsistenciaTabla> asistencias)
         {
-            manejadorBindings.actualizarBindingList(
-                convertirEnAsistenciasParaTabla(asistencias), manejadorBindings.AsistenciasTurnoManana);
+            manejadorBindings.actualizarBindingList(asistencias, manejadorBindings.AsistenciasTurnoManana);
         }
 
-        public void cargarAsistenciasTurnoTarde(List<Asistencia> asistencias)
+        public void cargarAsistenciasTurnoTarde(List<AsistenciaTabla> asistencias)
         {
-            manejadorBindings.actualizarBindingList(
-                convertirEnAsistenciasParaTabla(asistencias), manejadorBindings.AsistenciasTurnoTarde);
+            manejadorBindings.actualizarBindingList(asistencias, manejadorBindings.AsistenciasTurnoTarde);
         }
 
-        public void cargarAsistenciasTurnoNoche(List<Asistencia> asistencias)
+        public void cargarAsistenciasTurnoNoche(List<AsistenciaTabla> asistencias)
         {
-            manejadorBindings.actualizarBindingList(
-                convertirEnAsistenciasParaTabla(asistencias), manejadorBindings.AsistenciasTurnoNoche);
-        }
-
-        private List<AsistenciaTabla> convertirEnAsistenciasParaTabla(List<Asistencia> asistencias)
-        {
-            List<AsistenciaTabla> asistenciasParaTabla = new List<AsistenciaTabla>();
-            foreach (Asistencia asistencia in asistencias)
-            {
-                AsistenciaTabla asistenciaTabla = new AsistenciaTabla(asistencia);
-                asistenciasParaTabla.Add(asistenciaTabla);
-            }
-
-            return asistenciasParaTabla;
+            manejadorBindings.actualizarBindingList(asistencias, manejadorBindings.AsistenciasTurnoNoche);
         }
 
         public void agregarObservador(IObservadorTripleGrilla observador)
@@ -70,47 +58,6 @@ namespace PlanillaAsistencia.ControlesPersonalizados
             {
                 observadores.Add(observador);
             }
-        }
-
-        private void refrescarGrillas()
-        {
-            dgvTurnoManana.Refresh();
-            dgvTurnoTarde.Refresh();
-            dgvTurnoNoche.Refresh();
-        }
-
-        // Busca en la lista de DataGridViewRow si existe alguna fila que contenga una asistencia
-        // con el id pasado por parametro
-        private DataGridViewRow buscarFilaDeAsistencia(int idAsistencia)
-        {
-            foreach (DataGridViewRow fila in dgvTurnoManana.Rows)
-            {
-                AsistenciaTabla asistencia = (AsistenciaTabla)fila.DataBoundItem;
-                if (asistencia.IdAsistencia == idAsistencia)
-                {
-                    return fila;
-                }
-            }
-
-            foreach (DataGridViewRow fila in dgvTurnoTarde.Rows)
-            {
-                AsistenciaTabla asistencia = (AsistenciaTabla)fila.DataBoundItem;
-                if (asistencia.IdAsistencia == idAsistencia)
-                {
-                    return fila;
-                }
-            }
-
-            foreach (DataGridViewRow fila in dgvTurnoNoche.Rows)
-            {
-                AsistenciaTabla asistencia = (AsistenciaTabla)fila.DataBoundItem;
-                if (asistencia.IdAsistencia == idAsistencia)
-                {
-                    return fila;
-                }
-            }
-
-            return null;
         }
 
         private void dgv_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -129,16 +76,72 @@ namespace PlanillaAsistencia.ControlesPersonalizados
             }
             catch (Exception ex)
             {
-                GestorExcepciones.mostrarExcepcion(ex);
+                //GestorExcepciones.mostrarExcepcion(ex);
             }
         }
 
-        private void dgv_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        // Este evento solamente se dispara porque si no las grillas no se pintan bien si nunca se
+        // las selecciono antes
+        private void tabDatosDelDia_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DataGridView dgv = (DataGridView)sender;
-            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
-            dgv.Columns[dgv.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            manejadorGrillas.refrescarGrillas();
         }
+
+        private class ManejadorGrillas
+        {
+            private TripleGrillaAsistencias tripleGrilla;
+            private Timer timerRefrescoGrillas;
+
+            public ManejadorGrillas(TripleGrillaAsistencias tripleGrilla)
+            {
+                this.tripleGrilla = tripleGrilla;
+
+                tripleGrilla.dgvTurnoNoche.ClearSelection();
+
+                configurarTimerRefresco();
+            }
+
+            public void refrescarGrillas()
+            {
+                if (this.timerRefrescoGrillas.Enabled == false)
+                {
+                    this.timerRefrescoGrillas.Enabled = true;
+                }
+            }
+
+            private void procesarRefrescoGrillas()
+            {
+                repintarGrilla(tripleGrilla.dgvTurnoManana);
+                repintarGrilla(tripleGrilla.dgvTurnoTarde);
+                repintarGrilla(tripleGrilla.dgvTurnoNoche);
+            }
+
+            private void repintarGrilla(DataGridView grilla)
+            {
+                foreach (DataGridViewRow fila in grilla.Rows)
+                {
+                    this.tripleGrilla.presentador.determinarModoPresentacionFila(fila);
+                }
+                grilla.Update();
+                grilla.Refresh();
+            }
+
+            private void configurarTimerRefresco()
+            {
+                // Esta negrada se hace porque cuando se modifica un campo en la plantilla, la notificacion de
+                // modificacion se lanza dos veces porque a Microsoft se le ocurrio que asi sea. Entonces
+                // eso provoca que la grilla se refresque dos veces de forma muy rapida y terminamos viendo
+                // un valor viejo en lugar del que realmente deberia mostrar.
+                this.timerRefrescoGrillas = new Timer();
+                timerRefrescoGrillas.Interval = 1 * 200;
+                timerRefrescoGrillas.Tick += (o, i) =>
+                {
+                    procesarRefrescoGrillas();
+                    timerRefrescoGrillas.Enabled = false;
+                };
+            }
+        }
+
 
         private class ManejadorBindings
         {
@@ -187,6 +190,13 @@ namespace PlanillaAsistencia.ControlesPersonalizados
                 {
                     bindingList.Add(asistencia);
                 }
+
+                tripleGrilla.manejadorGrillas.refrescarGrillas();
+            }
+
+            private void redibujarGrilla(DataGridView grilla)
+            {
+                grilla.Refresh();
             }
         }
 
@@ -265,13 +275,31 @@ namespace PlanillaAsistencia.ControlesPersonalizados
 
             private Color fondoAsistenciaModificada = Color.Yellow;
             private Color fondoAsistenciaNormal = Color.White;
+            private Color fondoSinHoraEntradaReal_PostHoraEntradaEsperada = Color.Red;
 
             public Presentador(TripleGrillaAsistencias tga)
             {
                 this.tga = tga;
             }
 
-            public void pintarTodasLasFilasComoNormales()
+            public void determinarModoPresentacionFila(DataGridViewRow fila)
+            {
+                AsistenciaTabla asistenciaActual = (AsistenciaTabla)fila.DataBoundItem;
+                if (asistenciaActual.esModificada())
+                {
+                    pintarFilaComoModificada(fila);
+                }
+                else if (asistenciaActual.esSinHoraEntradaReal_PostHoraEntradaEsperada())
+                {
+                    pintarFilaSinHoraEntradaReal_PostHoraEntradaEsperada(fila);
+                }
+                else
+                {
+                    pintarFilaComoNormal(fila);
+                }
+            }
+
+            private void pintarTodasLasFilasComoNormales()
             {
                 foreach (DataGridViewRow fila in tga.dgvTurnoManana.Rows)
                 {
@@ -287,17 +315,22 @@ namespace PlanillaAsistencia.ControlesPersonalizados
                 }
             }
 
-            public void pintarFilaComoNormal(DataGridViewRow fila)
+            private void pintarFilaComoNormal(DataGridViewRow fila)
             {
-                pintarFila(fila, fondoAsistenciaNormal);
+                pintarFila(fila, this.fondoAsistenciaNormal);
             }
 
-            public void pintarFilaComoModificada(DataGridViewRow fila)
+            private void pintarFilaComoModificada(DataGridViewRow fila)
             {
-                pintarFila(fila, fondoAsistenciaModificada);
+                pintarFila(fila, this.fondoAsistenciaModificada);
             }
 
-            public void pintarFila(DataGridViewRow fila, Color color)
+            private void pintarFilaSinHoraEntradaReal_PostHoraEntradaEsperada(DataGridViewRow fila)
+            {
+                pintarFila(fila, this.fondoSinHoraEntradaReal_PostHoraEntradaEsperada);
+            }
+
+            private void pintarFila(DataGridViewRow fila, Color color)
             {
                 if (fila != null)
                 {
@@ -339,8 +372,44 @@ namespace PlanillaAsistencia.ControlesPersonalizados
 
             private void configurarAutosizeGrilla(DataGridView grilla)
             {
-
+                grilla.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+                grilla.Columns[grilla.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
+        }
+
+        public void observarCambioDocente(Docente docente)
+        {
+            manejadorGrillas.refrescarGrillas();
+        }
+
+        public void observarCambioAsignatura(Asignatura Asignatura)
+        {
+            manejadorGrillas.refrescarGrillas();
+        }
+
+        public void observarCambioHoraRealDeSalida(TimeSpan horaSalida)
+        {
+            manejadorGrillas.refrescarGrillas();
+        }
+
+        public void observarCambioHoraRealDeEntrada(TimeSpan horaEntrada)
+        {
+            manejadorGrillas.refrescarGrillas();
+        }
+
+        public void observarCambioEstadoAsistencia(EstadoAsistencia estadoAsistencia)
+        {
+            manejadorGrillas.refrescarGrillas();
+        }
+
+        public void observarCambioObservaciones(string observaciones)
+        {
+            manejadorGrillas.refrescarGrillas();
+        }
+
+        public void observarCambioCantidadAlumnos(int cantidadAlumnos)
+        {
+            manejadorGrillas.refrescarGrillas();
         }
     }
 }

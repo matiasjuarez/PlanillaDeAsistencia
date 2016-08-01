@@ -78,7 +78,7 @@ namespace SincronizacionInterBase
 
             foreach (Evento evento in eventos)
             {
-                string asignaturaRapla = evento.Materia;
+                string asignaturaRapla = evento.Asignatura;
 
                 bool seEncontroAsignatura = false;
                 foreach (Asignatura asignaturaPlanilla in asignaturasPlanilla.obtenerDatos())

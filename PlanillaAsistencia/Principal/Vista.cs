@@ -19,7 +19,10 @@ namespace PlanillaAsistencia
         private Controlador controlador;
         public Controlador Controlador
         {
-            set { controlador = value; }
+            set { 
+                controlador = value;
+                observadoresCamposEditables.Insert(0, controlador);
+            }
         }
 
         private ManejadorControles manejadorControles;
@@ -41,6 +44,8 @@ namespace PlanillaAsistencia
             InitializeComponent();
 
             observadoresCamposEditables = new List<IObservadorCamposPlanilla>();
+            agregarObservadorCamposEditables(tripleGrillaAsistencias);
+
             tripleGrillaAsistencias.agregarObservador(this);
 
             manejadorControles = new ManejadorControles(this);
@@ -177,17 +182,17 @@ namespace PlanillaAsistencia
         // ****************************************************************************************
         // ****************************************************************************************
 
-        public void cargarAsistenciasTurnoManana(List<Asistencia> asistencias)
+        public void cargarAsistenciasTurnoManana(List<AsistenciaTabla> asistencias)
         {
             tripleGrillaAsistencias.cargarAsistenciasTurnoManana(asistencias);
         }
 
-        public void cargarAsistenciasTurnoTarde(List<Asistencia> asistencias)
+        public void cargarAsistenciasTurnoTarde(List<AsistenciaTabla> asistencias)
         {
             tripleGrillaAsistencias.cargarAsistenciasTurnoTarde(asistencias);
         }
 
-        public void cargarAsistenciasTurnoNoche(List<Asistencia> asistencias)
+        public void cargarAsistenciasTurnoNoche(List<AsistenciaTabla> asistencias)
         {
             tripleGrillaAsistencias.cargarAsistenciasTurnoNoche(asistencias);
         }
@@ -246,7 +251,7 @@ namespace PlanillaAsistencia
                 else if (estado == planillaAsistencia.ESTADO_SICAMBIO_NOSELECCION)
                 {
                     planilla.manejadorControles.habilitarBotonGuardado(true);
-                    planilla.manejadorControles.habilitarCampos(true);
+                    planilla.manejadorControles.habilitarCampos(false);
                     planilla.manejadorControles.resetearCampos();
                 }
                 else if (estado == planillaAsistencia.ESTADO_SICAMBIO_SISELECCION)

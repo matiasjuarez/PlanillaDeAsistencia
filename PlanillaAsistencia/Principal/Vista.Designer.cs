@@ -580,12 +580,12 @@
             // 
             // lbleMensajes
             // 
-            this.lbleMensajes.AutoSize = true;
             this.lbleMensajes.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.lbleMensajes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbleMensajes.Location = new System.Drawing.Point(235, 6);
-            this.lbleMensajes.MaximumSize = new System.Drawing.Size(73, 0);
+            this.lbleMensajes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lbleMensajes.Name = "lbleMensajes";
-            this.lbleMensajes.Size = new System.Drawing.Size(73, 0);
+            this.lbleMensajes.Size = new System.Drawing.Size(548, 34);
             this.lbleMensajes.TabIndex = 20;
             // 
             // tripleGrillaAsistencias
@@ -594,7 +594,7 @@
             this.tripleGrillaAsistencias.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tripleGrillaAsistencias.Location = new System.Drawing.Point(3, 241);
             this.tripleGrillaAsistencias.Name = "tripleGrillaAsistencias";
-            this.tripleGrillaAsistencias.Size = new System.Drawing.Size(781, 243);
+            this.tripleGrillaAsistencias.Size = new System.Drawing.Size(780, 243);
             this.tripleGrillaAsistencias.TabIndex = 19;
             // 
             // planillaAsistencia

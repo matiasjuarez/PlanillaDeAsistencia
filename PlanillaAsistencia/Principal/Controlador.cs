@@ -22,7 +22,7 @@ namespace PlanillaAsistencia
         private Modelo modelo;
 
         // La asistencia sobre la que el usuario hizo click en la grilla
-        private Asistencia asistenciaSeleccionada;
+        private AsistenciaTabla asistenciaSeleccionada;
         // Las asistencias que se han ido cargando en las grillas luego de apretado el boton de guardado
         private ContenedorAsistencias asistenciasTrabajadas;
 
@@ -39,8 +39,6 @@ namespace PlanillaAsistencia
 
             this.asistenciasTrabajadas = new ContenedorAsistencias();
 
-            vista.agregarObservadorCamposEditables(this);
-
             vista.Controlador = this;
             modelo.Controlador = this;
 
@@ -55,28 +53,55 @@ namespace PlanillaAsistencia
         public void manejarGuardarCambios()
         {
             guardarAsistenciasModificadas();
-            vista.ponerEnEstado(planillaAsistencia.ESTADO_NOCAMBIO_NOSELECCION);
+
             this.vista.mostrarMensaje("Los datos fueron guardados", Color.Green, 3000);
+            mostrarAsistenciasDeFecha(this.vista.obtenerFechaSeleccionada());
+
+            asistenciaSeleccionada = null;
+
+            vista.ponerEnEstado(determinarEstadoPlanillaAsistencia());
         }
 
         private void guardarAsistenciasModificadas()
         {
-            List<Asistencia> asistenciasModificadas = new List<Asistencia>();
+            List<Asistencia> asistenciasModificadasValidasParaGuardar = new List<Asistencia>();
+            List<Asistencia> asistenciasNoValidas = new List<Asistencia>();
 
             foreach (Asistencia asistencia in asistenciasTrabajadas.obtenerDatos())
             {
                 if (asistencia.estaModificada())
                 {
-                    asistenciasModificadas.Add(asistencia);
+                    if (tieneDatosValidosParaGuardarse(asistencia))
+                    {
+                        asistenciasModificadasValidasParaGuardar.Add(asistencia);
+                    }
+                    else
+                    {
+                        asistenciasNoValidas.Add(asistencia);
+                        vista.mostrarMensaje("Hay algunas asistencias que no tienen datos validos", Color.Purple);
+                    }
                 }
             }
 
-            DAOAsistencias.updateAsistencias(asistenciasModificadas);
+            DAOAsistencias.updateAsistencias(asistenciasModificadasValidasParaGuardar);
 
-            foreach (Asistencia asistencia in asistenciasModificadas)
+            foreach (Asistencia asistencia in asistenciasModificadasValidasParaGuardar)
             {
                 asistencia.guardarEstado();
             }
+        }
+
+        private void marcarAsistenciasTablaConDatosNoValidos()
+        {
+            foreach(AsistenciaTabla asistencia in asistenciasTrabajadas.obtenerDatos())
+        }
+
+        private bool tieneDatosValidosParaGuardarse(Asistencia asistencia)
+        {
+            if (asistencia.CantidadAlumnos == 0) return false;
+            if (asistencia.HoraEntradaReal.Equals(new TimeSpan(0, 0, 0))) return false;
+
+            return true;
         }
 
         public List<Asignatura> obtenerAsignaturas()
@@ -98,20 +123,18 @@ namespace PlanillaAsistencia
         // alguna fila de alguna grilla. 
         public void manejarSeleccionDeAsistenciaDesdeGrilla(AsistenciaTabla asistencia)
         {
-            this.asistenciaSeleccionada = asistencia.obtenerAsistencia();
-            vista.ponerEnEstado(planillaAsistencia.ESTADO_NOCAMBIO_SISELECCION);
-            vista.mostrarDatosDeAsistencia(this.asistenciaSeleccionada);
+            this.asistenciaSeleccionada = asistencia;
+            vista.mostrarDatosDeAsistencia(this.asistenciaSeleccionada.obtenerAsistencia());
+            vista.ponerEnEstado(determinarEstadoPlanillaAsistencia());
         }
 
         // Cuando el usuario cambia la fecha seleccionada debe llamar a esta funcion.
         public void manejarCambioFechaSeleccionada(DateTime fechaSeleccionada)
         {
-            if (hayAsistenciasModificadas())
-            {
-                vista.ponerEnEstado(planillaAsistencia.ESTADO_SICAMBIO_NOSELECCION);
-            }
-
+            this.asistenciaSeleccionada = null;
             mostrarAsistenciasDeFecha(fechaSeleccionada);
+
+            vista.ponerEnEstado(determinarEstadoPlanillaAsistencia());
         }
 
         private bool hayAsistenciasModificadas()
@@ -128,26 +151,32 @@ namespace PlanillaAsistencia
         {
             List<Asistencia> asistenciasDeFecha = modelo.obtenerAsistenciasParaFecha(fecha);
 
-            List<Asistencia> asistenciasManana = new List<Asistencia>();
-            List<Asistencia> asistenciasTarde = new List<Asistencia>();
-            List<Asistencia> asistenciasNoche = new List<Asistencia>();
+            List<AsistenciaTabla> asistenciasManana = new List<AsistenciaTabla>();
+            List<AsistenciaTabla> asistenciasTarde = new List<AsistenciaTabla>();
+            List<AsistenciaTabla> asistenciasNoche = new List<AsistenciaTabla>();
 
             if (asistenciasDeFecha != null)
             {
                 foreach (Asistencia asistencia in asistenciasDeFecha)
                 {
+                    this.asistenciasTrabajadas.guardarDato(asistencia.Id, asistencia);
+
+                    AsistenciaTabla nuevaAsistenciaTabla = new AsistenciaTabla(asistencia);
+                    nuevaAsistenciaTabla.calcularEstado();
+
                     TimeSpan horaClase = asistencia.HoraEntradaEsperada;
+
                     if (rangoHorarioManana.estaDentroDelRangoHorario(horaClase))
                     {
-                        asistenciasManana.Add(asistencia);
+                        asistenciasManana.Add(nuevaAsistenciaTabla);
                     }
                     else if (rangoHorarioTarde.estaDentroDelRangoHorario(horaClase))
                     {
-                        asistenciasTarde.Add(asistencia);
+                        asistenciasTarde.Add(nuevaAsistenciaTabla);
                     }
                     else
                     {
-                        asistenciasNoche.Add(asistencia);
+                        asistenciasNoche.Add(nuevaAsistenciaTabla);
                     }
                 }
 
@@ -163,10 +192,11 @@ namespace PlanillaAsistencia
             vista.cargarAsistenciasTurnoNoche(asistenciasNoche);
         }
 
-        private delegate int OrdenadorAsistencias(Asistencia a1, Asistencia a2);
-        private int ordenadorAsistenciaPorHoraEntradaEsperada(Asistencia a1, Asistencia a2)
+        private delegate int OrdenadorAsistencias(AsistenciaTabla a1, AsistenciaTabla a2);
+        private int ordenadorAsistenciaPorHoraEntradaEsperada(AsistenciaTabla a1, AsistenciaTabla a2)
         {
-            return a1.obtenerEntradaEsperada().CompareTo(a2.obtenerEntradaEsperada());
+            return a1.obtenerAsistencia().obtenerEntradaEsperada().CompareTo(
+                a2.obtenerAsistencia().obtenerEntradaEsperada());
         }
 
         private void actualizarModelo()
@@ -175,39 +205,79 @@ namespace PlanillaAsistencia
             modelo.refrescarAsistencias();
         }
 
+        private int determinarEstadoPlanillaAsistencia()
+        {
+            if (asistenciaSeleccionada == null)
+            {
+                if (hayAsistenciasModificadas())
+                {
+                    return planillaAsistencia.ESTADO_SICAMBIO_NOSELECCION;
+                }
+                else
+                {
+                    return planillaAsistencia.ESTADO_NOCAMBIO_NOSELECCION;
+                }
+            }
+            else
+            {
+                if (hayAsistenciasModificadas())
+                {
+                    return planillaAsistencia.ESTADO_SICAMBIO_SISELECCION;
+                }
+                else
+                {
+                    return planillaAsistencia.ESTADO_NOCAMBIO_SISELECCION;
+                }
+            }
+        }
+
+        private void procesarModificacionDeAsistencia()
+        {
+            this.asistenciaSeleccionada.calcularEstado();
+
+            vista.ponerEnEstado(determinarEstadoPlanillaAsistencia());
+        }
+
         void IObservadorCamposPlanilla.observarCambioDocente(Docente docente)
         {
-            asistenciaSeleccionada.Docente = docente;
+            asistenciaSeleccionada.obtenerAsistencia().Docente = docente;
+            procesarModificacionDeAsistencia();
         }
 
         void IObservadorCamposPlanilla.observarCambioAsignatura(Asignatura Asignatura)
         {
-            asistenciaSeleccionada.Asignatura = Asignatura;
+            asistenciaSeleccionada.obtenerAsistencia().Asignatura = Asignatura;
+            procesarModificacionDeAsistencia();
         }
 
         void IObservadorCamposPlanilla.observarCambioHoraRealDeSalida(TimeSpan horaSalida)
         {
-            asistenciaSeleccionada.HoraSalidaReal = horaSalida;
+            asistenciaSeleccionada.obtenerAsistencia().HoraSalidaReal = horaSalida;
+            procesarModificacionDeAsistencia();
         }
 
         void IObservadorCamposPlanilla.observarCambioHoraRealDeEntrada(TimeSpan horaEntrada)
         {
-            asistenciaSeleccionada.HoraEntradaReal = horaEntrada;
+            asistenciaSeleccionada.obtenerAsistencia().HoraEntradaReal = horaEntrada;
+            procesarModificacionDeAsistencia();
         }
 
         void IObservadorCamposPlanilla.observarCambioEstadoAsistencia(EstadoAsistencia estadoAsistencia)
         {
-            asistenciaSeleccionada.EstadoAsistencia = estadoAsistencia;
+            asistenciaSeleccionada.obtenerAsistencia().EstadoAsistencia = estadoAsistencia;
+            procesarModificacionDeAsistencia();
         }
 
         void IObservadorCamposPlanilla.observarCambioObservaciones(string observaciones)
         {
             asistenciaSeleccionada.Observaciones = observaciones;
+            procesarModificacionDeAsistencia();
         }
 
         void IObservadorCamposPlanilla.observarCambioCantidadAlumnos(int cantidadAlumnos)
         {
             asistenciaSeleccionada.CantidadAlumnos = cantidadAlumnos;
+            procesarModificacionDeAsistencia();
         }
 
         void Temporizador.ITemporizable.procesarTick()

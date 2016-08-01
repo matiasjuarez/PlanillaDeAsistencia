@@ -73,7 +73,7 @@ namespace PlanillaAsistencia
         {
             List<Asistencia> asistenciasDeFecha = asistencias.obtenerAsistenciasDeFecha(fecha);
 
-            if (asistencias.Count == 0)
+            if (asistenciasDeFecha.Count == 0)
             {
                 HashSet<DateTime> fechasConAsistencias = new HashSet<DateTime>();
 
@@ -82,6 +82,9 @@ namespace PlanillaAsistencia
                 {
                     asistencias.guardarDato(asistencia.Id, asistencia);
                     fechasConAsistencias.Add(asistencia.Fecha);
+
+                    // Se guarda el estado inicial con que llegan las asistencias desde la base de datos
+                    asistencia.guardarEstado();
                 }
 
                 if (!fechasConAsistencias.Contains(fecha.Date))

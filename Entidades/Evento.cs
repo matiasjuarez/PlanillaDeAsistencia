@@ -87,7 +87,7 @@ namespace Entidades
             set { aulas = value; }
         }
 
-        public string Materia
+        public string Asignatura
         {
             get { return materia; }
             set { materia = value; }

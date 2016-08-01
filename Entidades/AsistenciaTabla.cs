@@ -13,16 +13,19 @@ namespace Entidades
             return asistencia;
         }
 
+        private EstadoAsistenciaTabla estadoAsistencia;
+
         private string stringPorDefecto = "N/A";
         private string formatoTimespan = @"hh\:mm";
 
         public AsistenciaTabla(Asistencia asistencia)
         {
             this.asistencia = asistencia;
+            this.estadoAsistencia = new EstadoAsistenciaTabla(this);
 
             FinClaseEsperado = asistencia.HoraSalidaEsperada.ToString(formatoTimespan);
-            ComienzoClaseReal = asistencia.HoraEntradaReal.ToString(formatoTimespan);
-            FinClaseReal = asistencia.HoraSalidaReal.ToString();
+            HoraEntradaReal = asistencia.HoraEntradaReal.ToString(formatoTimespan);
+            HoraSalidaReal = asistencia.HoraSalidaReal.ToString();
 
             if (asistencia.Docente != null) NombreProfesor = asistencia.Docente.Nombre;
             else NombreProfesor = stringPorDefecto;
@@ -75,7 +78,7 @@ namespace Entidades
             }
         }
 
-        public String ComienzoClaseReal
+        public String HoraEntradaReal
         {
             get {
                 string hora = asistencia.HoraEntradaReal.ToString(formatoTimespan);
@@ -87,7 +90,7 @@ namespace Entidades
             }
         }
 
-        public String FinClaseReal
+        public String HoraSalidaReal
         {
             get {
                 string hora = asistencia.HoraSalidaReal.ToString(formatoTimespan);
@@ -232,25 +235,9 @@ namespace Entidades
             return fechaConFormato;
         }
 
-        private bool modificada;
-        public bool esModificada()
+        public void calcularEstado()
         {
-            return modificada;
+            this.estadoAsistencia.calcularEstado();
         }
-        public void setModificada(bool valor)
-        {
-            modificada = valor;
-        }
-
-        private bool seleccionada;
-        public bool esSeleccionada()
-        {
-            return seleccionada;
-        }
-        public void setSeleccionada(bool valor)
-        {
-            seleccionada = valor;
-        }
-        
     }
 }

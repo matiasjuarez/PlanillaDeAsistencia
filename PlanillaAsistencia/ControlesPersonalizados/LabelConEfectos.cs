@@ -15,8 +15,8 @@ namespace PlanillaAsistencia.ControlesPersonalizados
         public LabelConEfectos()
         {
             InitializeComponent();
-            this.lblTexto.Size = new System.Drawing.Size(this.Size.Width, 0);
-            this.MaximumSize = new System.Drawing.Size(this.Size.Width, 0);
+            //this.lblTexto.Size = new System.Drawing.Size(this.Size.Width, 0);
+            //this.MaximumSize = new System.Drawing.Size(this.Size.Width, 0);
         }
 
         private string mensaje = "";

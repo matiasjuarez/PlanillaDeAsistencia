@@ -75,7 +75,7 @@ namespace Entidades
         public DateTime Fecha
         {
             get { return fecha.Date; }
-            set { fecha = value; }
+            set { fecha = value.Date; }
         }
 
         public TimeSpan HoraEntradaEsperada
@@ -242,7 +242,7 @@ namespace Entidades
             Asistencia aux = new Asistencia();
             estadoGuardado.restaurarEstado(aux);
 
-            return aux.Equals(this);
+            return !aux.Equals(this);
         }
 
         public Asistencia Clone()
@@ -261,6 +261,7 @@ namespace Entidades
             }
         }
 
+        [Serializable]
         private class AsistenciaMemento
         {
             private TimeSpan comienzoClaseEsperado;
@@ -276,6 +277,9 @@ namespace Entidades
             private EstadoAsistencia estadoAsistencia;
             private List<Aula> aulas;
             private string observaciones;
+            private int id;
+            private int appointmentId;
+            private int eventId;
 
             public AsistenciaMemento(Asistencia asistencia)
             {
@@ -294,10 +298,16 @@ namespace Entidades
                 this.estadoAsistencia = clon.EstadoAsistencia;
                 this.aulas = clon.Aulas;
                 this.observaciones = clon.Observaciones;
+                this.id = clon.Id;
+                this.appointmentId = clon.AppointmentId;
+                this.eventId = clon.EventId;
             }
 
             public void restaurarEstado(Asistencia asistencia)
             {
+                asistencia.Id = this.id;
+                asistencia.AppointmentId = this.appointmentId;
+                asistencia.EventId = this.eventId;
                 asistencia.HoraEntradaEsperada = this.comienzoClaseEsperado;
                 asistencia.HoraSalidaEsperada = this.finClaseEsperado;
                 asistencia.HoraEntradaReal = this.comienzoClaseReal;

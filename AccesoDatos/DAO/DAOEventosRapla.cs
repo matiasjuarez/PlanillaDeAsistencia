@@ -249,7 +249,7 @@ namespace AccesoDatos
 
                 evento.IDEvento = ValidadorValoresNull.getInt(reader, "EVENTO");
                 evento.AppointmentId = ValidadorValoresNull.getInt(reader, "IDAP");
-                evento.Materia = ValidadorValoresNull.getString(reader, "Materia");
+                evento.Asignatura = ValidadorValoresNull.getString(reader, "Materia");
                 evento.Aulas = ValidadorValoresNull.getString(reader, "Aulas");
                 evento.Docente = ValidadorValoresNull.getString(reader, "Docente");
                 evento.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra");
