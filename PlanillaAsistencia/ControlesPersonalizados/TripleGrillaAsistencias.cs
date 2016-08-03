@@ -275,7 +275,8 @@ namespace PlanillaAsistencia.ControlesPersonalizados
 
             private Color fondoAsistenciaModificada = Color.Yellow;
             private Color fondoAsistenciaNormal = Color.White;
-            private Color fondoSinHoraEntradaReal_PostHoraEntradaEsperada = Color.Red;
+            private Color fondoSinHoraCargada = Color.DarkRed;
+            private Color fondoAsistenciaNoValidaParaGuardar = Color.Purple;
 
             public Presentador(TripleGrillaAsistencias tga)
             {
@@ -287,11 +288,13 @@ namespace PlanillaAsistencia.ControlesPersonalizados
                 AsistenciaTabla asistenciaActual = (AsistenciaTabla)fila.DataBoundItem;
                 if (asistenciaActual.esModificada())
                 {
-                    pintarFilaComoModificada(fila);
+                    if (asistenciaActual.esValidaParaGuardarse()) pintarFilaComoModificada(fila);
+                    else pintarFilaComoNoValidaParaGuardarse(fila);
                 }
-                else if (asistenciaActual.esSinHoraEntradaReal_PostHoraEntradaEsperada())
+                else if (asistenciaActual.esSinHoraEntradaReal_PostHoraEntradaEsperada() || 
+                    asistenciaActual.esSinHoraSalidaReal_PostHoraSalidaEsperada())
                 {
-                    pintarFilaSinHoraEntradaReal_PostHoraEntradaEsperada(fila);
+                    pintarFilaSinHoraCargada(fila);
                 }
                 else
                 {
@@ -318,16 +321,26 @@ namespace PlanillaAsistencia.ControlesPersonalizados
             private void pintarFilaComoNormal(DataGridViewRow fila)
             {
                 pintarFila(fila, this.fondoAsistenciaNormal);
+                fila.DefaultCellStyle.ForeColor = Color.Black;
             }
 
             private void pintarFilaComoModificada(DataGridViewRow fila)
             {
                 pintarFila(fila, this.fondoAsistenciaModificada);
+                fila.DefaultCellStyle.ForeColor = Color.Black;
             }
 
-            private void pintarFilaSinHoraEntradaReal_PostHoraEntradaEsperada(DataGridViewRow fila)
+            private void pintarFilaSinHoraCargada(DataGridViewRow fila)
             {
-                pintarFila(fila, this.fondoSinHoraEntradaReal_PostHoraEntradaEsperada);
+                pintarFila(fila, this.fondoSinHoraCargada);
+                fila.DefaultCellStyle.ForeColor = Color.White;
+                
+            }
+
+            private void pintarFilaComoNoValidaParaGuardarse(DataGridViewRow fila)
+            {
+                pintarFila(fila, this.fondoAsistenciaNoValidaParaGuardar);
+                fila.DefaultCellStyle.ForeColor = Color.White;
             }
 
             private void pintarFila(DataGridViewRow fila, Color color)
@@ -410,6 +423,12 @@ namespace PlanillaAsistencia.ControlesPersonalizados
         public void observarCambioCantidadAlumnos(int cantidadAlumnos)
         {
             manejadorGrillas.refrescarGrillas();
+        }
+
+        private void dgvTurnoNoche_CellStyleChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridView grilla = (DataGridView)sender;
+            grilla.DefaultCellStyle.Font = new Font(grilla.Font, FontStyle.Bold);
         }
     }
 }

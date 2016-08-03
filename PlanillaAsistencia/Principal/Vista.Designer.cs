@@ -581,6 +581,8 @@
             // lbleMensajes
             // 
             this.lbleMensajes.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.lbleMensajes.ColorPorDefecto = System.Drawing.Color.Black;
+            this.lbleMensajes.DuracionMensajes = 3000;
             this.lbleMensajes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbleMensajes.Location = new System.Drawing.Point(235, 6);
             this.lbleMensajes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);

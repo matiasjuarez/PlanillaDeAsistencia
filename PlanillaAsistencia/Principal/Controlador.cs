@@ -54,7 +54,6 @@ namespace PlanillaAsistencia
         {
             guardarAsistenciasModificadas();
 
-            this.vista.mostrarMensaje("Los datos fueron guardados", Color.Green, 3000);
             mostrarAsistenciasDeFecha(this.vista.obtenerFechaSeleccionada());
 
             asistenciaSeleccionada = null;
@@ -69,39 +68,40 @@ namespace PlanillaAsistencia
 
             foreach (Asistencia asistencia in asistenciasTrabajadas.obtenerDatos())
             {
+                asistencia.calcularCondicion();
+
                 if (asistencia.estaModificada())
                 {
-                    if (tieneDatosValidosParaGuardarse(asistencia))
+                    if (asistencia.esValidaParaGuardarse())
                     {
                         asistenciasModificadasValidasParaGuardar.Add(asistencia);
                     }
                     else
                     {
                         asistenciasNoValidas.Add(asistencia);
-                        vista.mostrarMensaje("Hay algunas asistencias que no tienen datos validos", Color.Purple);
                     }
                 }
             }
 
+            int guardadas = asistenciasModificadasValidasParaGuardar.Count;
+            int noValidas = asistenciasNoValidas.Count;
+
+            if (guardadas > 0)
+            {
+                vista.mostrarMensaje("Se guardaron " + guardadas + " asistencias", Color.Green, 1500);
+            }
+
+            if (noValidas > 0)
+            {
+                vista.mostrarMensaje(noValidas + " asistencias tienen valores no validos", Color.Purple, 2000);
+            }
+                
             DAOAsistencias.updateAsistencias(asistenciasModificadasValidasParaGuardar);
 
             foreach (Asistencia asistencia in asistenciasModificadasValidasParaGuardar)
             {
                 asistencia.guardarEstado();
             }
-        }
-
-        private void marcarAsistenciasTablaConDatosNoValidos()
-        {
-            foreach(AsistenciaTabla asistencia in asistenciasTrabajadas.obtenerDatos())
-        }
-
-        private bool tieneDatosValidosParaGuardarse(Asistencia asistencia)
-        {
-            if (asistencia.CantidadAlumnos == 0) return false;
-            if (asistencia.HoraEntradaReal.Equals(new TimeSpan(0, 0, 0))) return false;
-
-            return true;
         }
 
         public List<Asignatura> obtenerAsignaturas()
@@ -162,7 +162,7 @@ namespace PlanillaAsistencia
                     this.asistenciasTrabajadas.guardarDato(asistencia.Id, asistencia);
 
                     AsistenciaTabla nuevaAsistenciaTabla = new AsistenciaTabla(asistencia);
-                    nuevaAsistenciaTabla.calcularEstado();
+                    asistencia.calcularCondicion();
 
                     TimeSpan horaClase = asistencia.HoraEntradaEsperada;
 
@@ -233,7 +233,7 @@ namespace PlanillaAsistencia
 
         private void procesarModificacionDeAsistencia()
         {
-            this.asistenciaSeleccionada.calcularEstado();
+            this.asistenciaSeleccionada.obtenerAsistencia().calcularCondicion();
 
             vista.ponerEnEstado(determinarEstadoPlanillaAsistencia());
         }

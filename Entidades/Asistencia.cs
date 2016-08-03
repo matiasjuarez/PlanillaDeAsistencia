@@ -28,6 +28,7 @@ namespace Entidades
         private Encargado encargado;
         private Curso curso;
         private EstadoAsistencia estadoAsistencia;
+        private CondicionAsistencia condicionAsistencia;
         private List<Aula> aulas;
         private int id;
         private int eventId;    
@@ -45,6 +46,7 @@ namespace Entidades
             encargado = new Encargado();
             curso = new Curso();
             estadoAsistencia = new EstadoAsistencia();
+            condicionAsistencia = new CondicionAsistencia(this);
             aulas = new List<Aula>();
         }
 
@@ -259,6 +261,31 @@ namespace Entidades
                 }
                 return null;
             }
+        }
+
+        public void calcularCondicion()
+        {
+            condicionAsistencia.calcularCondicion();
+        }
+
+        public bool esModificada()
+        {
+            return condicionAsistencia.esModificada();
+        }
+
+        public bool esSinHoraEntradaReal_PostHoraEntradaEsperada()
+        {
+            return condicionAsistencia.esSinHoraEntradaReal_PostHoraEntradaEsperada();
+        }
+
+        public bool esSinHoraSalidaReal_PostHoraSalidaEsperada()
+        {
+            return condicionAsistencia.esSinHoraSalidaReal_PostHoraSalidaEsperada();
+        }
+
+        public bool esValidaParaGuardarse()
+        {
+            return condicionAsistencia.esValidaParaGuardarse();
         }
 
         [Serializable]

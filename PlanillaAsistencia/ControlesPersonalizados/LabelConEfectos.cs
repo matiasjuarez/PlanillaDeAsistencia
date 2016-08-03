@@ -12,103 +12,207 @@ namespace PlanillaAsistencia.ControlesPersonalizados
 {
     public partial class LabelConEfectos : UserControl
     {
+        private int duracionMensajes;
+        public int DuracionMensajes
+        {
+            get { return duracionMensajes; }
+            set { duracionMensajes = value; }
+        }
+
+        private Color colorPorDefecto;
+        public Color ColorPorDefecto
+        {
+            get { return colorPorDefecto; }
+            set { colorPorDefecto = value; }
+        }
+
+        private MostradorMensaje mostradorMensajes;
+
+        private List<Mensaje> mensajes;
+
         public LabelConEfectos()
         {
             InitializeComponent();
+
+            this.mostradorMensajes = new MostradorMensaje(this);
+
+            mensajes = new List<Mensaje>();
+            colorPorDefecto = Color.Black;
+            duracionMensajes = 3000;
             //this.lblTexto.Size = new System.Drawing.Size(this.Size.Width, 0);
             //this.MaximumSize = new System.Drawing.Size(this.Size.Width, 0);
         }
 
-        private string mensaje = "";
-        private Color color = Color.Black;
+        private void setTexto(string texto)
+        {
+            this.txt.Text = texto;
+        }
 
         // El mensaje, el color del mensaje y la cantidad de tiempo que queremos que sea visible
-        public void mostrarMensaje(string mensaje, Color color, int milisegundos)
+        public void mostrarMensaje(string mensaje, Color color, int duracion)
         {
-            mostrarMensaje(mensaje, color);
+            Mensaje mensajeNuevo = new Mensaje();
+            mensajeNuevo.TextoMensaje = mensaje;
+            mensajeNuevo.Color = color;
+            mensajeNuevo.Duracion = duracion;
 
-            if (milisegundos < 0)
+            if (duracion < 0)
             {
-                milisegundos = 0;
+                duracion = this.duracionMensajes;
             }
 
-            desvanecerMensaje(milisegundos);
+            mensajes.Add(mensajeNuevo);
+
+            if (mostradorMensajes.EstaDormido)
+            {
+                mostradorMensajes.despertar();
+            }
         }
 
         public void mostrarMensaje(string mensaje)
         {
-            mostrarMensaje(mensaje, Color.Black);
-        }
-
-        public void mostrarUltimoMensaje()
-        {
-            mostrarMensaje(this.mensaje, this.color);
+            mostrarMensaje(mensaje, this.colorPorDefecto, this.duracionMensajes);
         }
 
         public void mostrarMensaje(string mensaje, Color color)
         {
-            lblTexto.Text = mensaje;
-            lblTexto.ForeColor = color;
-
-            this.mensaje = mensaje;
-            this.color = color;
+            mostrarMensaje(mensaje, color, this.duracionMensajes);
         }
 
-        private void desvanecerMensaje(int milisegundos)
+        private Mensaje obtenerProximoMensaje()
         {
-            int frecuenciaAnimacion = 10;
+            if (mensajes.Count == 0) return null;
 
-            System.Windows.Forms.Timer tmrAnimacion = new System.Windows.Forms.Timer();
-            tmrAnimacion.Interval = 1000 / frecuenciaAnimacion;
-            tmrAnimacion.Start();
+            Mensaje mensaje = mensajes.ElementAt<Mensaje>(0);
+            mensajes.Remove(mensaje);
+            return mensaje;
+        }
 
-            Color backColor = lblTexto.BackColor;
-            Color foreColor = lblTexto.ForeColor;
+        private class MostradorMensaje
+        {
+            private LabelConEfectos label;
+            private Timer timer;
 
-            int pasoRojo = (backColor.R - foreColor.R) / ((milisegundos / 1000) * frecuenciaAnimacion);
-            int pasoVerde = (backColor.G - foreColor.G) / ((milisegundos / 1000) * frecuenciaAnimacion);
-            int pasoAzul = (backColor.B - foreColor.B) / ((milisegundos / 1000) * frecuenciaAnimacion);
-
-            tmrAnimacion.Tick += (o, e) =>
+            private bool estaDormido = true;
+            public bool EstaDormido
             {
-                int nuevoRojo = devolverValorDeColorValido(foreColor.R + pasoRojo);
-                int nuevoVerde = devolverValorDeColorValido(foreColor.G + pasoVerde);
-                int nuevoAzul = devolverValorDeColorValido(foreColor.B + pasoAzul);
+                get { return estaDormido; }
+            }
 
-                Color nuevoColor = Color.FromArgb(100, nuevoRojo, nuevoVerde, nuevoAzul);
-                foreColor = nuevoColor;
-                lblTexto.ForeColor = nuevoColor;
+            public void despertar()
+            {
+                estaDormido = false;
+                Mensaje proximoMensaje = label.obtenerProximoMensaje();
+                mostrarMensaje(proximoMensaje);
+            }
 
-                if (sonColoresIguales(lblTexto.ForeColor, lblTexto.BackColor))
+            public MostradorMensaje(LabelConEfectos label)
+            {
+                this.label = label;
+            }
+
+            private void mostrarMensaje(Mensaje mensaje)
+            {
+                this.label.setTexto(mensaje.TextoMensaje);
+
+                int frecuencia = 30;
+                int intervalo = mensaje.Duracion / frecuencia;
+
+                this.timer = new Timer();
+                this.timer.Interval = intervalo;
+                this.timer.Start();
+
+                Color backColor = label.BackColor;
+                Color foreColor = mensaje.Color;
+
+                float valorRojo = foreColor.R;
+                float valorVerde = foreColor.G;
+                float valorAzul = foreColor.B;
+
+                float pasoRojo = (backColor.R - valorRojo) / frecuencia;
+                float pasoVerde = (backColor.G - valorVerde) / frecuencia;
+                float pasoAzul = (backColor.B - valorAzul) / frecuencia;
+
+                this.timer.Tick += (o, e) =>
                 {
-                    lblTexto.Text = "";
-                    tmrAnimacion.Stop();
+                    valorRojo = procesarNuevoValorParaColor(backColor.R, valorRojo, pasoRojo);
+                    valorVerde = procesarNuevoValorParaColor(backColor.G, valorVerde, pasoVerde);
+                    valorAzul = procesarNuevoValorParaColor(backColor.B, valorAzul, pasoAzul);
+
+                    Color nuevoColor = Color.FromArgb(100, (byte)valorRojo, (byte)valorVerde, (byte)valorAzul);
+                    label.txt.ForeColor = nuevoColor;
+
+                    procesarFinMensaje();
+                };
+            }
+
+            private void procesarFinMensaje()
+            {
+                if (sonColoresIguales(label.txt.ForeColor, label.txt.BackColor))
+                {
+                    label.Text = "";
+                    timer.Stop();
+
+                    Mensaje mensaje = label.obtenerProximoMensaje();
+
+                    if (mensaje == null) this.estaDormido = true;
+                    else mostrarMensaje(mensaje);
                 }
-            };
+            }
+
+            private bool sonColoresIguales(Color c1, Color c2)
+            {
+                if (c1.R == c2.R && c1.B == c2.B && c1.G == c2.G)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            private float procesarNuevoValorParaColor(byte background, float foreground, float paso)
+            {
+                float nuevoValor = (foreground + paso);
+
+                if (paso > 0)
+                {
+                    if (nuevoValor > background)
+                    {
+                        nuevoValor = background;
+                    }
+                }
+                else
+                {
+                    if (nuevoValor < background)
+                    {
+                        nuevoValor = background;
+                    }
+                }
+
+                return nuevoValor;
+            }
         }
 
-        private bool sonColoresIguales(Color c1, Color c2)
+        private class Mensaje
         {
-            if (c1.R == c2.R && c1.B == c2.B && c1.G == c2.G)
+            private string textoMensaje;
+            public string TextoMensaje
             {
-                return true;
+                get { return textoMensaje; }
+                set { textoMensaje = value; }
             }
-            return false;
-        }
 
-        private int devolverValorDeColorValido(int valorColor)
-        {
-            if (valorColor < 0)
+            private Color color;
+            public Color Color
             {
-                return 0;
+                get { return color; }
+                set { color = value; }
             }
-            else if (valorColor > 255)
+
+            private int duracion;
+            public int Duracion
             {
-                return 255;
-            }
-            else
-            {
-                return valorColor;
+                get { return duracion; }
+                set { duracion = value; }
             }
         }
     }

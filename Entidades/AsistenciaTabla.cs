@@ -13,15 +13,12 @@ namespace Entidades
             return asistencia;
         }
 
-        private EstadoAsistenciaTabla estadoAsistencia;
-
         private string stringPorDefecto = "N/A";
         private string formatoTimespan = @"hh\:mm";
 
         public AsistenciaTabla(Asistencia asistencia)
         {
             this.asistencia = asistencia;
-            this.estadoAsistencia = new EstadoAsistenciaTabla(this);
 
             FinClaseEsperado = asistencia.HoraSalidaEsperada.ToString(formatoTimespan);
             HoraEntradaReal = asistencia.HoraEntradaReal.ToString(formatoTimespan);
@@ -235,9 +232,24 @@ namespace Entidades
             return fechaConFormato;
         }
 
-        public void calcularEstado()
+        public bool esModificada()
         {
-            this.estadoAsistencia.calcularEstado();
+            return asistencia.esModificada();
+        }
+
+        public bool esSinHoraEntradaReal_PostHoraEntradaEsperada()
+        {
+            return asistencia.esSinHoraEntradaReal_PostHoraEntradaEsperada();
+        }
+
+        public bool esSinHoraSalidaReal_PostHoraSalidaEsperada()
+        {
+            return asistencia.esSinHoraSalidaReal_PostHoraSalidaEsperada();
+        }
+
+        public bool esValidaParaGuardarse()
+        {
+            return asistencia.esValidaParaGuardarse();
         }
     }
 }

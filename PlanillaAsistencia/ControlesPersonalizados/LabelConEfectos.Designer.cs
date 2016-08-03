@@ -28,29 +28,28 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblTexto = new System.Windows.Forms.Label();
+            this.txt = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // lblTexto
+            // txt
             // 
-            this.lblTexto.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblTexto.AutoSize = true;
-            this.lblTexto.Location = new System.Drawing.Point(0, 0);
-            this.lblTexto.MaximumSize = this.Size;
-            this.lblTexto.Name = "lblTexto";
-            this.lblTexto.Size = new System.Drawing.Size(57, 13);
-            this.lblTexto.TabIndex = 0;
-            this.lblTexto.Text = "MENSAJE";
+            this.txt.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.txt.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txt.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txt.Location = new System.Drawing.Point(0, 0);
+            this.txt.Multiline = true;
+            this.txt.Name = "txt";
+            this.txt.ReadOnly = true;
+            this.txt.Size = new System.Drawing.Size(392, 20);
+            this.txt.TabIndex = 0;
             // 
             // LabelConEfectos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Controls.Add(this.lblTexto);
+            this.Controls.Add(this.txt);
             this.Name = "LabelConEfectos";
-            this.Size = new System.Drawing.Size(73, 13);
+            this.Size = new System.Drawing.Size(392, 20);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -58,6 +57,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label lblTexto;
+        private System.Windows.Forms.TextBox txt;
+
     }
 }
