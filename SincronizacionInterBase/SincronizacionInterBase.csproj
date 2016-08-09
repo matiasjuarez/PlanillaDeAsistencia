@@ -50,6 +50,10 @@
       <Project>{beea5f26-3a6f-4a01-8d62-ef0c27e929bf}</Project>
       <Name>AccesoDatos</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Configuracion\Configuracion.csproj">
+      <Project>{71941b97-e905-4be2-82ab-8114f57be27c}</Project>
+      <Name>Configuracion</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Entidades\Entidades.csproj">
       <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
       <Name>Entidades</Name>

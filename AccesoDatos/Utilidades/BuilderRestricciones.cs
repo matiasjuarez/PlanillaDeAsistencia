@@ -9,9 +9,9 @@ namespace AccesoDatos
 {
     public class BuilderRestricciones
     {
-        private string nombreBaseParametros;
+        /*private string nombreBaseParametros;
         private MySqlCommand command;
 
-        public string unstring;
+        public string unstring;*/
     }
 }

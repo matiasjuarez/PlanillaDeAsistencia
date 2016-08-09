@@ -11,6 +11,7 @@ using System.Timers;
 using AccesoDatos;
 using Entidades;
 using Utilidades;
+using PlanillaAsistencia.ABMCEncargados;
 
 namespace PlanillaAsistencia
 {
@@ -54,6 +55,8 @@ namespace PlanillaAsistencia
             manejadorCambiosEstado = new ManejadorCambiosEstado(this);
 
             escalador = new Escalador(this);
+
+            ControladorVistaGlobal controladorVistaGlobal = new ControladorVistaGlobal(this.vistaGlobal1);
         }
 
         public void inicializar()
@@ -67,6 +70,14 @@ namespace PlanillaAsistencia
             manejadorControles.resetearCampos();
 
             procesadorEventos.ProcesarEventosCamposEditables = true;
+        }
+
+        public void agregarPestanaABMCEncargados(ABMCEncargados.ABMCEncargados encargados)
+        {
+            TabPage tab = new TabPage("Encargados");
+            tab.Controls.Add(encargados);
+            encargados.Dock = DockStyle.Fill;
+            this.tabControlPrincipal.TabPages.Add(tab);
         }
 
         public void agregarObservadorCamposEditables(IObservadorCamposPlanilla observador)
@@ -277,9 +288,14 @@ namespace PlanillaAsistencia
 
             public void cargarCombos()
             {
-                cargarCombo(planilla.cmbDocente, planilla.controlador.obtenerDocentes(), "nombre", "id");
-                cargarCombo(planilla.cmbAsignatura, planilla.controlador.obtenerAsignaturas(), "nombre", "id");
-                cargarCombo(planilla.cmbEstadoAsistencia, planilla.controlador.obtenerEstadosDeAsistencia(), "nombre", "id");
+                CargadorCombo.cargar<Docente>(planilla.cmbDocente, 
+                    planilla.controlador.obtenerDocentes(), "nombre", "id");
+
+                CargadorCombo.cargar<Asignatura>(planilla.cmbAsignatura, 
+                    planilla.controlador.obtenerAsignaturas(), "nombre", "id");
+
+                CargadorCombo.cargar<EstadoAsistencia>(planilla.cmbEstadoAsistencia, 
+                    planilla.controlador.obtenerEstadosDeAsistencia(), "nombre", "id");
             }
 
             public void mostrarDatosAsistencia(Asistencia asistencia)
@@ -355,15 +371,6 @@ namespace PlanillaAsistencia
                 }
             }
 
-            private void cargarCombo<T>(ComboBox combo, List<T> data, string displayMember, string valueMember)
-            {
-                BindingSource source = new BindingSource();
-                source.DataSource = data;
-
-                combo.DataSource = source;
-                combo.DisplayMember = displayMember;
-                combo.ValueMember = valueMember;
-            }
         }
 
         private class ProcesadorEventos

@@ -13,6 +13,7 @@ namespace AccesoDatos
 {
     public static class DAOCursos
     {
+        private static Configuracion.Config configuracion = Configuracion.Config.getInstance();
         // Devuelve null si no se encuentra un curso con ese id
         public static List<Curso> obtenerTodosLosCursos()
         {
@@ -41,8 +42,8 @@ namespace AccesoDatos
                 {
                     Curso curso = new Curso();
 
-                    curso.Id = ValidadorValoresNull.getInt(reader, "IdCurso");
-                    curso.Nombre = ValidadorValoresNull.getString(reader, "Nombre");
+                    curso.Id = ValidadorValoresNull.getInt(reader, "IdCurso", -1);
+                    curso.Nombre = ValidadorValoresNull.getString(reader, "Nombre", configuracion.CursoNoAsignado);
 
                     cursos.Add(curso);
                 }
@@ -95,8 +96,8 @@ namespace AccesoDatos
                 {
                     Curso curso = new Curso();
 
-                    curso.Id = ValidadorValoresNull.getInt(reader, "IdCurso");
-                    curso.Nombre = ValidadorValoresNull.getString(reader, "Nombre");
+                    curso.Id = ValidadorValoresNull.getInt(reader, "IdCurso", -1);
+                    curso.Nombre = ValidadorValoresNull.getString(reader, "Nombre", configuracion.CursoNoAsignado);
 
                     return curso;
                 }

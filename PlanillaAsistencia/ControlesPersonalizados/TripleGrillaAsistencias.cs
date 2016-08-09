@@ -26,13 +26,13 @@ namespace PlanillaAsistencia.ControlesPersonalizados
             InitializeComponent();
 
             presentador = new Presentador(this);
-            presentador.configurarPresentacionGrillas();
 
             controladorRecarga = new ControladorRecargaDeGrillas(this);
 
             manejadorBindings = new ManejadorBindings(this);
 
             manejadorGrillas = new ManejadorGrillas(this);
+            manejadorGrillas.configurarPresentacionGrillas();
 
             observadores = new List<IObservadorTripleGrilla>();
         }
@@ -50,6 +50,28 @@ namespace PlanillaAsistencia.ControlesPersonalizados
         public void cargarAsistenciasTurnoNoche(List<AsistenciaTabla> asistencias)
         {
             manejadorBindings.actualizarBindingList(asistencias, manejadorBindings.AsistenciasTurnoNoche);
+        }
+
+        public void refrescarGrillas()
+        {
+            manejadorGrillas.refrescarGrillas();
+        }
+
+        private DataGridViewRow buscarFilaAsistencia(Asistencia asistencia, DataGridView grilla)
+        {
+            if (asistencia != null)
+            {
+                foreach (DataGridViewRow fila in grilla.Rows)
+                {
+                    AsistenciaTabla asistenciaTabla = (AsistenciaTabla)fila.DataBoundItem;
+                    if (asistencia.Id == asistenciaTabla.IdAsistencia)
+                    {
+                        return fila;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public void agregarObservador(IObservadorTripleGrilla observador)
@@ -96,8 +118,6 @@ namespace PlanillaAsistencia.ControlesPersonalizados
             {
                 this.tripleGrilla = tripleGrilla;
 
-                tripleGrilla.dgvTurnoNoche.ClearSelection();
-
                 configurarTimerRefresco();
             }
 
@@ -118,10 +138,16 @@ namespace PlanillaAsistencia.ControlesPersonalizados
 
             private void repintarGrilla(DataGridView grilla)
             {
+                CurrencyManager currencyManager = grilla.BindingContext[grilla.DataSource] as CurrencyManager;
+                currencyManager.SuspendBinding();
+
                 foreach (DataGridViewRow fila in grilla.Rows)
                 {
                     this.tripleGrilla.presentador.determinarModoPresentacionFila(fila);
                 }
+
+                currencyManager.ResumeBinding();
+
                 grilla.Update();
                 grilla.Refresh();
             }
@@ -139,6 +165,74 @@ namespace PlanillaAsistencia.ControlesPersonalizados
                     procesarRefrescoGrillas();
                     timerRefrescoGrillas.Enabled = false;
                 };
+            }
+
+            public void configurarPresentacionGrillas()
+            {
+                configurarGrilla(tripleGrilla.dgvTurnoManana);
+                configurarGrilla(tripleGrilla.dgvTurnoTarde);
+                configurarGrilla(tripleGrilla.dgvTurnoNoche);
+            }
+
+            private void configurarGrilla(DataGridView grilla)
+            {
+                crearColumnas(grilla);
+
+                grilla.BackgroundColor = System.Drawing.SystemColors.Control;
+
+                foreach (DataGridViewColumn column in grilla.Columns)
+                {
+                    column.MinimumWidth = 100;
+                    column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                }
+
+                grilla.Columns[0].MinimumWidth = 300;
+
+                grilla.DataBindingComplete += (o, i) =>
+                {
+                    grilla.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+                    grilla.Columns[grilla.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                };
+
+                grilla.AllowUserToResizeColumns = false;
+                grilla.AllowUserToResizeRows = false;
+            }
+
+            private void crearColumnas(DataGridView grilla)
+            {
+                grilla.Columns.Clear();
+                grilla.AutoGenerateColumns = false;
+
+                grilla.Columns.Add(crearColumna("NombreAsignatura", "Nombre asignatura"));
+                grilla.Columns.Add(crearColumna("Aula", "Aula"));
+                grilla.Columns.Add(crearColumna("Fecha", "Fecha"));
+                grilla.Columns.Add(crearColumna("HoraEntradaEsperada", "Hora de entrada esperada"));
+                grilla.Columns.Add(crearColumna("HoraSalidaEsperada", "Hora de salida esperada"));
+                grilla.Columns.Add(crearColumna("HoraEntradaReal", "Hora de entrada real"));
+                grilla.Columns.Add(crearColumna("HoraSalidaReal", "Hora de salida real"));
+                grilla.Columns.Add(crearColumna("NombreProfesor", "Nombre del profesor"));
+                grilla.Columns.Add(crearColumna("EstadoAsistencia", "Estado de la asistencia"));
+                grilla.Columns.Add(crearColumna("CantidadAlumnos", "Cantidad de alumnos"));
+                grilla.Columns.Add(crearColumna("Observaciones", "Observaciones"));
+                grilla.Columns.Add(crearColumna("Encargados", "Encargados"));
+
+                DataGridViewColumn colId = crearColumna("IdAsistencia", "Id");
+                colId.Visible = false;
+                grilla.Columns.Add(colId);
+            }
+
+            private DataGridViewColumn crearColumna(string dataPropertyName, string header)
+            {
+                DataGridViewColumn columna = new DataGridViewTextBoxColumn();
+                columna.DataPropertyName = dataPropertyName;
+                columna.HeaderText = header;
+                return columna;
+            }
+
+            private void configurarAutosizeGrilla(DataGridView grilla)
+            {
+                grilla.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+                grilla.Columns[grilla.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
         }
 
@@ -286,6 +380,15 @@ namespace PlanillaAsistencia.ControlesPersonalizados
             public void determinarModoPresentacionFila(DataGridViewRow fila)
             {
                 AsistenciaTabla asistenciaActual = (AsistenciaTabla)fila.DataBoundItem;
+                if (!asistenciaActual.Visible)
+                {
+                    fila.Visible = false;
+                }
+                else
+                {
+                    fila.Visible = true;
+                }
+
                 if (asistenciaActual.esModificada())
                 {
                     if (asistenciaActual.esValidaParaGuardarse()) pintarFilaComoModificada(fila);
@@ -320,74 +423,39 @@ namespace PlanillaAsistencia.ControlesPersonalizados
 
             private void pintarFilaComoNormal(DataGridViewRow fila)
             {
-                pintarFila(fila, this.fondoAsistenciaNormal);
-                fila.DefaultCellStyle.ForeColor = Color.Black;
+                AsistenciaTabla asistenciaTabla = (AsistenciaTabla)fila.DataBoundItem;
+                pintarFila(fila, asistenciaTabla.ColorBackground, asistenciaTabla.ColorForeground);
             }
 
             private void pintarFilaComoModificada(DataGridViewRow fila)
             {
-                pintarFila(fila, this.fondoAsistenciaModificada);
-                fila.DefaultCellStyle.ForeColor = Color.Black;
+                pintarFila(fila, this.fondoAsistenciaModificada, Color.Black);
             }
 
             private void pintarFilaSinHoraCargada(DataGridViewRow fila)
             {
-                pintarFila(fila, this.fondoSinHoraCargada);
-                fila.DefaultCellStyle.ForeColor = Color.White;
+                pintarFila(fila, this.fondoSinHoraCargada, Color.White);
                 
             }
 
             private void pintarFilaComoNoValidaParaGuardarse(DataGridViewRow fila)
             {
-                pintarFila(fila, this.fondoAsistenciaNoValidaParaGuardar);
-                fila.DefaultCellStyle.ForeColor = Color.White;
+                pintarFila(fila, this.fondoAsistenciaNoValidaParaGuardar, Color.White);
             }
 
-            private void pintarFila(DataGridViewRow fila, Color color)
+            public void pintarFila(DataGridViewRow fila, Color backgroundColor, Color foregroundColor)
             {
                 if (fila != null)
                 {
-                    if (color != null)
+                    if (backgroundColor != null)
                     {
-                        fila.DefaultCellStyle.BackColor = color;
+                        fila.DefaultCellStyle.BackColor = backgroundColor;
+                        fila.DefaultCellStyle.ForeColor = foregroundColor;
                     }
                 }
             }
 
-            public void configurarPresentacionGrillas()
-            {
-                configurarGrilla(tga.dgvTurnoManana);
-                configurarGrilla(tga.dgvTurnoTarde);
-                configurarGrilla(tga.dgvTurnoNoche);
-            }
-
-            private void configurarGrilla(DataGridView grilla)
-            {
-                grilla.BackgroundColor = System.Drawing.SystemColors.Control;
-
-                foreach (DataGridViewColumn column in grilla.Columns)
-                {
-                    column.MinimumWidth = 100;
-                    column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                }
-
-                grilla.Columns[0].MinimumWidth = 300;
-
-                grilla.DataBindingComplete += (o, i) =>
-                {
-                    grilla.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
-                    grilla.Columns[grilla.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                };
-
-                grilla.AllowUserToResizeColumns = false;
-                grilla.AllowUserToResizeRows = false;
-            }
-
-            private void configurarAutosizeGrilla(DataGridView grilla)
-            {
-                grilla.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
-                grilla.Columns[grilla.ColumnCount - 1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            }
+            
         }
 
         public void observarCambioDocente(Docente docente)

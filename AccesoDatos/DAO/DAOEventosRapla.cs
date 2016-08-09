@@ -15,6 +15,7 @@ namespace AccesoDatos
      */
     public static class DAOEventosRapla
     {
+        private static Configuracion.Config configuracion = Configuracion.Config.getInstance();
         /*
         // Este codigo encampsula la funcionalidad basica para obtener los eventos. En la interfaz de la clase
         // colocaremos dos metodos: uno que permite al usuario especificar dos fechas o un dia dado que le interese.
@@ -247,25 +248,25 @@ namespace AccesoDatos
             {
                 Evento evento = new Evento();
 
-                evento.IDEvento = ValidadorValoresNull.getInt(reader, "EVENTO");
-                evento.AppointmentId = ValidadorValoresNull.getInt(reader, "IDAP");
-                evento.Asignatura = ValidadorValoresNull.getString(reader, "Materia");
-                evento.Aulas = ValidadorValoresNull.getString(reader, "Aulas");
-                evento.Docente = ValidadorValoresNull.getString(reader, "Docente");
-                evento.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra");
-                evento.Curso = ValidadorValoresNull.getString(reader, "Curso");
+                evento.IDEvento = reader.GetInt32("EVENTO");
+                evento.AppointmentId = reader.GetInt32("IDAP");
+                evento.Asignatura = ValidadorValoresNull.getString(reader, "Materia", configuracion.AsignaturaNoAsignada);
+                evento.Aulas = ValidadorValoresNull.getString(reader, "Aulas", configuracion.AulaNoAsignada);
+                evento.Docente = ValidadorValoresNull.getString(reader, "Docente", configuracion.DocenteNoAsignado);
+                evento.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra", configuracion.DocenteNoAsignado);
+                evento.Curso = ValidadorValoresNull.getString(reader, "Curso", configuracion.CursoNoAsignado);
 
-                string fechaEvento = ValidadorValoresNull.getString(reader, "Inicio");
+                string fechaEvento = reader.GetString("Inicio");
                 evento.FechaEvento = DateTime.Parse(fechaEvento).Date;
 
-                string inicioEsperado = ValidadorValoresNull.getString(reader, "Inicio");
+                string inicioEsperado = reader.GetString("Inicio");
                 evento.InicioEsperado = DateTime.Parse(inicioEsperado).TimeOfDay;
 
-                string finEsperado = ValidadorValoresNull.getString(reader, "Fin");
+                string finEsperado = reader.GetString("Fin");
                 evento.FinEsperado = DateTime.Parse(finEsperado).TimeOfDay;
 
-                int esExamen = ValidadorValoresNull.getInt(reader, "esExamen");
-                int esParcial = ValidadorValoresNull.getInt(reader, "esParcial");
+                int esExamen = ValidadorValoresNull.getInt(reader, "esExamen", 0);
+                int esParcial = ValidadorValoresNull.getInt(reader, "esParcial", 0);
 
                 if (esExamen == 1)evento.EsExamen = true;
                 else evento.EsExamen = false;

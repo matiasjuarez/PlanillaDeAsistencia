@@ -8,36 +8,34 @@ namespace AccesoDatos
 {
     public abstract class ValidadorValoresNull
     {
-        public const string VALOR_POR_DEFECTO_STRING = "N/A";
-        public const int VALOR_POR_DEFECTO_INT = -1;
-        private static DateTime VALOR_POR_DEFECTO_DATETIME = new DateTime(1, 1, 1);
+        private static Configuracion.Config configuracion = Configuracion.Config.getInstance();
 
-        public static string getString(MySqlDataReader reader, string nombreColumna)
+        public static string getString(MySqlDataReader reader, string nombreColumna, string valorParaNulo)
         {
             int indiceColumna = reader.GetOrdinal(nombreColumna);
-            return getString(reader, indiceColumna);
+            return getString(reader, indiceColumna, valorParaNulo);
         }
 
-        public static string getString(MySqlDataReader reader, int indiceColumna)
+        public static string getString(MySqlDataReader reader, int indiceColumna, string valorParaNulo)
         {
             if (!reader.IsDBNull(indiceColumna))
                 return reader.GetString(indiceColumna);
             else
-                return VALOR_POR_DEFECTO_STRING;
+                return valorParaNulo;
         }
 
-        public static int getInt(MySqlDataReader reader, string nombreColumna)
+        public static int getInt(MySqlDataReader reader, string nombreColumna, int valorParaNulo)
         {
             int indiceColumna = reader.GetOrdinal(nombreColumna);
-            return getInt(reader, indiceColumna);
+            return getInt(reader, indiceColumna, valorParaNulo);
         }
 
-        public static int getInt(MySqlDataReader reader, int indiceColumna)
+        public static int getInt(MySqlDataReader reader, int indiceColumna, int valorParaNulo)
         {
             if (!reader.IsDBNull(indiceColumna))
                 return reader.GetInt32(indiceColumna);
             else
-                return VALOR_POR_DEFECTO_INT;
+                return valorParaNulo;
         }
 
         public static bool getBoolean(MySqlDataReader reader, string nombreColumna)
@@ -65,7 +63,7 @@ namespace AccesoDatos
             if (!reader.IsDBNull(indiceColumna))
                 return reader.GetDateTime(indiceColumna);
             else
-                return VALOR_POR_DEFECTO_DATETIME;
+                return configuracion.ValorParaFechaNula;
         }
 
         public static TimeSpan getTimeSpan(MySqlDataReader reader, int indiceColumna)
@@ -75,7 +73,7 @@ namespace AccesoDatos
                 DateTime fecha = reader.GetDateTime(indiceColumna);
                 return fecha.TimeOfDay;
             }
-            else return new TimeSpan(0, 0, 0);
+            else return configuracion.ValorParaHoraNula;
         }
 
         public static TimeSpan getTimeSpan(MySqlDataReader reader, string nombreColumna)
@@ -84,18 +82,18 @@ namespace AccesoDatos
             return getTimeSpan(reader, indiceColumna);
         }
 
-        public static decimal getDecimal(MySqlDataReader reader, string nombreColumna, decimal valorPorDefecto)
+        public static decimal getDecimal(MySqlDataReader reader, string nombreColumna, decimal valorParaNulo)
         {
             int indiceColumna = reader.GetOrdinal(nombreColumna);
-            return getDecimal(reader, indiceColumna, valorPorDefecto);
+            return getDecimal(reader, indiceColumna, valorParaNulo);
         }
 
-        public static decimal getDecimal(MySqlDataReader reader, int indiceColumna, decimal valorPorDefecto)
+        public static decimal getDecimal(MySqlDataReader reader, int indiceColumna, decimal valorParaNulo)
         {
             if (!reader.IsDBNull(indiceColumna))
                 return reader.GetDecimal(indiceColumna);
             else
-                return valorPorDefecto;
+                return valorParaNulo;
         }
         
     }

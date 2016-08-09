@@ -15,7 +15,8 @@ namespace AccesoDatos
 
     public static class DAOAulas
     {
-        
+        private static Configuracion.Config configuracion = Configuracion.Config.getInstance();
+
         public static List<Aula> obtenerTodasLasAulas()
         {
             List<Aula> aulas = new List<Aula>();
@@ -41,11 +42,7 @@ namespace AccesoDatos
             {
                 while (reader.Read())
                 {
-                    Aula aula = new Aula();
-
-                    aula.Id = ValidadorValoresNull.getInt(reader, "id");
-                    aula.Nombre = ValidadorValoresNull.getString(reader, "nombre");
-                    aula.Descripcion = ValidadorValoresNull.getString(reader, "descripcion");
+                    Aula aula = armarAulaDesdeReader(reader);
 
                     aulas.Add(aula);
                 }
@@ -98,11 +95,7 @@ namespace AccesoDatos
             {
                 while (reader.Read())
                 {
-                    aula = new Aula();
-
-                    aula.Id = ValidadorValoresNull.getInt(reader, "id");
-                    aula.Nombre = ValidadorValoresNull.getString(reader, "nombre");
-                    aula.Descripcion = ValidadorValoresNull.getString(reader, "descripcion");
+                    aula = armarAulaDesdeReader(reader);
                 }
             }
             catch (MySqlException e)
@@ -117,6 +110,15 @@ namespace AccesoDatos
             return aula;
         }
 
+        private static Aula armarAulaDesdeReader(MySqlDataReader reader)
+        {
+            Aula aula = new Aula();
+            aula.Id = ValidadorValoresNull.getInt(reader, "id", -1);
+            aula.Nombre = ValidadorValoresNull.getString(reader, "nombre", configuracion.AulaNoAsignada);
+            aula.Descripcion = ValidadorValoresNull.getString(reader, "descripcion", "");
+
+            return aula;
+        }
 
         public static Boolean existeAula(Aula aula)
         {

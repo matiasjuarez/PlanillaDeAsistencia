@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 using PlanillaAsistencia;
+using PlanillaAsistencia.ABMCEncargados;
 
 namespace PlanillaAsistencia
 {
@@ -26,11 +27,21 @@ namespace PlanillaAsistencia
             modelo.Controlador = controlador;
             planilla.Controlador = controlador;
 
-            DateTime inicio = DateTime.Parse("2016-01-01");
+            crearTabEncargados(planilla);
+
+            /*DateTime inicio = DateTime.Parse("2016-01-01");
             DateTime fin = DateTime.Parse("2016-12-12");
             SincronizacionInterBase.ControladorSincronizacionInterBase.sincronizar(inicio, fin);
-            
+            */
+
             Application.Run(planilla);
+        }
+
+        private static void crearTabEncargados(planillaAsistencia planilla){
+            ABMCEncargados.ABMCEncargados vista = new ABMCEncargados.ABMCEncargados();
+            ControladorABMCEncargados controlador = new ControladorABMCEncargados(vista);
+
+            planilla.agregarPestanaABMCEncargados(vista);
         }
     }
 }

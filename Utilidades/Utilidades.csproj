@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CargadorCombo.cs" />
     <Compile Include="Escalador.cs" />
     <Compile Include="GestorExcepciones.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

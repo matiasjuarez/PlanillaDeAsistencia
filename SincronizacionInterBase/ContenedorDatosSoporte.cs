@@ -6,13 +6,15 @@ using System.Text;
 using Entidades;
 using AccesoDatos;
 using ContenedoresDeDatos;
-
+using Configuracion;
 namespace SincronizacionInterBase
 {
     // Esta clase se encarga de hacer la sincronizacion necesaria entre la base de datos del rapla y
     // la base de datos que guarda la planilla de asistencia
     public class ContenedorDatosSoporte
     {
+        private static Config configuracion = Config.getInstance();
+
         private static ContenedorDatosSoporte contenedor;
 
         private ContenedorDocentes docentesPlanilla;
@@ -79,6 +81,11 @@ namespace SincronizacionInterBase
             foreach (Evento evento in eventos)
             {
                 string asignaturaRapla = evento.Asignatura;
+                if (asignaturaRapla == configuracion.AsignaturaNoAsignada)
+                {
+                    // Esto lo hacemos para no guardar una entrada que diga "asignatura no asignada"
+                    continue;
+                }
 
                 bool seEncontroAsignatura = false;
                 foreach (Asignatura asignaturaPlanilla in asignaturasPlanilla.obtenerDatos())
@@ -92,8 +99,10 @@ namespace SincronizacionInterBase
                          * es el mismo jefe de catedra que el que trae el evento. Si no lo es, tenemos que 
                          * hacer un update en la asignatura correspondiente
                          * */
-                        if (evento.JefeCatedra != asignaturaPlanilla.JefeCatedra.Nombre)
+                        if (evento.JefeCatedra != configuracion.DocenteNoAsignado)
                         {
+                            if (asignaturaPlanilla.JefeCatedra == null) asignaturaPlanilla.JefeCatedra = new Docente();
+
                             asignaturaPlanilla.JefeCatedra.Nombre = evento.JefeCatedra;
                             cambios.modificarValor(asignaturaPlanilla);
                         }
@@ -140,6 +149,11 @@ namespace SincronizacionInterBase
 
             foreach (Evento evento in eventos)
             {
+                if (evento.Aulas == configuracion.AulaNoAsignada)
+                {
+                    continue;
+                }
+
                 string[] aulasRaplaNombre = evento.Aulas.Split(',');
 
                 foreach (string aulaRaplaNombre in aulasRaplaNombre)
@@ -215,12 +229,18 @@ namespace SincronizacionInterBase
 
                 if (!existeDocente)
                 {
-                    nombresDocentesNuevos.Add(docenteRapla);
+                    if (docenteRapla != configuracion.DocenteNoAsignado)
+                    {
+                        nombresDocentesNuevos.Add(docenteRapla);
+                    }
                 }
 
                 if (!existeJefe)
                 {
-                    nombresDocentesNuevos.Add(jefeCatedraRapla);
+                    if (jefeCatedraRapla != configuracion.DocenteNoAsignado)
+                    {
+                        nombresDocentesNuevos.Add(jefeCatedraRapla);
+                    }
                 }
             }
 
@@ -247,6 +267,10 @@ namespace SincronizacionInterBase
             foreach (Evento evento in eventos)
             {
                 string cursoRapla = evento.Curso;
+                if (cursoRapla == configuracion.CursoNoAsignado)
+                {
+                    continue;
+                }
 
                 bool seEncontroCurso = false;
 

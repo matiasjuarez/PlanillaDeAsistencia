@@ -56,7 +56,7 @@ namespace AccesoDatos
             {
                 while (reader.Read())
                 {
-                    Asistencia asistencia = armarAsistenciaConEntradaDeReader(reader);
+                    Asistencia asistencia = armarAsistenciaDesdeReader(reader);
                     asistencias.Add(asistencia);
                 }
             }
@@ -100,7 +100,7 @@ namespace AccesoDatos
             {
                 while (reader.Read())
                 {
-                    Asistencia asistencia = armarAsistenciaConEntradaDeReader(reader);
+                    Asistencia asistencia = armarAsistenciaDesdeReader(reader);
                     asistencias.Add(asistencia);
                 }
             }
@@ -124,14 +124,14 @@ namespace AccesoDatos
                     "asistencias.comienzoClaseEsperado as InicioEsperado, " +
                     "asistencias.finClaseEsperado as FinEsperado, asistencias.comienzoClaseReal as InicioReal, " +
                     "asistencias.finClaseReal as FinReal, asistencias.cantidadAlumnos as Alumnos, " +
-                    "asistencias.encargadoNombre as Encargado, asistencias.docenteNombre, " +
+                    "asistencias.encargadoNombre as Encargado, asistencias.idEncargado, asistencias.docenteNombre, " +
                     "asistencias.docenteId, asistencias.asignaturaNombre, asistencias.asignaturaId, " +
                     "asistencias.estadoAsistenciaNombre, asistencias.estadoAsistenciaId, " +
                     "asistencias.cursoId, asistencias.cursoNombre, aulas.aulasId, aulas.aulasNombre, asistencias.observaciones FROM ( " +
                     "select asistencia.id as asistenciaId, asistencia.appointmentId as APID, asistencia.eventId as eventId, " +
                     "comienzoClaseEsperado, finClaseEsperado, " +
                     "comienzoClaseReal, finClaseReal, cantidadAlumnos, " +
-                    "(encargado.nombre + ' ' + encargado.apellido) as encargadoNombre, " +
+                    "(encargado.nombre + ' ' + encargado.apellido) as encargadoNombre, idEncargado, " +
                     "docente.nombre as docenteNombre, docente.id as docenteId, " +
                     "asignatura.nombre as asignaturaNombre, asignatura.id as asignaturaId, " +
                     "estadoasistencia.nombre as estadoAsistenciaNombre, estadoasistencia.id as estadoAsistenciaId, " +
@@ -157,7 +157,7 @@ namespace AccesoDatos
 
         // Toma un objeto de tipo MySqlDataReader y teniendo en cuenta la posicion del puntero del mismo
         // arma una asistencia.
-        private static Asistencia armarAsistenciaConEntradaDeReader(MySqlDataReader reader)
+        private static Asistencia armarAsistenciaDesdeReader(MySqlDataReader reader)
         {
             Asistencia asistencia = new Asistencia();
             Docente docente = new Docente();
@@ -167,21 +167,22 @@ namespace AccesoDatos
             Especialidad especialidad = new Especialidad();
             EstadoAsistencia estadoAsistencia = new EstadoAsistencia();
 
-            docente.Nombre = ValidadorValoresNull.getString(reader, "docenteNombre");
-            docente.Id = ValidadorValoresNull.getInt(reader, "docenteId");
+            docente.Nombre = ValidadorValoresNull.getString(reader, "docenteNombre", configuracion.DocenteNoAsignado);
+            docente.Id = ValidadorValoresNull.getInt(reader, "docenteId", configuracion.IdDocenteNoAsignado);
 
-            asignatura.Nombre = ValidadorValoresNull.getString(reader, "asignaturaNombre");
-            asignatura.Id = ValidadorValoresNull.getInt(reader, "asignaturaId");
+            asignatura.Nombre = ValidadorValoresNull.getString(reader, "asignaturaNombre", configuracion.AsignaturaNoAsignada);
+            asignatura.Id = ValidadorValoresNull.getInt(reader, "asignaturaId", configuracion.IdAsignaturaNoAsignada);
 
-            encargado.Nombre = ValidadorValoresNull.getString(reader, "encargado");
+            encargado.Nombre = ValidadorValoresNull.getString(reader, "encargado", configuracion.EncargadoNoAsignado);
+            encargado.Id = ValidadorValoresNull.getInt(reader, "idEncargado", configuracion.IdEncargadoNoAsignado);
 
-            curso.Id = ValidadorValoresNull.getInt(reader, "cursoId");
-            curso.Nombre = ValidadorValoresNull.getString(reader, "cursoNombre");
+            curso.Id = ValidadorValoresNull.getInt(reader, "cursoId", configuracion.IdCursoNoAsignado);
+            curso.Nombre = ValidadorValoresNull.getString(reader, "cursoNombre", configuracion.CursoNoAsignado);
 
-            string nombreAulas = ValidadorValoresNull.getString(reader, "aulasNombre");
+            string nombreAulas = ValidadorValoresNull.getString(reader, "aulasNombre", configuracion.AulaNoAsignada);
             string[] listaNombresAulas = nombreAulas.Split(',');
 
-            string idAulas = ValidadorValoresNull.getString(reader, "aulasId");
+            string idAulas = ValidadorValoresNull.getString(reader, "aulasId", "");
             string[] listaIdsAulas = idAulas.Split(',');
 
             for (int i = 0; i < listaIdsAulas.Length; i++)
@@ -196,24 +197,24 @@ namespace AccesoDatos
                 }
             }
 
-            estadoAsistencia.Id = ValidadorValoresNull.getInt(reader, "estadoAsistenciaId");
-            estadoAsistencia.Nombre = ValidadorValoresNull.getString(reader, "estadoAsistenciaNombre");
+            estadoAsistencia.Id = ValidadorValoresNull.getInt(reader, "estadoAsistenciaId", configuracion.IdEstadoAsistenciaNoAsignado);
+            estadoAsistencia.Nombre = ValidadorValoresNull.getString(reader, "estadoAsistenciaNombre", configuracion.EstadoAsistenciaNoAsignado);
 
             asistencia.Asignatura = asignatura;
             asistencia.Curso = curso;
             asistencia.Docente = docente;
             asistencia.Encargado = encargado;
             asistencia.EstadoAsistencia = estadoAsistencia;
-            asistencia.CantidadAlumnos = ValidadorValoresNull.getInt(reader, "alumnos");
+            asistencia.CantidadAlumnos = ValidadorValoresNull.getInt(reader, "alumnos", 0);
             asistencia.Fecha = ValidadorValoresNull.getDateTime(reader, "InicioEsperado");
             asistencia.HoraEntradaEsperada = ValidadorValoresNull.getTimeSpan(reader, "InicioEsperado");
             asistencia.HoraEntradaReal = ValidadorValoresNull.getTimeSpan(reader, "InicioReal");
             asistencia.HoraSalidaEsperada = ValidadorValoresNull.getTimeSpan(reader, "FinEsperado");
             asistencia.HoraSalidaReal = ValidadorValoresNull.getTimeSpan(reader, "FinReal");
-            asistencia.Id = ValidadorValoresNull.getInt(reader, "Id");
-            asistencia.EventId = ValidadorValoresNull.getInt(reader, "eventId");
-            asistencia.AppointmentId = ValidadorValoresNull.getInt(reader, "appointmentId");
-            asistencia.Observaciones = ValidadorValoresNull.getString(reader, "observaciones");
+            asistencia.Id = reader.GetInt32("Id");
+            asistencia.EventId = reader.GetInt32("eventId");
+            asistencia.AppointmentId = reader.GetInt32("appointmentId");
+            asistencia.Observaciones = ValidadorValoresNull.getString(reader, "observaciones", "");
 
             return asistencia;
         }
@@ -332,12 +333,12 @@ namespace AccesoDatos
 
             MySqlParameter idEncargadoParam = new MySqlParameter();
             idEncargadoParam.ParameterName = "@idEncargado";
-            idEncargadoParam.Value = configuracion.DefaultEncargadoAsistencia.IdEntrada;
+            idEncargadoParam.Value = configuracion.IdEncargadoNoAsignado;
             if(asistencia.Encargado != null) idEncargadoParam.Value = asistencia.Encargado.Id;
 
             MySqlParameter idEstadoAsistenciaParam = new MySqlParameter();
             idEstadoAsistenciaParam.ParameterName = "@idEstadoAsistencia";
-            idEstadoAsistenciaParam.Value = configuracion.DefaultEstadoAsistencia.IdEntrada;
+            idEstadoAsistenciaParam.Value = configuracion.IdEstadoAsistenciaNoAsignado;
             if(asistencia.EstadoAsistencia != null) idEstadoAsistenciaParam.Value = asistencia.EstadoAsistencia.Id;
 
             MySqlParameter idCursoParam = new MySqlParameter();
@@ -365,7 +366,10 @@ namespace AccesoDatos
 
                 asistencia.Id = id;
 
-                insertarAulasDeAsistencia(asistencia);
+                if (asistencia.Aulas != null && asistencia.Aulas.Count > 0)
+                {
+                    insertarAulasDeAsistencia(asistencia);
+                }
 
             }
             catch (MySqlException e)
@@ -491,7 +495,11 @@ namespace AccesoDatos
                 foreach (Asistencia asistencia in asistencias)
                 {
                     eliminarAulasDeAsistencia(asistencia);
-                    insertarAulasDeAsistencia(asistencia);
+
+                    if (asistencia.Aulas != null && asistencia.Aulas.Count > 0)
+                    {
+                        insertarAulasDeAsistencia(asistencia);
+                    }
                 }
             }
             catch (Exception e)

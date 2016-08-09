@@ -14,6 +14,7 @@ namespace AccesoDatos
 
     public static class DAOEspecialidades
     {
+        /*private static Configuracion.Config configuracion = Configuracion.Config.getInstance();
 
         public static List<Especialidad> obtenerTodasLasEspecialidades()
         {
@@ -42,7 +43,7 @@ namespace AccesoDatos
                 {
                     Especialidad especialidad = new Especialidad();
 
-                    especialidad.Id = ValidadorValoresNull.getInt(reader, "id");
+                    especialidad.Id = ValidadorValoresNull.getInt(reader, "id", -1);
                     especialidad.Nombre = ValidadorValoresNull.getString(reader, "nombre");
                     especialidad.Letra = ValidadorValoresNull.getString(reader, "letra");
 
@@ -113,7 +114,7 @@ namespace AccesoDatos
             }
 
             return especialidad;
-        }
+        }*/
     }
 
 }

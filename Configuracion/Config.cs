@@ -12,8 +12,7 @@ namespace Configuracion
 
         private Config() 
         {
-            DefaultEncargadoAsistencia = new Entrada(-1);
-            DefaultEstadoAsistencia = new Entrada(4);
+
         }
         
         public static Config getInstance()
@@ -26,18 +25,69 @@ namespace Configuracion
             return configuracion;
         }
 
-        private Entrada defaultEstadoAsistencia;
-        public Entrada DefaultEstadoAsistencia
+        public string DocenteNoAsignado
         {
-            get { return defaultEstadoAsistencia; }
-            set { defaultEstadoAsistencia = value; }
+            get { return "No asignado"; }
         }
 
-        private Entrada defaultEncargadoAsistencia;
-        public Entrada DefaultEncargadoAsistencia
+        public int IdDocenteNoAsignado
         {
-            get { return defaultEncargadoAsistencia; }
-            set { defaultEncargadoAsistencia = value; }
+            get { return -1; }
         }
+
+        public string EncargadoNoAsignado{
+            get { return "No asignado"; }
+        }
+
+        public int IdEncargadoNoAsignado
+        {
+            get { return -1; }
+        }
+
+        public string AsignaturaNoAsignada
+        {
+            get { return "No asignada"; }
+        }
+
+        public int IdAsignaturaNoAsignada
+        {
+            get { return -1; }
+        }
+
+        public string AulaNoAsignada
+        {
+            get { return "No asignada"; }
+        }
+
+        public string CursoNoAsignado
+        {
+            get { return "No asignado"; }
+        }
+
+        public int IdCursoNoAsignado
+        {
+            get { return -1; }
+        }
+
+        public string EstadoAsistenciaNoAsignado
+        {
+            get { return "No asignado"; }
+        }
+
+        public int IdEstadoAsistenciaNoAsignado
+        {
+            get { return -1; }
+        }
+
+        public DateTime ValorParaFechaNula
+        {
+            get { return new DateTime(1, 1, 1); }
+        }
+
+        public TimeSpan ValorParaHoraNula
+        {
+            get { return new TimeSpan(0, 0, 0); }
+        }
+
     }
 }

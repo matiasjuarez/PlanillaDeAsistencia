@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MetriCam">
+      <HintPath>C:\Program Files (x86)\Metrilus GmbH\MetriCam\SDK\MetriCam.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,8 +45,17 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WebCam">
+      <HintPath>C:\Program Files (x86)\Metrilus GmbH\MetriCam\SDK\WebCam.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ABMCEncargados\ABMCEncargados.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ABMCEncargados\ABMCEncargados.Designer.cs">
+      <DependentUpon>ABMCEncargados.cs</DependentUpon>
+    </Compile>
     <Compile Include="ControlesPersonalizados\LabelConEfectos.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -60,6 +72,8 @@
     <Compile Include="Interfaces\IObservadorModelo.cs" />
     <Compile Include="Interfaces\IObservadorTripleGrilla.cs" />
     <Compile Include="Principal\Controlador.cs" />
+    <Compile Include="ABMCEncargados\ControladorABMCEncargados.cs" />
+    <Compile Include="Principal\ControladorVistaGlobal.cs" />
     <Compile Include="Principal\Modelo.cs" />
     <Compile Include="Principal\Vista.cs">
       <SubType>Form</SubType>
@@ -67,8 +81,17 @@
     <Compile Include="Principal\Vista.Designer.cs">
       <DependentUpon>Vista.cs</DependentUpon>
     </Compile>
+    <Compile Include="ControlesPersonalizados\VistaGlobal.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ControlesPersonalizados\VistaGlobal.Designer.cs">
+      <DependentUpon>VistaGlobal.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ABMCEncargados\ABMCEncargados.resx">
+      <DependentUpon>ABMCEncargados.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ControlesPersonalizados\LabelConEfectos.resx">
       <DependentUpon>LabelConEfectos.cs</DependentUpon>
     </EmbeddedResource>
@@ -79,6 +102,9 @@
       <DependentUpon>Vista.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="ControlesPersonalizados\VistaGlobal.resx">
+      <DependentUpon>VistaGlobal.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -87,6 +113,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
@@ -107,6 +134,10 @@
       <Project>{beea5f26-3a6f-4a01-8d62-ef0c27e929bf}</Project>
       <Name>AccesoDatos</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Configuracion\Configuracion.csproj">
+      <Project>{71941b97-e905-4be2-82ab-8114f57be27c}</Project>
+      <Name>Configuracion</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Entidades\Entidades.csproj">
       <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
       <Name>Entidades</Name>
@@ -123,6 +154,15 @@
       <Project>{7fcc5895-70d4-4825-a03c-e4d88eaca187}</Project>
       <Name>Utilidades</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\search.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EmptyPhoto.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\mystery.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

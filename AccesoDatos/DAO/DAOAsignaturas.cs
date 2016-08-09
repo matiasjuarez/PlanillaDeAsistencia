@@ -40,12 +40,7 @@ namespace AccesoDatos
 
                 while (reader.Read())
                 {
-                    Asignatura asignatura = new Asignatura();
-
-                    asignatura.Id = reader.GetInt32("id");
-                    asignatura.Nombre = reader.GetString("nombre"); 
-                    asignatura.JefeCatedra = DAODocentes.obtenerDocentePorID(ValidadorValoresNull.getInt(reader, "idJefeCatedra"));
-                    if (asignatura.JefeCatedra == null) asignatura.JefeCatedra = new Docente();
+                    Asignatura asignatura = armarAsignaturaDesdeReader(reader);
 
                     asignaturas.Add(asignatura);
                 }
@@ -60,6 +55,17 @@ namespace AccesoDatos
             }
 
             return asignaturas;
+        }
+
+        private static Asignatura armarAsignaturaDesdeReader(MySqlDataReader reader)
+        {
+            Asignatura asignatura = new Asignatura();
+
+            asignatura.Id = reader.GetInt32("id");
+            asignatura.Nombre = reader.GetString("nombre");
+            asignatura.JefeCatedra = DAODocentes.obtenerDocentePorID(ValidadorValoresNull.getInt(reader, "idJefeCatedra", -1));
+
+            return asignatura;
         }
 
         // Devuelve null si no se encuentra una asignatura con ese id
@@ -97,11 +103,7 @@ namespace AccesoDatos
 
                 while (reader.Read())
                 {
-                    asignatura = new Asignatura();
-
-                    asignatura.Id = reader.GetInt32("id");
-                    asignatura.Nombre = reader.GetString("nombre");
-                    asignatura.JefeCatedra = DAODocentes.obtenerDocentePorID(reader.GetInt32("idJefeCatedra"));
+                    asignatura = armarAsignaturaDesdeReader(reader);
                 }
             }
             catch (MySqlException e)

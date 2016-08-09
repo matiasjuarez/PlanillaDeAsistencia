@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace Entidades
 {
@@ -20,7 +21,7 @@ namespace Entidades
         {
             this.asistencia = asistencia;
 
-            FinClaseEsperado = asistencia.HoraSalidaEsperada.ToString(formatoTimespan);
+            HoraSalidaEsperada = asistencia.HoraSalidaEsperada.ToString(formatoTimespan);
             HoraEntradaReal = asistencia.HoraEntradaReal.ToString(formatoTimespan);
             HoraSalidaReal = asistencia.HoraSalidaReal.ToString();
 
@@ -49,7 +50,7 @@ namespace Entidades
             }
         }
 
-        public String ComienzoClaseEsperado
+        public String HoraEntradaEsperada
         {
             get {
                 string hora = asistencia.HoraEntradaEsperada.ToString(formatoTimespan);
@@ -62,7 +63,7 @@ namespace Entidades
             }
         }
 
-        public String FinClaseEsperado
+        public String HoraSalidaEsperada
         {
             get {
                 string hora = asistencia.HoraSalidaEsperada.ToString(formatoTimespan);
@@ -97,6 +98,15 @@ namespace Entidades
             {
                 string horaFormateada = formatearHora(value);
                 asistencia.HoraSalidaReal = TimeSpan.Parse(horaFormateada);
+            }
+        }
+
+        public String Fecha
+        {
+            get
+            {
+                string fecha = asistencia.Fecha.ToString("dd/MM/yyyy");
+                return fecha;
             }
         }
 
@@ -186,10 +196,31 @@ namespace Entidades
             }
         }
 
+        private Color colorBackground = Color.White;
+        public Color ColorBackground
+        {
+            get { return colorBackground; }
+            set { colorBackground = value; }
+        }
+
+        private Color colorForeground = Color.Black;
+        public Color ColorForeground
+        {
+            get { return colorForeground; }
+            set { colorForeground = value; }
+        }
+
+        private bool visible = true;
+        public bool Visible
+        {
+            get { return visible; }
+            set { visible = value; }
+        }
+
         public int CompareTo(AsistenciaTabla otraAsistencia)
         {
-            DateTime estaFecha = DateTime.Parse(ComienzoClaseEsperado);
-            DateTime otraFecha = DateTime.Parse(otraAsistencia.ComienzoClaseEsperado);
+            DateTime estaFecha = DateTime.Parse(HoraEntradaEsperada);
+            DateTime otraFecha = DateTime.Parse(otraAsistencia.HoraEntradaEsperada);
 
             return estaFecha.CompareTo(otraFecha);
         }
