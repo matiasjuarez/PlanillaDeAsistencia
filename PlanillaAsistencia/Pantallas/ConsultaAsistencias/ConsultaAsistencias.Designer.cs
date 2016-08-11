@@ -222,15 +222,15 @@
             this.tripleGrillaVistaGlobal.Size = new System.Drawing.Size(797, 326);
             this.tripleGrillaVistaGlobal.TabIndex = 4;
             // 
-            // VistaGlobal
+            // ConsultaAsistencias
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.Controls.Add(this.tripleGrillaVistaGlobal);
             this.Controls.Add(this.grpBoxFiltrosCursos);
-            this.Name = "VistaGlobal";
+            this.Name = "ConsultaAsistencias";
             this.Size = new System.Drawing.Size(797, 488);
-            this.Resize += new System.EventHandler(this.VistaGlobal_Resize);
             this.grpBoxFiltrosCursos.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();

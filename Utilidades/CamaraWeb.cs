@@ -14,7 +14,7 @@ namespace Utilidades
     {
         private WebCam webcam;
         private BackgroundWorker bkgWorker;
-        private PictureBox pictureBox;
+        private CamaraContenedorImagen destino;
 
         public CamaraWeb()
         {
@@ -35,10 +35,9 @@ namespace Utilidades
                     while (!this.bkgWorker.CancellationPending)
                     {
                         webcam.Update();
-
                         try
                         {
-                            pictureBox.Image = webcam.GetBitmap();
+                            destino.Imagen = webcam.GetBitmap();
                         }
                         catch (Exception e)
                         {
@@ -52,13 +51,13 @@ namespace Utilidades
             bkgWorker.RunWorkerCompleted += (o, i) =>
             {
                 webcam.Disconnect();
-                this.pictureBox = null;
+                this.destino = null;
             };
         }
 
-        public void iniciarCaptura(ref PictureBox destino)
+        public void iniciarCaptura(ref CamaraContenedorImagen destino)
         {
-            this.pictureBox = destino;
+            this.destino = destino;
 
             if (!webcam.IsConnected())
             {

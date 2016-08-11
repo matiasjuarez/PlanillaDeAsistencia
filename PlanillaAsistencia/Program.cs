@@ -23,10 +23,11 @@ namespace PlanillaAsistencia
             PantallaPrincipal pantalla = new PantallaPrincipal();
             ControladorPrincipal controlador = new ControladorPrincipal(pantalla);
 
-            /*DateTime inicio = DateTime.Parse("2016-01-01");
-            DateTime fin = DateTime.Parse("2016-12-12");
+            // yyyy-mm-dd
+            DateTime inicio = DateTime.Parse("2016-01-01");
+            DateTime fin = DateTime.Parse("2016-12-30");
             SincronizacionInterBase.ControladorSincronizacionInterBase.sincronizar(inicio, fin);
-            */
+            
 
             Application.Run(pantalla);
         }

@@ -162,6 +162,7 @@
             // 
             this.cmbAsignatura.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.cmbAsignatura.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.cmbAsignatura.Enabled = false;
             this.cmbAsignatura.FormattingEnabled = true;
             this.cmbAsignatura.Location = new System.Drawing.Point(6, 22);
             this.cmbAsignatura.Name = "cmbAsignatura";
@@ -347,7 +348,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.BackgroundImage = global::PlanillaAsistencia.Properties.Resources.background;
             this.Controls.Add(this.lbleMensajes);
             this.Controls.Add(this.tripleGrillaAsistencias);
             this.Controls.Add(this.btnGuardar);
@@ -358,7 +358,6 @@
             this.Controls.Add(this.datePickerCargaAsistencia);
             this.Name = "ModificacionAsistencias";
             this.Size = new System.Drawing.Size(788, 488);
-            this.Resize += new System.EventHandler(this.ModificacionAsistencias_Resize);
             this.grpBoxGeneral.ResumeLayout(false);
             this.grpBoxGeneral.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownAlumnos)).EndInit();

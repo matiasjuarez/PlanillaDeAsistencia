@@ -14,10 +14,8 @@ using PlanillaAsistencia.ControlesPersonalizados;
 
 namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
 {
-    public partial class ModificacionAsistencias : UserControl, IObservadorTripleGrilla
+    public partial class ModificacionAsistencias : ResizableControl, IObservadorTripleGrilla
     {
-        private Escalador escalador;
-
         private ControladorModificacionAsistencias controlador;
         public ControladorModificacionAsistencias Controlador
         {
@@ -42,7 +40,7 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
         public ModificacionAsistencias()
         {
             InitializeComponent();
-            escalador = new Escalador(this);
+            inicializarEscalador();
 
             observadoresCamposEditables = new List<IObservadorCamposPlanilla>();
             agregarObservadorCamposEditables(tripleGrillaAsistencias);
@@ -526,7 +524,7 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
                 bool cantidadAlumnos, bool asistencia, bool observaciones)
             {
                 principal.cmbDocente.Enabled = docentes;
-                principal.cmbAsignatura.Enabled = asignaturas;
+                principal.cmbAsignatura.Enabled = false;
                 principal.mktxtHoraEntradaEsperada.Enabled = horaEntradaEsperada;
                 principal.mktxtHoraSalidaEsperada.Enabled = horaSalidaEsperada;
                 principal.mktxtHoraEntradaReal.Enabled = horaEntradaReal;
@@ -541,11 +539,6 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
             {
                 habilitarCampos(habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar);
             }
-        }
-
-        private void ModificacionAsistencias_Resize(object sender, EventArgs e)
-        {
-            escalador.resize();
         }
     }
 }

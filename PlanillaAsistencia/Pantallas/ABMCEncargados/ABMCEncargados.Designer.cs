@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.listEncargados = new System.Windows.Forms.ListBox();
             this.lblNombre = new System.Windows.Forms.Label();
             this.txtNombre = new System.Windows.Forms.TextBox();
             this.txtApellido = new System.Windows.Forms.TextBox();
@@ -40,11 +40,11 @@
             this.label4 = new System.Windows.Forms.Label();
             this.txtLegajo = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.txtMailBBS = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtMailPersonal = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtTelefono = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -52,19 +52,26 @@
             this.btnTomarFoto = new System.Windows.Forms.Button();
             this.btnSeleccionarFoto = new System.Windows.Forms.Button();
             this.pbFoto = new System.Windows.Forms.PictureBox();
+            this.btnBajaEncargado = new System.Windows.Forms.Button();
+            this.btnModificarEncargado = new System.Windows.Forms.Button();
+            this.btnNuevoEncargado = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnCancelar = new System.Windows.Forms.Button();
+            this.btnGuardarCambios = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbFoto)).BeginInit();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
-            // listBox1
+            // listEncargados
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(3, 3);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(165, 446);
-            this.listBox1.TabIndex = 0;
+            this.listEncargados.FormattingEnabled = true;
+            this.listEncargados.Location = new System.Drawing.Point(3, 3);
+            this.listEncargados.Name = "listEncargados";
+            this.listEncargados.Size = new System.Drawing.Size(165, 446);
+            this.listEncargados.TabIndex = 0;
             // 
             // lblNombre
             // 
@@ -81,6 +88,7 @@
             this.txtNombre.Name = "txtNombre";
             this.txtNombre.Size = new System.Drawing.Size(166, 20);
             this.txtNombre.TabIndex = 2;
+            this.txtNombre.TextChanged += new System.EventHandler(this.txtNombre_TextChanged);
             // 
             // txtApellido
             // 
@@ -88,6 +96,7 @@
             this.txtApellido.Name = "txtApellido";
             this.txtApellido.Size = new System.Drawing.Size(166, 20);
             this.txtApellido.TabIndex = 4;
+            this.txtApellido.TextChanged += new System.EventHandler(this.txtApellido_TextChanged);
             // 
             // label1
             // 
@@ -113,6 +122,7 @@
             this.txtDocumento.Name = "txtDocumento";
             this.txtDocumento.Size = new System.Drawing.Size(166, 20);
             this.txtDocumento.TabIndex = 6;
+            this.txtDocumento.TextChanged += new System.EventHandler(this.txtDocumento_TextChanged);
             // 
             // label3
             // 
@@ -125,10 +135,12 @@
             // 
             // dtpNacimiento
             // 
+            this.dtpNacimiento.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpNacimiento.Location = new System.Drawing.Point(374, 58);
             this.dtpNacimiento.Name = "dtpNacimiento";
             this.dtpNacimiento.Size = new System.Drawing.Size(166, 20);
             this.dtpNacimiento.TabIndex = 8;
+            this.dtpNacimiento.CloseUp += new System.EventHandler(this.dtpNacimiento_CloseUp);
             // 
             // label4
             // 
@@ -145,14 +157,15 @@
             this.txtLegajo.Name = "txtLegajo";
             this.txtLegajo.Size = new System.Drawing.Size(166, 20);
             this.txtLegajo.TabIndex = 10;
+            this.txtLegajo.TextChanged += new System.EventHandler(this.txtLegajo_TextChanged);
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.textBox3);
+            this.groupBox1.Controls.Add(this.txtMailBBS);
             this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.textBox2);
+            this.groupBox1.Controls.Add(this.txtMailPersonal);
             this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.txtTelefono);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Location = new System.Drawing.Point(180, 116);
             this.groupBox1.Name = "groupBox1";
@@ -161,12 +174,13 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "CONTACTO";
             // 
-            // textBox3
+            // txtMailBBS
             // 
-            this.textBox3.Location = new System.Drawing.Point(107, 71);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(166, 20);
-            this.textBox3.TabIndex = 16;
+            this.txtMailBBS.Location = new System.Drawing.Point(107, 71);
+            this.txtMailBBS.Name = "txtMailBBS";
+            this.txtMailBBS.Size = new System.Drawing.Size(166, 20);
+            this.txtMailBBS.TabIndex = 16;
+            this.txtMailBBS.TextChanged += new System.EventHandler(this.txtMailBBS_TextChanged);
             // 
             // label7
             // 
@@ -177,12 +191,13 @@
             this.label7.TabIndex = 15;
             this.label7.Text = "MAIL BBS";
             // 
-            // textBox2
+            // txtMailPersonal
             // 
-            this.textBox2.Location = new System.Drawing.Point(107, 45);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(166, 20);
-            this.textBox2.TabIndex = 14;
+            this.txtMailPersonal.Location = new System.Drawing.Point(107, 45);
+            this.txtMailPersonal.Name = "txtMailPersonal";
+            this.txtMailPersonal.Size = new System.Drawing.Size(166, 20);
+            this.txtMailPersonal.TabIndex = 14;
+            this.txtMailPersonal.TextChanged += new System.EventHandler(this.txtMailPersonal_TextChanged);
             // 
             // label6
             // 
@@ -193,12 +208,13 @@
             this.label6.TabIndex = 13;
             this.label6.Text = "MAIL PERSONAL";
             // 
-            // textBox1
+            // txtTelefono
             // 
-            this.textBox1.Location = new System.Drawing.Point(107, 19);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(166, 20);
-            this.textBox1.TabIndex = 12;
+            this.txtTelefono.Location = new System.Drawing.Point(107, 19);
+            this.txtTelefono.Name = "txtTelefono";
+            this.txtTelefono.Size = new System.Drawing.Size(166, 20);
+            this.txtTelefono.TabIndex = 12;
+            this.txtTelefono.TextChanged += new System.EventHandler(this.txtTelefono_TextChanged);
             // 
             // label5
             // 
@@ -234,37 +250,37 @@
             this.groupBox3.Controls.Add(this.pbFoto);
             this.groupBox3.Location = new System.Drawing.Point(474, 118);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(276, 290);
+            this.groupBox3.Size = new System.Drawing.Size(276, 254);
             this.groupBox3.TabIndex = 13;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "FOTO";
             // 
             // btnEliminarFoto
             // 
-            this.btnEliminarFoto.Location = new System.Drawing.Point(197, 261);
+            this.btnEliminarFoto.Location = new System.Drawing.Point(195, 221);
             this.btnEliminarFoto.Name = "btnEliminarFoto";
             this.btnEliminarFoto.Size = new System.Drawing.Size(75, 23);
             this.btnEliminarFoto.TabIndex = 3;
-            this.btnEliminarFoto.Text = "ELIMINAR";
+            this.btnEliminarFoto.Text = "Eliminar";
             this.btnEliminarFoto.UseVisualStyleBackColor = true;
             // 
             // btnTomarFoto
             // 
-            this.btnTomarFoto.Location = new System.Drawing.Point(89, 261);
+            this.btnTomarFoto.Location = new System.Drawing.Point(87, 221);
             this.btnTomarFoto.Name = "btnTomarFoto";
             this.btnTomarFoto.Size = new System.Drawing.Size(75, 23);
             this.btnTomarFoto.TabIndex = 2;
-            this.btnTomarFoto.Text = "CAMARA";
+            this.btnTomarFoto.Text = "Camara";
             this.btnTomarFoto.UseVisualStyleBackColor = true;
             this.btnTomarFoto.Click += new System.EventHandler(this.btnTomarFoto_Click);
             // 
             // btnSeleccionarFoto
             // 
-            this.btnSeleccionarFoto.Location = new System.Drawing.Point(8, 261);
+            this.btnSeleccionarFoto.Location = new System.Drawing.Point(6, 221);
             this.btnSeleccionarFoto.Name = "btnSeleccionarFoto";
             this.btnSeleccionarFoto.Size = new System.Drawing.Size(75, 23);
             this.btnSeleccionarFoto.TabIndex = 1;
-            this.btnSeleccionarFoto.Text = "SELECCIONAR";
+            this.btnSeleccionarFoto.Text = "Seleccionar";
             this.btnSeleccionarFoto.UseVisualStyleBackColor = true;
             this.btnSeleccionarFoto.Click += new System.EventHandler(this.btnSeleccionarFoto_Click);
             // 
@@ -275,30 +291,93 @@
             this.pbFoto.InitialImage = global::PlanillaAsistencia.Properties.Resources.mystery;
             this.pbFoto.Location = new System.Drawing.Point(6, 19);
             this.pbFoto.Name = "pbFoto";
-            this.pbFoto.Size = new System.Drawing.Size(264, 236);
+            this.pbFoto.Size = new System.Drawing.Size(264, 196);
             this.pbFoto.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbFoto.TabIndex = 0;
             this.pbFoto.TabStop = false;
+            // 
+            // btnBajaEncargado
+            // 
+            this.btnBajaEncargado.Location = new System.Drawing.Point(177, 19);
+            this.btnBajaEncargado.Name = "btnBajaEncargado";
+            this.btnBajaEncargado.Size = new System.Drawing.Size(75, 23);
+            this.btnBajaEncargado.TabIndex = 16;
+            this.btnBajaEncargado.Text = "Baja";
+            this.btnBajaEncargado.UseVisualStyleBackColor = true;
+            // 
+            // btnModificarEncargado
+            // 
+            this.btnModificarEncargado.Location = new System.Drawing.Point(96, 19);
+            this.btnModificarEncargado.Name = "btnModificarEncargado";
+            this.btnModificarEncargado.Size = new System.Drawing.Size(75, 23);
+            this.btnModificarEncargado.TabIndex = 15;
+            this.btnModificarEncargado.Text = "Modificar";
+            this.btnModificarEncargado.UseVisualStyleBackColor = true;
+            this.btnModificarEncargado.Click += new System.EventHandler(this.btnModificarEncargado_Click);
+            // 
+            // btnNuevoEncargado
+            // 
+            this.btnNuevoEncargado.Location = new System.Drawing.Point(15, 19);
+            this.btnNuevoEncargado.Name = "btnNuevoEncargado";
+            this.btnNuevoEncargado.Size = new System.Drawing.Size(75, 23);
+            this.btnNuevoEncargado.TabIndex = 14;
+            this.btnNuevoEncargado.Text = "Alta";
+            this.btnNuevoEncargado.UseVisualStyleBackColor = true;
+            this.btnNuevoEncargado.Click += new System.EventHandler(this.btnNuevoEncargado_Click);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.btnCancelar);
+            this.groupBox4.Controls.Add(this.btnGuardarCambios);
+            this.groupBox4.Controls.Add(this.btnModificarEncargado);
+            this.groupBox4.Controls.Add(this.btnBajaEncargado);
+            this.groupBox4.Controls.Add(this.btnNuevoEncargado);
+            this.groupBox4.Location = new System.Drawing.Point(180, 400);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(564, 49);
+            this.groupBox4.TabIndex = 17;
+            this.groupBox4.TabStop = false;
+            // 
+            // btnCancelar
+            // 
+            this.btnCancelar.Location = new System.Drawing.Point(483, 19);
+            this.btnCancelar.Name = "btnCancelar";
+            this.btnCancelar.Size = new System.Drawing.Size(75, 23);
+            this.btnCancelar.TabIndex = 18;
+            this.btnCancelar.Text = "Cancelar";
+            this.btnCancelar.UseVisualStyleBackColor = true;
+            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
+            // 
+            // btnGuardarCambios
+            // 
+            this.btnGuardarCambios.Location = new System.Drawing.Point(381, 19);
+            this.btnGuardarCambios.Name = "btnGuardarCambios";
+            this.btnGuardarCambios.Size = new System.Drawing.Size(75, 23);
+            this.btnGuardarCambios.TabIndex = 17;
+            this.btnGuardarCambios.Text = "Guardar";
+            this.btnGuardarCambios.UseVisualStyleBackColor = true;
             // 
             // ABMCEncargados
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txtLegajo);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.listEncargados);
             this.Name = "ABMCEncargados";
             this.Size = new System.Drawing.Size(758, 461);
-            this.SizeChanged += new System.EventHandler(this.ABMCEncargados_SizeChanged);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbFoto)).EndInit();
+            this.groupBox4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -306,7 +385,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox listEncargados;
         private System.Windows.Forms.Label lblNombre;
         private System.Windows.Forms.TextBox txtNombre;
         private System.Windows.Forms.TextBox txtApellido;
@@ -318,11 +397,11 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtLegajo;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox txtMailBBS;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtMailPersonal;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtTelefono;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -330,5 +409,11 @@
         private System.Windows.Forms.Button btnTomarFoto;
         private System.Windows.Forms.Button btnSeleccionarFoto;
         private System.Windows.Forms.PictureBox pbFoto;
+        private System.Windows.Forms.Button btnBajaEncargado;
+        private System.Windows.Forms.Button btnModificarEncargado;
+        private System.Windows.Forms.Button btnNuevoEncargado;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button btnGuardarCambios;
+        private System.Windows.Forms.Button btnCancelar;
     }
 }

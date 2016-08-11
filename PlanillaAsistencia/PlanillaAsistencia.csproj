@@ -78,6 +78,12 @@
     <Compile Include="Pantallas\ModificacionAsistencias\ModificacionAsistencias.Designer.cs">
       <DependentUpon>ModificacionAsistencias.cs</DependentUpon>
     </Compile>
+    <Compile Include="Pantallas\ResizableControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pantallas\ResizableControl.Designer.cs">
+      <DependentUpon>ResizableControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Principal\ControladorPrincipal.cs" />
     <Compile Include="Pantallas\ABMCEncargados\ControladorABMCEncargados.cs" />
     <Compile Include="Pantallas\ConsultaAsistencias\ControladorConsultaAsistencias.cs" />
@@ -110,6 +116,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Pantallas\ConsultaAsistencias\ConsultaAsistencias.resx">
       <DependentUpon>ConsultaAsistencias.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Pantallas\ResizableControl.resx">
+      <DependentUpon>ResizableControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Principal\PantallaPrincipal.resx">
       <DependentUpon>PantallaPrincipal.cs</DependentUpon>

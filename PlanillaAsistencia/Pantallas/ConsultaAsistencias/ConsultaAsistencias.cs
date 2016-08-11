@@ -12,14 +12,13 @@ using Entidades;
 using Utilidades;
 using Configuracion;
 using PlanillaAsistencia.ControlesPersonalizados;
+using PlanillaAsistencia.Pantallas;
 
 namespace PlanillaAsistencia.Pantallas.VistaGlobalAsistencias
 {
-    public partial class ConsultaAsistencias : UserControl
+    public partial class ConsultaAsistencias : ResizableControl
     {
         private Config configuracion = Config.getInstance();
-
-        private Escalador escalador;
 
         private ControladorConsultaAsistencias controladorVistaGlobal;
         public ControladorConsultaAsistencias ControladorVistaGlobal
@@ -31,7 +30,7 @@ namespace PlanillaAsistencia.Pantallas.VistaGlobalAsistencias
         public ConsultaAsistencias()
         {
             InitializeComponent();
-            escalador = new Escalador(this);
+            inicializarEscalador();
         }
 
         public DateTime obtenerFechaDesde()
@@ -167,12 +166,6 @@ namespace PlanillaAsistencia.Pantallas.VistaGlobalAsistencias
         {
             tripleGrillaVistaGlobal.cargarAsistenciasTurnoNoche(asistencias);
         }
-
-        private void VistaGlobal_Resize(object sender, EventArgs e)
-        {
-            escalador.resize();
-        }
-
        
     }
 }
