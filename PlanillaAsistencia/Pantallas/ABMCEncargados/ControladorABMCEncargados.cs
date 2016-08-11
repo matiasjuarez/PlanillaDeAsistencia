@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Drawing;
 
 
-namespace PlanillaAsistencia.ABMCEncargados
+namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 {
     public class ControladorABMCEncargados
     {

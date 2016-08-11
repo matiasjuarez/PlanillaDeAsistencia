@@ -50,10 +50,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ABMCEncargados\ABMCEncargados.cs">
+    <Compile Include="Pantallas\ABMCEncargados\ABMCEncargados.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ABMCEncargados\ABMCEncargados.Designer.cs">
+    <Compile Include="Pantallas\ABMCEncargados\ABMCEncargados.Designer.cs">
       <DependentUpon>ABMCEncargados.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlesPersonalizados\LabelConEfectos.cs">
@@ -71,25 +71,32 @@
     <Compile Include="Interfaces\IObservadorCamposPlanilla.cs" />
     <Compile Include="Interfaces\IObservadorModelo.cs" />
     <Compile Include="Interfaces\IObservadorTripleGrilla.cs" />
-    <Compile Include="Principal\Controlador.cs" />
-    <Compile Include="ABMCEncargados\ControladorABMCEncargados.cs" />
-    <Compile Include="Principal\ControladorVistaGlobal.cs" />
-    <Compile Include="Principal\Modelo.cs" />
-    <Compile Include="Principal\Vista.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Principal\Vista.Designer.cs">
-      <DependentUpon>Vista.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ControlesPersonalizados\VistaGlobal.cs">
+    <Compile Include="Pantallas\ModificacionAsistencias\ControladorModificacionAsistenciacs.cs" />
+    <Compile Include="Pantallas\ModificacionAsistencias\ModificacionAsistencias.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ControlesPersonalizados\VistaGlobal.Designer.cs">
-      <DependentUpon>VistaGlobal.cs</DependentUpon>
+    <Compile Include="Pantallas\ModificacionAsistencias\ModificacionAsistencias.Designer.cs">
+      <DependentUpon>ModificacionAsistencias.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Principal\ControladorPrincipal.cs" />
+    <Compile Include="Pantallas\ABMCEncargados\ControladorABMCEncargados.cs" />
+    <Compile Include="Pantallas\ConsultaAsistencias\ControladorConsultaAsistencias.cs" />
+    <Compile Include="Pantallas\ModificacionAsistencias\ModeloModificacionAsistencias.cs" />
+    <Compile Include="Pantallas\ConsultaAsistencias\ConsultaAsistencias.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pantallas\ConsultaAsistencias\ConsultaAsistencias.Designer.cs">
+      <DependentUpon>ConsultaAsistencias.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Principal\PantallaPrincipal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Principal\PantallaPrincipal.Designer.cs">
+      <DependentUpon>PantallaPrincipal.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ABMCEncargados\ABMCEncargados.resx">
+    <EmbeddedResource Include="Pantallas\ABMCEncargados\ABMCEncargados.resx">
       <DependentUpon>ABMCEncargados.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ControlesPersonalizados\LabelConEfectos.resx">
@@ -98,12 +105,14 @@
     <EmbeddedResource Include="ControlesPersonalizados\TripleGrillaAsistencias.resx">
       <DependentUpon>TripleGrillaAsistencias.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Principal\Vista.resx">
-      <DependentUpon>Vista.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="Pantallas\ModificacionAsistencias\ModificacionAsistencias.resx">
+      <DependentUpon>ModificacionAsistencias.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ControlesPersonalizados\VistaGlobal.resx">
-      <DependentUpon>VistaGlobal.cs</DependentUpon>
+    <EmbeddedResource Include="Pantallas\ConsultaAsistencias\ConsultaAsistencias.resx">
+      <DependentUpon>ConsultaAsistencias.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Principal\PantallaPrincipal.resx">
+      <DependentUpon>PantallaPrincipal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -115,7 +124,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -164,7 +172,15 @@
   <ItemGroup>
     <None Include="Resources\mystery.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\1654307.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

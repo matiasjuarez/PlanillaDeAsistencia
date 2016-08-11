@@ -11,23 +11,27 @@ using System.Windows.Forms;
 using Entidades;
 using Utilidades;
 using Configuracion;
+using PlanillaAsistencia.ControlesPersonalizados;
 
-namespace PlanillaAsistencia
+namespace PlanillaAsistencia.Pantallas.VistaGlobalAsistencias
 {
-    public partial class VistaGlobal : UserControl
+    public partial class ConsultaAsistencias : UserControl
     {
         private Config configuracion = Config.getInstance();
 
-        private ControladorVistaGlobal controladorVistaGlobal;
-        public ControladorVistaGlobal ControladorVistaGlobal
+        private Escalador escalador;
+
+        private ControladorConsultaAsistencias controladorVistaGlobal;
+        public ControladorConsultaAsistencias ControladorVistaGlobal
         {
             get { return controladorVistaGlobal; }
             set { controladorVistaGlobal = value; }
         }
 
-        public VistaGlobal()
+        public ConsultaAsistencias()
         {
             InitializeComponent();
+            escalador = new Escalador(this);
         }
 
         public DateTime obtenerFechaDesde()
@@ -162,6 +166,11 @@ namespace PlanillaAsistencia
         public void cargarAsistenciasTurnoNoche(List<AsistenciaTabla> asistencias)
         {
             tripleGrillaVistaGlobal.cargarAsistenciasTurnoNoche(asistencias);
+        }
+
+        private void VistaGlobal_Resize(object sender, EventArgs e)
+        {
+            escalador.resize();
         }
 
        

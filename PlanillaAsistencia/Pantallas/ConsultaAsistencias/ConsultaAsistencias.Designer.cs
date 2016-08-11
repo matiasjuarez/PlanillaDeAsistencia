@@ -1,6 +1,6 @@
-﻿namespace PlanillaAsistencia
+﻿namespace PlanillaAsistencia.Pantallas.VistaGlobalAsistencias
 {
-    partial class VistaGlobal
+    partial class ConsultaAsistencias
     {
         /// <summary> 
         /// Required designer variable.
@@ -31,6 +31,8 @@
             this.grpBoxFiltrosCursos = new System.Windows.Forms.GroupBox();
             this.btnBuscar = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.chkUsarDocente = new System.Windows.Forms.CheckBox();
+            this.chkUsarAsignatura = new System.Windows.Forms.CheckBox();
             this.cmbFiltroDocente = new System.Windows.Forms.ComboBox();
             this.lblFiltroTurno = new System.Windows.Forms.Label();
             this.cmbFiltroAsignatura = new System.Windows.Forms.ComboBox();
@@ -42,8 +44,6 @@
             this.dtpFiltroFechaDesde = new System.Windows.Forms.DateTimePicker();
             this.lblFiltroFechaHasta = new System.Windows.Forms.Label();
             this.lblFiltroFechaDesde = new System.Windows.Forms.Label();
-            this.chkUsarAsignatura = new System.Windows.Forms.CheckBox();
-            this.chkUsarDocente = new System.Windows.Forms.CheckBox();
             this.tripleGrillaVistaGlobal = new PlanillaAsistencia.ControlesPersonalizados.TripleGrillaAsistencias();
             this.grpBoxFiltrosCursos.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -87,6 +87,26 @@
             this.groupBox2.Size = new System.Drawing.Size(692, 45);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
+            // 
+            // chkUsarDocente
+            // 
+            this.chkUsarDocente.AutoSize = true;
+            this.chkUsarDocente.Location = new System.Drawing.Point(647, 25);
+            this.chkUsarDocente.Name = "chkUsarDocente";
+            this.chkUsarDocente.Size = new System.Drawing.Size(15, 14);
+            this.chkUsarDocente.TabIndex = 6;
+            this.chkUsarDocente.UseVisualStyleBackColor = true;
+            this.chkUsarDocente.CheckedChanged += new System.EventHandler(this.chkUsarDocente_CheckedChanged);
+            // 
+            // chkUsarAsignatura
+            // 
+            this.chkUsarAsignatura.AutoSize = true;
+            this.chkUsarAsignatura.Location = new System.Drawing.Point(317, 25);
+            this.chkUsarAsignatura.Name = "chkUsarAsignatura";
+            this.chkUsarAsignatura.Size = new System.Drawing.Size(15, 14);
+            this.chkUsarAsignatura.TabIndex = 5;
+            this.chkUsarAsignatura.UseVisualStyleBackColor = true;
+            this.chkUsarAsignatura.CheckedChanged += new System.EventHandler(this.chkUsarAsignatura_CheckedChanged);
             // 
             // cmbFiltroDocente
             // 
@@ -161,6 +181,7 @@
             // 
             // dtpFiltroFechaHasta
             // 
+            this.dtpFiltroFechaHasta.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpFiltroFechaHasta.Location = new System.Drawing.Point(441, 16);
             this.dtpFiltroFechaHasta.Name = "dtpFiltroFechaHasta";
             this.dtpFiltroFechaHasta.Size = new System.Drawing.Size(200, 23);
@@ -169,6 +190,7 @@
             // 
             // dtpFiltroFechaDesde
             // 
+            this.dtpFiltroFechaDesde.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpFiltroFechaDesde.Location = new System.Drawing.Point(100, 18);
             this.dtpFiltroFechaDesde.Name = "dtpFiltroFechaDesde";
             this.dtpFiltroFechaDesde.Size = new System.Drawing.Size(208, 23);
@@ -193,29 +215,8 @@
             this.lblFiltroFechaDesde.TabIndex = 0;
             this.lblFiltroFechaDesde.Text = "Desde";
             // 
-            // chkUsarAsignatura
-            // 
-            this.chkUsarAsignatura.AutoSize = true;
-            this.chkUsarAsignatura.Location = new System.Drawing.Point(317, 25);
-            this.chkUsarAsignatura.Name = "chkUsarAsignatura";
-            this.chkUsarAsignatura.Size = new System.Drawing.Size(15, 14);
-            this.chkUsarAsignatura.TabIndex = 5;
-            this.chkUsarAsignatura.UseVisualStyleBackColor = true;
-            this.chkUsarAsignatura.CheckedChanged += new System.EventHandler(this.chkUsarAsignatura_CheckedChanged);
-            // 
-            // chkUsarDocente
-            // 
-            this.chkUsarDocente.AutoSize = true;
-            this.chkUsarDocente.Location = new System.Drawing.Point(647, 25);
-            this.chkUsarDocente.Name = "chkUsarDocente";
-            this.chkUsarDocente.Size = new System.Drawing.Size(15, 14);
-            this.chkUsarDocente.TabIndex = 6;
-            this.chkUsarDocente.UseVisualStyleBackColor = true;
-            this.chkUsarDocente.CheckedChanged += new System.EventHandler(this.chkUsarDocente_CheckedChanged);
-            // 
             // tripleGrillaVistaGlobal
             // 
-            this.tripleGrillaVistaGlobal.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tripleGrillaVistaGlobal.Location = new System.Drawing.Point(0, 162);
             this.tripleGrillaVistaGlobal.Name = "tripleGrillaVistaGlobal";
             this.tripleGrillaVistaGlobal.Size = new System.Drawing.Size(797, 326);
@@ -229,6 +230,7 @@
             this.Controls.Add(this.grpBoxFiltrosCursos);
             this.Name = "VistaGlobal";
             this.Size = new System.Drawing.Size(797, 488);
+            this.Resize += new System.EventHandler(this.VistaGlobal_Resize);
             this.grpBoxFiltrosCursos.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();

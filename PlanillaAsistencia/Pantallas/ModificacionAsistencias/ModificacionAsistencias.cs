@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Timers;
 
-using AccesoDatos;
 using Entidades;
 using Utilidades;
-using PlanillaAsistencia.ABMCEncargados;
+using PlanillaAsistencia.ControlesPersonalizados;
 
-namespace PlanillaAsistencia
+namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
 {
-    public partial class planillaAsistencia : Form, IObservadorTripleGrilla
+    public partial class ModificacionAsistencias : UserControl, IObservadorTripleGrilla
     {
-        private Controlador controlador;
-        public Controlador Controlador
+        private Escalador escalador;
+
+        private ControladorModificacionAsistencias controlador;
+        public ControladorModificacionAsistencias Controlador
         {
             set { 
                 controlador = value;
@@ -33,16 +34,15 @@ namespace PlanillaAsistencia
 
         private List<IObservadorCamposPlanilla> observadoresCamposEditables;
 
-        public Escalador escalador;
-
         public const int ESTADO_NOCAMBIO_NOSELECCION = 0;
         public const int ESTADO_NOCAMBIO_SISELECCION = 1;
         public const int ESTADO_SICAMBIO_NOSELECCION = 2;
         public const int ESTADO_SICAMBIO_SISELECCION = 3;
 
-        public planillaAsistencia()
+        public ModificacionAsistencias()
         {
             InitializeComponent();
+            escalador = new Escalador(this);
 
             observadoresCamposEditables = new List<IObservadorCamposPlanilla>();
             agregarObservadorCamposEditables(tripleGrillaAsistencias);
@@ -53,10 +53,6 @@ namespace PlanillaAsistencia
             procesadorEventos = new ProcesadorEventos(this);
             mostradorDatos = new MostradorDatos(this);
             manejadorCambiosEstado = new ManejadorCambiosEstado(this);
-
-            escalador = new Escalador(this);
-
-            ControladorVistaGlobal controladorVistaGlobal = new ControladorVistaGlobal(this.vistaGlobal1);
         }
 
         public void inicializar()
@@ -70,14 +66,6 @@ namespace PlanillaAsistencia
             manejadorControles.resetearCampos();
 
             procesadorEventos.ProcesarEventosCamposEditables = true;
-        }
-
-        public void agregarPestanaABMCEncargados(ABMCEncargados.ABMCEncargados encargados)
-        {
-            TabPage tab = new TabPage("Encargados");
-            tab.Controls.Add(encargados);
-            encargados.Dock = DockStyle.Fill;
-            this.tabControlPrincipal.TabPages.Add(tab);
         }
 
         public void agregarObservadorCamposEditables(IObservadorCamposPlanilla observador)
@@ -208,17 +196,6 @@ namespace PlanillaAsistencia
             tripleGrillaAsistencias.cargarAsistenciasTurnoNoche(asistencias);
         }
 
-        private void planillaAsistencia_Resize(object sender, EventArgs e)
-        {
-            cambiarTamanoControles(this);
-        }
-
-        
-        private void cambiarTamanoControles(Control parent)
-        {
-            escalador.resize();
-        }
-
         private void datePickerCargaAsistencia_CloseUp(object sender, EventArgs e)
         {
             controlador.manejarCambioFechaSeleccionada(obtenerFechaSeleccionada());
@@ -236,11 +213,11 @@ namespace PlanillaAsistencia
                 }
             }
 
-            private planillaAsistencia planilla;
+            private ModificacionAsistencias principal;
 
-            public ManejadorCambiosEstado(planillaAsistencia planilla)
+            public ManejadorCambiosEstado(ModificacionAsistencias principal)
             {
-                this.planilla = planilla;
+                this.principal = principal;
             }
 
             private void manejarCambioEstado(int estado)
@@ -248,27 +225,27 @@ namespace PlanillaAsistencia
                 int estadoAux = this.estadoActual;
                 this.estadoActual = estado;
 
-                if (estado == planillaAsistencia.ESTADO_NOCAMBIO_NOSELECCION)
+                if (estado == ModificacionAsistencias.ESTADO_NOCAMBIO_NOSELECCION)
                 {
-                    planilla.manejadorControles.habilitarBotonGuardado(false);
-                    planilla.manejadorControles.habilitarCampos(false);
-                    planilla.manejadorControles.resetearCampos();
+                    principal.manejadorControles.habilitarBotonGuardado(false);
+                    principal.manejadorControles.habilitarCampos(false);
+                    principal.manejadorControles.resetearCampos();
                 }
-                else if (estado == planillaAsistencia.ESTADO_NOCAMBIO_SISELECCION)
+                else if (estado == ModificacionAsistencias.ESTADO_NOCAMBIO_SISELECCION)
                 {
-                    planilla.manejadorControles.habilitarBotonGuardado(false);
-                    planilla.manejadorControles.habilitarCampos(true);
+                    principal.manejadorControles.habilitarBotonGuardado(false);
+                    principal.manejadorControles.habilitarCampos(true);
                 }
-                else if (estado == planillaAsistencia.ESTADO_SICAMBIO_NOSELECCION)
+                else if (estado == ModificacionAsistencias.ESTADO_SICAMBIO_NOSELECCION)
                 {
-                    planilla.manejadorControles.habilitarBotonGuardado(true);
-                    planilla.manejadorControles.habilitarCampos(false);
-                    planilla.manejadorControles.resetearCampos();
+                    principal.manejadorControles.habilitarBotonGuardado(true);
+                    principal.manejadorControles.habilitarCampos(false);
+                    principal.manejadorControles.resetearCampos();
                 }
-                else if (estado == planillaAsistencia.ESTADO_SICAMBIO_SISELECCION)
+                else if (estado == ModificacionAsistencias.ESTADO_SICAMBIO_SISELECCION)
                 {
-                    planilla.manejadorControles.habilitarBotonGuardado(true);
-                    planilla.manejadorControles.habilitarCampos(true);
+                    principal.manejadorControles.habilitarBotonGuardado(true);
+                    principal.manejadorControles.habilitarCampos(true);
                 }
                 else
                 {
@@ -279,57 +256,57 @@ namespace PlanillaAsistencia
 
         private class MostradorDatos
         {
-            private planillaAsistencia planilla;
+            private ModificacionAsistencias principal;
 
-            public MostradorDatos(planillaAsistencia planilla)
+            public MostradorDatos(ModificacionAsistencias principal)
             {
-                this.planilla = planilla;
+                this.principal = principal;
             }
 
             public void cargarCombos()
             {
-                CargadorCombo.cargar<Docente>(planilla.cmbDocente, 
-                    planilla.controlador.obtenerDocentes(), "nombre", "id");
+                CargadorCombo.cargar<Docente>(principal.cmbDocente, 
+                    principal.controlador.obtenerDocentes(), "nombre", "id");
 
-                CargadorCombo.cargar<Asignatura>(planilla.cmbAsignatura, 
-                    planilla.controlador.obtenerAsignaturas(), "nombre", "id");
+                CargadorCombo.cargar<Asignatura>(principal.cmbAsignatura, 
+                    principal.controlador.obtenerAsignaturas(), "nombre", "id");
 
-                CargadorCombo.cargar<EstadoAsistencia>(planilla.cmbEstadoAsistencia, 
-                    planilla.controlador.obtenerEstadosDeAsistencia(), "nombre", "id");
+                CargadorCombo.cargar<EstadoAsistencia>(principal.cmbEstadoAsistencia, 
+                    principal.controlador.obtenerEstadosDeAsistencia(), "nombre", "id");
             }
 
             public void mostrarDatosAsistencia(Asistencia asistencia)
             {
-                planilla.procesadorEventos.ProcesarEventosCamposEditables = false;
+                principal.procesadorEventos.ProcesarEventosCamposEditables = false;
 
-                planilla.mktxtHoraEntradaEsperada.Text = asistencia.HoraEntradaEsperada.ToString();
-                planilla.mktxtHoraSalidaEsperada.Text = asistencia.HoraSalidaEsperada.ToString();
-                planilla.mktxtHoraEntradaReal.Text = asistencia.HoraEntradaReal.ToString();
-                planilla.mktxtHoraSalidaReal.Text = asistencia.HoraSalidaReal.ToString();
-                planilla.txtObservaciones.Text = asistencia.Observaciones;
-                planilla.numUpDownAlumnos.Value = asistencia.CantidadAlumnos;
+                principal.mktxtHoraEntradaEsperada.Text = asistencia.HoraEntradaEsperada.ToString();
+                principal.mktxtHoraSalidaEsperada.Text = asistencia.HoraSalidaEsperada.ToString();
+                principal.mktxtHoraEntradaReal.Text = asistencia.HoraEntradaReal.ToString();
+                principal.mktxtHoraSalidaReal.Text = asistencia.HoraSalidaReal.ToString();
+                principal.txtObservaciones.Text = asistencia.Observaciones;
+                principal.numUpDownAlumnos.Value = asistencia.CantidadAlumnos;
 
                 seleccionarEstadoAsistencia(asistencia.EstadoAsistencia.Id);
                 seleccionarDocente(asistencia.Docente.Id);
                 seleccionarAsignatura(asistencia.Asignatura.Id);
 
-                planilla.procesadorEventos.ProcesarEventosCamposEditables = true;
+                principal.procesadorEventos.ProcesarEventosCamposEditables = true;
             }
 
             // Recibe como parametro el id correspondiente a un estadoAsistencia y basandose en ese
             // id seleccionada el estadoAsistencia que corresponda del comboBox
             private void seleccionarEstadoAsistencia(int idEstadoAsistencia)
             {
-                int length = planilla.cmbEstadoAsistencia.Items.Count;
+                int length = principal.cmbEstadoAsistencia.Items.Count;
                 EstadoAsistencia estadoAsistencia = null;
 
                 for (int i = 0; i < length; i++)
                 {
-                    estadoAsistencia = (EstadoAsistencia)planilla.cmbEstadoAsistencia.Items[i];
+                    estadoAsistencia = (EstadoAsistencia)principal.cmbEstadoAsistencia.Items[i];
 
                     if (estadoAsistencia.Id == idEstadoAsistencia)
                     {
-                        planilla.cmbEstadoAsistencia.SelectedIndex = i;
+                        principal.cmbEstadoAsistencia.SelectedIndex = i;
                         break;
                     }
                 }
@@ -339,16 +316,16 @@ namespace PlanillaAsistencia
             // id seleccionada el docente que corresponda del comboBox
             private void seleccionarDocente(int idDocente)
             {
-                int length = planilla.cmbDocente.Items.Count;
+                int length = principal.cmbDocente.Items.Count;
                 Docente docente = null;
 
                 for (int i = 0; i < length; i++)
                 {
-                    docente = (Docente)planilla.cmbDocente.Items[i];
+                    docente = (Docente)principal.cmbDocente.Items[i];
 
                     if (docente.Id == idDocente)
                     {
-                        planilla.cmbDocente.SelectedIndex = i;
+                        principal.cmbDocente.SelectedIndex = i;
                     }
                 }
             }
@@ -357,16 +334,16 @@ namespace PlanillaAsistencia
             // id seleccionada la asignatura que corresponda del comboBox
             private void seleccionarAsignatura(int idAsignatura)
             {
-                int length = planilla.cmbAsignatura.Items.Count;
+                int length = principal.cmbAsignatura.Items.Count;
                 Asignatura asignatura = null;
 
                 for (int i = 0; i < length; i++)
                 {
-                    asignatura = (Asignatura)planilla.cmbAsignatura.Items[i];
+                    asignatura = (Asignatura)principal.cmbAsignatura.Items[i];
 
                     if (asignatura.Id == idAsignatura)
                     {
-                        planilla.cmbAsignatura.SelectedIndex = i;
+                        principal.cmbAsignatura.SelectedIndex = i;
                     }
                 }
             }
@@ -375,7 +352,7 @@ namespace PlanillaAsistencia
 
         private class ProcesadorEventos
         {
-            private planillaAsistencia planilla;
+            private ModificacionAsistencias principal;
 
             private bool procesarEventosCamposEditables = true;
             public bool ProcesarEventosCamposEditables
@@ -384,9 +361,9 @@ namespace PlanillaAsistencia
                 set { procesarEventosCamposEditables = value; }
             }
 
-            public ProcesadorEventos(planillaAsistencia planilla)
+            public ProcesadorEventos(ModificacionAsistencias principal)
             {
-                this.planilla = planilla;
+                this.principal = principal;
             }
 
             public void procesarCambioSeleccionDocente(Object sender, EventArgs e)
@@ -396,7 +373,7 @@ namespace PlanillaAsistencia
                 ComboBox combo = (ComboBox)sender;
                 Docente docenteSeleccionado = (Docente)combo.SelectedItem;
 
-                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                foreach (IObservadorCamposPlanilla observador in principal.observadoresCamposEditables)
                 {
                     observador.observarCambioDocente(docenteSeleccionado);
                 }
@@ -409,7 +386,7 @@ namespace PlanillaAsistencia
                 ComboBox combo = (ComboBox)sender;
                 Asignatura asignaturaSeleccionada = (Asignatura)combo.SelectedItem;
 
-                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                foreach (IObservadorCamposPlanilla observador in principal.observadoresCamposEditables)
                 {
                     observador.observarCambioAsignatura(asignaturaSeleccionada);
                 }
@@ -422,7 +399,7 @@ namespace PlanillaAsistencia
                 ComboBox combo = (ComboBox)sender;
                 EstadoAsistencia estadoAsistenciaSeleccionado = (EstadoAsistencia)combo.SelectedItem;
 
-                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                foreach (IObservadorCamposPlanilla observador in principal.observadoresCamposEditables)
                 {
                     observador.observarCambioEstadoAsistencia(estadoAsistenciaSeleccionado);
                 }
@@ -434,7 +411,7 @@ namespace PlanillaAsistencia
 
                 MaskedTextBox mask = (MaskedTextBox)sender;
 
-                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                foreach (IObservadorCamposPlanilla observador in principal.observadoresCamposEditables)
                 {
                     TimeSpan horaProcesada = procesarTextoHoraEntradaSalidaReal(mask);
                     observador.observarCambioHoraRealDeEntrada(horaProcesada);
@@ -447,7 +424,7 @@ namespace PlanillaAsistencia
 
                 MaskedTextBox mask = (MaskedTextBox)sender;
 
-                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                foreach (IObservadorCamposPlanilla observador in principal.observadoresCamposEditables)
                 {
                     TimeSpan horaProcesada = procesarTextoHoraEntradaSalidaReal(mask);
                     observador.observarCambioHoraRealDeSalida(horaProcesada);
@@ -461,7 +438,7 @@ namespace PlanillaAsistencia
                 NumericUpDown spinner = (NumericUpDown)sender;
                 int valor = (int)spinner.Value;
 
-                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                foreach (IObservadorCamposPlanilla observador in principal.observadoresCamposEditables)
                 {
                     observador.observarCambioCantidadAlumnos(valor);
                 }
@@ -474,7 +451,7 @@ namespace PlanillaAsistencia
                 TextBox txt = (TextBox)sender;
                 string texto = txt.Text;
 
-                foreach (IObservadorCamposPlanilla observador in planilla.observadoresCamposEditables)
+                foreach (IObservadorCamposPlanilla observador in principal.observadoresCamposEditables)
                 {
                     observador.observarCambioObservaciones(texto);
                 }
@@ -504,11 +481,11 @@ namespace PlanillaAsistencia
 
         private class ManejadorControles
         {
-            private planillaAsistencia planilla;
+            private ModificacionAsistencias principal;
 
-            public ManejadorControles(planillaAsistencia planilla)
+            public ManejadorControles(ModificacionAsistencias principal)
             {
-                this.planilla = planilla;
+                this.principal = principal;
             }
 
             // Limpias los campos de texto, deselecciona los combo box. Para hacer eso se pasa un valor true o false
@@ -517,19 +494,19 @@ namespace PlanillaAsistencia
                 bool horaSalidaEsperada, bool horaEntradaReal, bool horaSalidaReal,
                 bool cantidadAlumnos, bool asistencia, bool observaciones)
             {
-                planilla.procesadorEventos.ProcesarEventosCamposEditables = false;
+                principal.procesadorEventos.ProcesarEventosCamposEditables = false;
 
-                if (docentes) planilla.cmbDocente.SelectedIndex = -1;
-                if (asignaturas) planilla.cmbAsignatura.SelectedIndex = -1;
-                if (horaEntradaEsperada) planilla.mktxtHoraEntradaEsperada.ResetText();
-                if (horaSalidaEsperada) planilla.mktxtHoraSalidaEsperada.ResetText();
-                if (horaEntradaReal) planilla.mktxtHoraEntradaReal.ResetText();
-                if (horaSalidaReal) planilla.mktxtHoraSalidaReal.ResetText();
-                if (cantidadAlumnos) planilla.numUpDownAlumnos.ResetText();
-                if (asistencia) planilla.cmbEstadoAsistencia.SelectedIndex = -1;
-                if (observaciones) planilla.txtObservaciones.ResetText();
+                if (docentes) principal.cmbDocente.SelectedIndex = -1;
+                if (asignaturas) principal.cmbAsignatura.SelectedIndex = -1;
+                if (horaEntradaEsperada) principal.mktxtHoraEntradaEsperada.ResetText();
+                if (horaSalidaEsperada) principal.mktxtHoraSalidaEsperada.ResetText();
+                if (horaEntradaReal) principal.mktxtHoraEntradaReal.ResetText();
+                if (horaSalidaReal) principal.mktxtHoraSalidaReal.ResetText();
+                if (cantidadAlumnos) principal.numUpDownAlumnos.ResetText();
+                if (asistencia) principal.cmbEstadoAsistencia.SelectedIndex = -1;
+                if (observaciones) principal.txtObservaciones.ResetText();
 
-                planilla.procesadorEventos.ProcesarEventosCamposEditables = true;
+                principal.procesadorEventos.ProcesarEventosCamposEditables = true;
             }
 
             // Resetea todos los campos del formulario
@@ -540,7 +517,7 @@ namespace PlanillaAsistencia
 
             public void habilitarBotonGuardado(bool habilitar)
             {
-                planilla.btnGuardar.Enabled = habilitar;
+                principal.btnGuardar.Enabled = habilitar;
             }
 
             // Habilita o deshabilita un cierto campo a traves de las bandearas pasadas por parametro
@@ -548,15 +525,15 @@ namespace PlanillaAsistencia
                 bool horaSalidaEsperada, bool horaEntradaReal, bool horaSalidaReal,
                 bool cantidadAlumnos, bool asistencia, bool observaciones)
             {
-                planilla.cmbDocente.Enabled = docentes;
-                planilla.cmbAsignatura.Enabled = asignaturas;
-                planilla.mktxtHoraEntradaEsperada.Enabled = horaEntradaEsperada;
-                planilla.mktxtHoraSalidaEsperada.Enabled = horaSalidaEsperada;
-                planilla.mktxtHoraEntradaReal.Enabled = horaEntradaReal;
-                planilla.mktxtHoraSalidaReal.Enabled = horaSalidaReal;
-                planilla.numUpDownAlumnos.Enabled = cantidadAlumnos;
-                planilla.cmbEstadoAsistencia.Enabled = asistencia;
-                planilla.txtObservaciones.Enabled = observaciones;
+                principal.cmbDocente.Enabled = docentes;
+                principal.cmbAsignatura.Enabled = asignaturas;
+                principal.mktxtHoraEntradaEsperada.Enabled = horaEntradaEsperada;
+                principal.mktxtHoraSalidaEsperada.Enabled = horaSalidaEsperada;
+                principal.mktxtHoraEntradaReal.Enabled = horaEntradaReal;
+                principal.mktxtHoraSalidaReal.Enabled = horaSalidaReal;
+                principal.numUpDownAlumnos.Enabled = cantidadAlumnos;
+                principal.cmbEstadoAsistencia.Enabled = asistencia;
+                principal.txtObservaciones.Enabled = observaciones;
             }
 
             // Habilita o deshabilita todos los campos con excepcion de las fechas del formulario
@@ -564,6 +541,11 @@ namespace PlanillaAsistencia
             {
                 habilitarCampos(habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar, habilitar);
             }
+        }
+
+        private void ModificacionAsistencias_Resize(object sender, EventArgs e)
+        {
+            escalador.resize();
         }
     }
 }

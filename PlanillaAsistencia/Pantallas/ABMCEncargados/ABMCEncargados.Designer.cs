@@ -1,4 +1,4 @@
-﻿namespace PlanillaAsistencia.ABMCEncargados
+﻿namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 {
     partial class ABMCEncargados
     {
@@ -52,7 +52,6 @@
             this.btnTomarFoto = new System.Windows.Forms.Button();
             this.btnSeleccionarFoto = new System.Windows.Forms.Button();
             this.pbFoto = new System.Windows.Forms.PictureBox();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -281,12 +280,6 @@
             this.pbFoto.TabIndex = 0;
             this.pbFoto.TabStop = false;
             // 
-            // backgroundWorker1
-            // 
-            this.backgroundWorker1.WorkerSupportsCancellation = true;
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
-            // 
             // ABMCEncargados
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -299,6 +292,7 @@
             this.Controls.Add(this.listBox1);
             this.Name = "ABMCEncargados";
             this.Size = new System.Drawing.Size(758, 461);
+            this.SizeChanged += new System.EventHandler(this.ABMCEncargados_SizeChanged);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -336,6 +330,5 @@
         private System.Windows.Forms.Button btnTomarFoto;
         private System.Windows.Forms.Button btnSeleccionarFoto;
         private System.Windows.Forms.PictureBox pbFoto;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

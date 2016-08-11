@@ -2,24 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-using PlanillaAsistencia;
-using Entidades;
-//using System.Windows.Forms;
+using System.Threading.Tasks;
 using System.Drawing;
-
-using System.Windows.Forms;
 
 using AccesoDatos;
 using ContenedoresDeDatos;
 using Utilidades;
+using Entidades;
 
-namespace PlanillaAsistencia
+namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
 {
-    public class Controlador : IObservadorCamposPlanilla, Temporizador.ITemporizable
+    public class ControladorModificacionAsistencias : IObservadorCamposPlanilla, Temporizador.ITemporizable
     {
-        private planillaAsistencia vista;
-        private Modelo modelo;
+        private ModificacionAsistencias vista;
+        private ModeloModificacionAsistencias modelo;
 
         // La asistencia sobre la que el usuario hizo click en la grilla
         private AsistenciaTabla asistenciaSeleccionada;
@@ -32,9 +28,9 @@ namespace PlanillaAsistencia
 
         private Temporizador temporizador;
 
-        public Controlador(planillaAsistencia planilla, Modelo modelo)
+        public ControladorModificacionAsistencias(ModificacionAsistencias vista, ModeloModificacionAsistencias modelo)
         {
-            this.vista = planilla;
+            this.vista = vista;
             this.modelo = modelo;
 
             this.asistenciasTrabajadas = new ContenedorAsistencias();
@@ -95,7 +91,7 @@ namespace PlanillaAsistencia
             {
                 vista.mostrarMensaje(noValidas + " asistencias tienen valores no validos", Color.Purple, 2000);
             }
-                
+
             DAOAsistencias.updateAsistencias(asistenciasModificadasValidasParaGuardar);
 
             foreach (Asistencia asistencia in asistenciasModificadasValidasParaGuardar)
@@ -181,7 +177,7 @@ namespace PlanillaAsistencia
                 }
 
                 OrdenadorAsistencias sorter = new OrdenadorAsistencias(ordenadorAsistenciaPorHoraEntradaEsperada);
-                
+
                 asistenciasManana.Sort((a1, a2) => sorter(a1, a2));
                 asistenciasTarde.Sort((a1, a2) => sorter(a1, a2));
                 asistenciasNoche.Sort((a1, a2) => sorter(a1, a2));
@@ -211,22 +207,22 @@ namespace PlanillaAsistencia
             {
                 if (hayAsistenciasModificadas())
                 {
-                    return planillaAsistencia.ESTADO_SICAMBIO_NOSELECCION;
+                    return ModificacionAsistencias.ESTADO_SICAMBIO_NOSELECCION;
                 }
                 else
                 {
-                    return planillaAsistencia.ESTADO_NOCAMBIO_NOSELECCION;
+                    return ModificacionAsistencias.ESTADO_NOCAMBIO_NOSELECCION;
                 }
             }
             else
             {
                 if (hayAsistenciasModificadas())
                 {
-                    return planillaAsistencia.ESTADO_SICAMBIO_SISELECCION;
+                    return ModificacionAsistencias.ESTADO_SICAMBIO_SISELECCION;
                 }
                 else
                 {
-                    return planillaAsistencia.ESTADO_NOCAMBIO_SISELECCION;
+                    return ModificacionAsistencias.ESTADO_NOCAMBIO_SISELECCION;
                 }
             }
         }

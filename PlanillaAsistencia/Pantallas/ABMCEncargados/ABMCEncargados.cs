@@ -7,13 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MetriCam;
+using Utilidades;
 
-namespace PlanillaAsistencia.ABMCEncargados
+namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 {
     public partial class ABMCEncargados : UserControl
     {
-        private WebCam webCam;
+        private Escalador escalador;
+
+        private CamaraWeb camara;
+        private bool camaraFilmando = false;
 
         private ControladorABMCEncargados controlador;
         public ControladorABMCEncargados Controlador
@@ -24,17 +27,9 @@ namespace PlanillaAsistencia.ABMCEncargados
         public ABMCEncargados()
         {
             InitializeComponent();
-            webCam = new WebCam();
-        }
+            this.escalador = new Escalador(this);
 
-        public PictureBox obtenerContenedorPhoto()
-        {
-            return this.pbFoto;
-        }
-
-        public void cambiarTextoBotonCapturaCamara(string texto)
-        {
-            btnTomarFoto.Text = texto;
+            camara = new CamaraWeb();
         }
 
         private void btnSeleccionarFoto_Click(object sender, EventArgs e)
@@ -53,32 +48,27 @@ namespace PlanillaAsistencia.ABMCEncargados
 
         private void btnTomarFoto_Click(object sender, EventArgs e)
         {
-            if (!webCam.IsConnected())
+            if (!camaraFilmando)
             {
-                webCam.Connect();
+                camaraFilmando = true;
+
+                camara.iniciarCaptura(ref pbFoto);
                 btnTomarFoto.Text = "Capturar";
-                backgroundWorker1.RunWorkerAsync();
             }
             else
             {
-                backgroundWorker1.CancelAsync();
+                camaraFilmando = false;
 
+                camara.detenerCaptura();
+                btnTomarFoto.Text = "Filmar";
             }
         }
 
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        private void ABMCEncargados_SizeChanged(object sender, EventArgs e)
         {
-            while (!backgroundWorker1.CancellationPending)
-            {
-                webCam.Update();
-                this.pbFoto.Image = webCam.GetBitmap();
-            }
+            this.escalador.resize();
+            this.Update();
         }
 
-        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            webCam.Disconnect();
-            btnTomarFoto.Text = "Filmar";
-        }
     }
 }
