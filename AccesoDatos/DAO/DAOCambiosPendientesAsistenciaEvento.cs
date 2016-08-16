@@ -9,7 +9,7 @@ namespace AccesoDatos
 {
     public class DAOCambiosPendientesAsistenciaEvento
     {
-        public static void guardarCambioPendiente(Asistencia asistencia, Evento evento, string nombreCambio)
+        public static void guardarCambioPendiente(Asistencia asistencia, Appointment evento, string nombreCambio)
         {
 
         }

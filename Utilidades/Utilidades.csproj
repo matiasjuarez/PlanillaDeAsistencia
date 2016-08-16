@@ -51,6 +51,7 @@
     <Compile Include="CargadorCombo.cs" />
     <Compile Include="Escalador.cs" />
     <Compile Include="GestorExcepciones.cs" />
+    <Compile Include="Imagenes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Temporizador.cs" />
     <Compile Include="CamaraWeb.cs" />

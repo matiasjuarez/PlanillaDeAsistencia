@@ -38,6 +38,11 @@ namespace Entidades
             set { apellido = value; }
         }
 
+        public string NombreCompleto
+        {
+            get { return Apellido + ", " + Nombre; }
+        }
+
         public string Telefono
         {
             get { return telefono; }

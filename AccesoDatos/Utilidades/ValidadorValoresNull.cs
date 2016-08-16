@@ -95,6 +95,28 @@ namespace AccesoDatos
             else
                 return valorParaNulo;
         }
+
+        public static byte[] getBinaryData(MySqlDataReader reader, int indiceColumna)
+        {
+            if(!reader.IsDBNull(indiceColumna))
+            {
+                int length = (int)reader.GetBytes(indiceColumna, 0, null, 0, 0); 
+
+                byte[] data = new byte[length];
+
+                reader.GetBytes(indiceColumna, 0, data, 0, length);
+
+                return data;
+            }
+
+            return null;
+        }
+
+        public static byte[] getBinaryData(MySqlDataReader reader, string nombreColumna)
+        {
+            int indiceColumna = reader.GetOrdinal(nombreColumna);
+            return getBinaryData(reader, indiceColumna);
+        }
         
     }
 }

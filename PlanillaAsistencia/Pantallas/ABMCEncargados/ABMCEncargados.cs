@@ -14,6 +14,8 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 {
     public partial class ABMCEncargados : ResizableControl
     {
+        private bool escucharEventos = true;
+
         private ControladorABMCEncargados controlador;
         public ControladorABMCEncargados Controlador
         {
@@ -38,8 +40,13 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 
         public void cargarListaEncargados(List<Encargado> encargados)
         {
+            escucharEventos = false;
+
             BindingList<Encargado> bindingEncargados = new BindingList<Encargado>(encargados);
             listEncargados.DataSource = bindingEncargados;
+            listEncargados.DisplayMember = "NombreCompleto";
+
+            escucharEventos = true;
         }
 
         public void tomarImagenEncargado(Image image)
@@ -72,7 +79,9 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             txtTelefono.ResetText();
             txtMailBBS.ResetText();
             txtMailPersonal.ResetText();
-            dtpNacimiento.ResetText();
+            mkFechaNacimiento.ResetText();
+
+            pbFoto.Image = controlador.obtenerImagenInicial();
         }
 
         private void habilitarCampos(bool habilitar)
@@ -85,7 +94,7 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             txtTelefono.Enabled = habilitar;
             txtMailBBS.Enabled = habilitar;
             txtMailPersonal.Enabled = habilitar;
-            dtpNacimiento.Enabled = habilitar;
+            mkFechaNacimiento.Enabled = habilitar;
         }
 
         private void habilitarBotones(bool btnEliminarFoto, bool btnSeleccionarFoto, bool btnCamara,
@@ -104,28 +113,36 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 
         public void ponerEnEstadoInicial()
         {
+            escucharEventos = false;
+
             habilitarCampos(false);
             limpiarCampos();
 
             habilitarBotones(false, false, false, true, false, false, false, false);
+
+            escucharEventos = true;
         }
 
         public void ponerEnEstadoNuevoEncargado()
         {
+            escucharEventos = false;
+
             habilitarCampos(true);
             limpiarCampos();
 
             habilitarBotones(false, true, true, false, false, false, true, true);
+
+            escucharEventos = true;
         }
 
-        public void ponerEnEstadoModificarEncargado()
+        public void ponerEnEstadoModificarEncargado(Encargado encargado)
         {
+            escucharEventos = false;
+
             habilitarCampos(true);
             limpiarCampos();
 
             habilitarBotones(false, true, true, false, false, false, true, true);
-
-            Encargado encargado = (Encargado)this.listEncargados.SelectedItem;
 
             txtNombre.Text = encargado.Nombre;
             txtApellido.Text = encargado.Apellido;
@@ -134,14 +151,24 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             txtMailBBS.Text = encargado.MailBBS;
             txtMailPersonal.Text = encargado.MailGeneral;
             txtLegajo.Text = encargado.Legajo;
-            dtpNacimiento.Value = encargado.FechaNacimiento;
 
-            controlador.opcionModificarEncargado(encargado);
+            string nacimiento = "";
+            try { nacimiento = encargado.FechaNacimiento.ToString("dd/MM/yyyy"); }
+            catch { nacimiento = Configuracion.Config.getInstance().ValorParaFechaNula.ToString("dd/MM/yyyy"); }
+            mkFechaNacimiento.Text = nacimiento;
+
+            pbFoto.Image = encargado.Foto;
+
+            escucharEventos = true;
         }
 
         private void txtNombre_TextChanged(object sender, EventArgs e)
         {
-            controlador.tomarNombreEncargado(obtenerTextoDeTextBox(sender));
+            if (escucharEventos)
+            {
+                controlador.tomarNombreEncargado(obtenerTextoDeTextBox(sender));
+            }
+            
         }
 
         private string obtenerTextoDeTextBox(object sender)
@@ -152,38 +179,50 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 
         private void txtApellido_TextChanged(object sender, EventArgs e)
         {
-            controlador.tomarApellidoEncargado(obtenerTextoDeTextBox(sender));
+            if (escucharEventos)
+            {
+                controlador.tomarApellidoEncargado(obtenerTextoDeTextBox(sender));
+            }
         }
 
         private void txtDocumento_TextChanged(object sender, EventArgs e)
         {
-            controlador.tomarDocumentoEncargado(obtenerTextoDeTextBox(sender));
+            if (escucharEventos)
+            {
+                controlador.tomarDocumentoEncargado(obtenerTextoDeTextBox(sender));
+            }
         }
 
         private void txtTelefono_TextChanged(object sender, EventArgs e)
         {
-            controlador.tomarTelefonoEncargado(obtenerTextoDeTextBox(sender));
+            if (escucharEventos)
+            {
+                controlador.tomarTelefonoEncargado(obtenerTextoDeTextBox(sender));
+            }
         }
 
         private void txtMailPersonal_TextChanged(object sender, EventArgs e)
         {
-            controlador.tomarMailPersonalEncargado(obtenerTextoDeTextBox(sender));
+            if (escucharEventos)
+            {
+                controlador.tomarMailPersonalEncargado(obtenerTextoDeTextBox(sender));
+            }
         }
 
         private void txtMailBBS_TextChanged(object sender, EventArgs e)
         {
-            controlador.tomarMailBBSencargado(obtenerTextoDeTextBox(sender));
+            if (escucharEventos)
+            {
+                controlador.tomarMailBBSencargado(obtenerTextoDeTextBox(sender));
+            }
         }
 
         private void txtLegajo_TextChanged(object sender, EventArgs e)
         {
-            controlador.tomarLegajoEncargado(obtenerTextoDeTextBox(sender));
-        }
-
-        private void dtpNacimiento_CloseUp(object sender, EventArgs e)
-        {
-            DateTimePicker dtp = (DateTimePicker)sender;
-            controlador.tomarFechaNacimientoEncargado(dtp.Value);
+            if (escucharEventos)
+            {
+                controlador.tomarLegajoEncargado(obtenerTextoDeTextBox(sender));
+            }
         }
 
         private void btnModificarEncargado_Click(object sender, EventArgs e)
@@ -206,6 +245,30 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
         private void btnGuardarCambios_Click(object sender, EventArgs e)
         {
             controlador.opcionGuardar();
+        }
+
+        public Image obtenerImagenSeleccionada()
+        {
+            return pbFoto.Image;
+        }
+
+        private void listEncargados_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!escucharEventos) return;
+
+            ListBox list = (ListBox)sender;
+
+            Encargado encargado = (Encargado)list.SelectedValue;
+
+            controlador.opcionModificarEncargado(encargado);
+        }
+
+        private void mkFechaNacimiento_TextChanged(object sender, EventArgs e)
+        {
+            if (!escucharEventos) return;
+
+            MaskedTextBox mk = (MaskedTextBox)sender;
+            controlador.tomarFechaNacimientoEncargado(mk.Text);
         }
     }
 }

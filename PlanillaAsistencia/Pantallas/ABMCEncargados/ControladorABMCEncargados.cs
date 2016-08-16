@@ -21,7 +21,6 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 
         private ABMCEncargados vista;
         private Image imagenInicial;
-        private Image imagenSeleccionada;
         private CamaraWeb camara;
 
         private List<Encargado> encargados;
@@ -64,16 +63,18 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 
             OpenFileDialog fileDialog = new OpenFileDialog();
 
+            Image imagen = null;
+
             if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 System.IO.StreamReader streamReader = new System.IO.StreamReader(fileDialog.FileName);
 
-                imagenSeleccionada = Image.FromStream(streamReader.BaseStream);
+                imagen = Image.FromStream(streamReader.BaseStream);
             }
 
-            if (imagenSeleccionada != null)
+            if (imagen != null)
             {
-                vista.tomarImagenEncargado(imagenSeleccionada);
+                vista.tomarImagenEncargado(imagen);
             }
             else
             {
@@ -113,7 +114,7 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
         {
             this.estadoActual = ESTADO_MODIFICACION;
 
-            vista.ponerEnEstadoModificarEncargado();
+            vista.ponerEnEstadoModificarEncargado(encargado);
             this.encargadoSeleccionado = encargado;
         }
 
@@ -135,23 +136,26 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 
         public void opcionGuardar()
         {
+            if (!validarDatosEncargado()) return;
+
             if (this.estadoActual == ESTADO_ALTA)
             {
-                if (validarDatosEncargado())
+                if (DAOEncargados.insertarEncargado(encargadoSeleccionado))
                 {
-                    if (DAOEncargados.insertarEncargado(encargadoSeleccionado))
-                    {
-                        this.encargados.Add(encargadoSeleccionado);
-                        this.ponerEnEstadoInicial();
-                        vista.ponerEnEstadoInicial();
-                        vista.tomarImagenEncargado(this.imagenInicial);
-                        vista.cargarListaEncargados(this.obtenerEncargados());
-                    }
+                    this.encargados.Add(encargadoSeleccionado);
+                    this.ponerEnEstadoInicial();
+                    vista.ponerEnEstadoInicial();
+                    vista.tomarImagenEncargado(this.imagenInicial);
+                    vista.cargarListaEncargados(this.obtenerEncargados());
                 }
             }
             else if (this.estadoActual == ESTADO_MODIFICACION)
             {
-
+                if (DAOEncargados.modificarEncargado(encargadoSeleccionado))
+                {
+                    this.ponerEnEstadoInicial();
+                    vista.ponerEnEstadoInicial();
+                }
             }
         }
 
@@ -165,6 +169,16 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             if (encargadoSeleccionado.FechaNacimiento == null)
             {
                 encargadoSeleccionado.FechaNacimiento = Configuracion.Config.getInstance().ValorParaFechaNula;
+            }
+
+            Image imagenSeleccionada = vista.obtenerImagenSeleccionada();
+            if (imagenSeleccionada != this.imagenInicial)
+            {
+                encargadoSeleccionado.Foto = imagenSeleccionada;
+            }
+            else
+            {
+                encargadoSeleccionado.Foto = null;
             }
 
             return true;
@@ -185,9 +199,18 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             encargadoSeleccionado.Dni = documento;
         }
 
-        public void tomarFechaNacimientoEncargado(DateTime nacimiento)
+        public void tomarFechaNacimientoEncargado(string nacimiento)
         {
-            encargadoSeleccionado.FechaNacimiento = nacimiento;
+            try
+            {
+                DateTime fecha = DateTime.Parse(nacimiento);
+                encargadoSeleccionado.FechaNacimiento = fecha;
+            }
+            catch (Exception e)
+            {
+
+            }
+            
         }
 
         public void tomarTelefonoEncargado(string telefono)

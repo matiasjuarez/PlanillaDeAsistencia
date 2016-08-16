@@ -49,7 +49,7 @@ namespace ContenedoresDeDatos
             return asistencias;
         }
         
-        public Asistencia obtenerAsistenciaSegunEvento(Evento evento)
+        public Asistencia obtenerAsistenciaSegunEvento(Appointment evento)
         {
             foreach (Asistencia asistencia in obtenerDatos())
             {

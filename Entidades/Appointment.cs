@@ -5,25 +5,40 @@ using System.Text;
 
 namespace Entidades
 {
-    public class Evento
+    public class Appointment
     {
         private int idEvento;
         private int appointmentId;
         private String docente;
         private String jefeCatedra;
         private String curso;
-        private TimeSpan inicioEsperado;
-        private TimeSpan finEsperado;
-        private DateTime fechaEvento;
+        private String tipoRepeticion;
+        private DateTime finRepeticion;
+        private DateTime inicio;
+        private DateTime fin;
         private string aulas;
         private string materia;
         private bool esParcial;
         private bool esExamen;
+        private String excepciones;
 
         public int AppointmentId
         {
             get { return appointmentId; }
             set { appointmentId = value; }
+        }
+
+        public String TipoRepeticion
+        {
+            get { return tipoRepeticion; }
+            set { tipoRepeticion = value; }
+        }
+        private int cantidadRepeticiones;
+
+        public int CantidadRepeticiones
+        {
+            get { return cantidadRepeticiones; }
+            set { cantidadRepeticiones = value; }
         }
 
         public bool EsParcial
@@ -62,29 +77,34 @@ namespace Entidades
             set { curso = value; }
         }
 
-        public TimeSpan InicioEsperado
+        public DateTime Inicio
         {
-            get { return inicioEsperado; }
-            set { inicioEsperado = value; }
+            get { return inicio; }
+            set { inicio = value; }
         }
 
-        public TimeSpan FinEsperado
+        public DateTime Fin
         {
-            get { return finEsperado; }
-            set { finEsperado = value; }
+            get { return fin; }
+            set { fin = value; }
         }
 
-
-        public DateTime FechaEvento
+        public DateTime FinRepeticion
         {
-            get { return fechaEvento; }
-            set { fechaEvento = value; }
+            get { return finRepeticion; }
+            set { finRepeticion = value; }
         }
 
         public string Aulas
         {
             get { return aulas; }
             set { aulas = value; }
+        }
+
+        public string Excepciones
+        {
+            get { return excepciones; }
+            set { excepciones = value; }
         }
 
         public string Asignatura

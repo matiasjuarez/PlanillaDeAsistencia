@@ -53,7 +53,7 @@
     <Compile Include="DAO\DAOEncargados.cs" />
     <Compile Include="DAO\DAOEspecialidades.cs" />
     <Compile Include="DAO\DAOEstadoAsistencia.cs" />
-    <Compile Include="DAO\DAOEventosRapla.cs" />
+    <Compile Include="DAO\DAOAppointmentsRapla.cs" />
     <Compile Include="DAO\DAODocentes.cs" />
     <Compile Include="DAO\GestorConexion.cs" />
     <Compile Include="Utilidades\Campo.cs" />

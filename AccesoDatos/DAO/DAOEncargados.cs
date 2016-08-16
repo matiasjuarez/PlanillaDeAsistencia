@@ -101,7 +101,61 @@ namespace AccesoDatos
             comando.Parameters.AddWithValue("@Legajo", encargado.Legajo);
             comando.Parameters.AddWithValue("@MailGeneral", encargado.MailGeneral);
             comando.Parameters.AddWithValue("@MailBBS", encargado.MailBBS);
-            comando.Parameters.AddWithValue("@Foto", encargado.Foto);
+
+            byte[] arregloFoto = null;
+            if (encargado.Foto != null)
+            {
+                arregloFoto = Imagenes.convertirImagenEnArregloDeBytes(encargado.Foto);
+            }
+
+            comando.Parameters.AddWithValue("@Foto", arregloFoto);
+
+            try
+            {
+                comando.ExecuteNonQuery();
+                return true;
+            }
+            catch (MySqlException e)
+            {
+                GestorExcepciones.mostrarExcepcion(e);
+                return false;
+            }
+            finally
+            {
+                gestorConexion.cerrarConexion();
+            }
+        }
+
+        public static bool modificarEncargado(Encargado encargado)
+        {
+            if (encargado == null) return false;
+
+            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
+
+            StringBuilder consulta = new StringBuilder(obtenerUpdateBasico());
+            consulta.Append(" WHERE id = @Id");
+
+            MySqlCommand comando = new MySqlCommand();
+            comando.CommandText = consulta.ToString();
+            comando.Connection = gestorConexion.getConexionAbierta();
+
+            comando.Parameters.AddWithValue("@Nombre", encargado.Nombre);
+            comando.Parameters.AddWithValue("@Apellido", encargado.Apellido);
+            comando.Parameters.AddWithValue("@Telefono", encargado.Telefono);
+            comando.Parameters.AddWithValue("@Dni", encargado.Dni);
+            comando.Parameters.AddWithValue("@FechaNacimiento", encargado.FechaNacimiento);
+            comando.Parameters.AddWithValue("@Legajo", encargado.Legajo);
+            comando.Parameters.AddWithValue("@MailGeneral", encargado.MailGeneral);
+            comando.Parameters.AddWithValue("@MailBBS", encargado.MailBBS);
+            comando.Parameters.AddWithValue("@Id", encargado.Id);
+
+            byte[] arregloFoto = null;
+            if (encargado.Foto != null)
+            {
+                arregloFoto = Imagenes.convertirImagenEnArregloDeBytes(encargado.Foto);
+            }
+
+            comando.Parameters.AddWithValue("@Foto", arregloFoto);
 
             try
             {
@@ -121,19 +175,40 @@ namespace AccesoDatos
 
         private static Encargado armarEncargado(MySqlDataReader reader)
         {
+            Configuracion.Config config = Configuracion.Config.getInstance();
+
             Encargado encargado = new Encargado();
 
             encargado.Id = reader.GetInt32("id");
-            encargado.Nombre = reader.GetString("nombre");
-            encargado.Apellido = reader.GetString("apellido");
-            encargado.Dni = reader.GetString("DNI");
-            encargado.FechaNacimiento = reader.GetDateTime("fechaNacimiento");
-            encargado.Legajo = reader.GetString("legajo");
-            encargado.MailGeneral = reader.GetString("mailGeneral");
-            encargado.MailBBS = reader.GetString("mailBBS");
-            encargado.Foto = obtenerFotoDeBaseDeDatos(reader.GetByte("foto"));
+            encargado.Nombre = ValidadorValoresNull.getString(reader,"nombre", "");
+            encargado.Apellido = ValidadorValoresNull.getString(reader, "apellido", "");
+            encargado.Dni = ValidadorValoresNull.getString(reader,"DNI", "");
+            encargado.FechaNacimiento = ValidadorValoresNull.getDateTime(reader, "fechaNacimiento");
+            encargado.Legajo = ValidadorValoresNull.getString(reader,"legajo", "");
+            encargado.MailGeneral = ValidadorValoresNull.getString(reader,"mailGeneral", "");
+            encargado.MailBBS = ValidadorValoresNull.getString(reader,"mailBBS","");
+
+            byte[] fotoData = ValidadorValoresNull.getBinaryData(reader, "foto");
+            encargado.Foto = Imagenes.obtenerImagenDesdeArregloDeBytes(fotoData);
 
             return encargado;
+        }
+
+        private static string obtenerUpdateBasico()
+        {
+            StringBuilder consulta = new StringBuilder();
+            consulta.Append("UPDATE encargado SET ");
+            consulta.Append("nombre = @Nombre, ");
+            consulta.Append("apellido = @Apellido, ");
+            consulta.Append("telefono = @Telefono, ");
+            consulta.Append("DNI = @Dni, ");
+            consulta.Append("fechaNacimiento = @FechaNacimiento, ");
+            consulta.Append("legajo = @Legajo, ");
+            consulta.Append("mailGeneral = @MailGeneral, ");
+            consulta.Append("mailBBS = @MailBBS, ");
+            consulta.Append("foto = @Foto)");
+
+            return consulta.ToString();
         }
 
         private static string obtenerSelectBasico()
@@ -163,19 +238,6 @@ namespace AccesoDatos
             consulta.Append("@Foto)");
 
             return consulta.ToString();
-        }
-
-        /*
-         * Recibe como parametro el campo de un dataReader que trae una imagen desde la base de datos,
-         * trabaja la informacion recibida y la convierte en una imagen
-         */
-        private static Image obtenerFotoDeBaseDeDatos(Object campo){
-
-            byte[] img = (byte[])campo;
-            MemoryStream memoryStream = new MemoryStream(img);
-            Image imagen = Image.FromStream(memoryStream);
-
-            return imagen;
         }
     }
 }

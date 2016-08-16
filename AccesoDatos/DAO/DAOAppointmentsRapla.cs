@@ -13,7 +13,7 @@ namespace AccesoDatos
     /*
      * Esta clase se encarga de obtener informacion de la base de datos usada por Rapla
      */
-    public static class DAOEventosRapla
+    public static class DAOAppointmentsRapla
     {
         private static Configuracion.Config configuracion = Configuracion.Config.getInstance();
         /*
@@ -176,8 +176,8 @@ namespace AccesoDatos
             return obtenerEventos(fechaHoraInicio, fechaHoraFin);
         }*/
 
-        private static List<Evento> obtenerEventosDesde2016(DateTime fechaInicio, DateTime fechaFin){
-            List<Evento> eventos = new List<Evento>();
+        private static List<Appointment> obtenerAppointmentsDesde2016(DateTime fechaInicio, DateTime fechaFin){
+            List<Appointment> eventos = new List<Appointment>();
 
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionRapla);
 
@@ -202,15 +202,17 @@ namespace AccesoDatos
 
             MySqlDataReader reader = comando.ExecuteReader();
 
-            return armarEventosDesdeReader(reader);
+            return armarAppointmentsDesdeReader(reader);
         }
 
         private static string obtenerSentenciaSelect2016()
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("SELECT EVENTO, SinAulas.IDAP, Inicio, Fin, Materia, esExamen, esParcial, ");
-            builder.Append("Docente, JefeCatedra, Curso, Aulas FROM( ");
+            builder.Append("SELECT EVENTO, REPETITION_TYPE as TipoRepeticion, REPETITION_NUMBER as Repeticiones, REPETITION_END as FinRepeticion, ");
+            builder.Append("SinAulas.IDAP, Inicio, Fin, Materia, esExamen, esParcial, ");
+            builder.Append("Docente, JefeCatedra, Curso, Aulas, Excepciones.fechasExcepcion FROM( ");
             builder.Append("SELECT evento.ID as EVENTO, ap.ID IDAP, ap.APPOINTMENT_START Inicio, ap.APPOINTMENT_END Fin, ");
+            builder.Append("REPETITION_TYPE, REPETITION_NUMBER, REPETITION_END, ");
             builder.Append("IF(cMat.LABEL <> 'EXAMEN' and cMat.LABEL <> 'PARCIAL',cMat.LABEL, (select label from category as c2 where c2.ID = cMat.PARENT_ID)) as Materia, ");
             builder.Append("IF(cMat.LABEL IS NULL or cMat.LABEL<> 'EXAMEN', False, True) as esExamen, ");
             builder.Append("IF(cMat.LABEL IS NULL or cMat.LABEL<> 'PARCIAL', False, True) as esParcial, ");
@@ -234,53 +236,56 @@ namespace AccesoDatos
             builder.Append("where rav.ATTRIBUTE_KEY = 'name' ");
             builder.Append("group by al.APPOINTMENT_ID) as Aulas ");
             builder.Append("ON SinAulas.IDAP = Aulas.IDAP ");
+            builder.Append("LEFT JOIN ");
+            builder.Append("(SELECT APPOINTMENT_ID as IDAP, GROUP_CONCAT(apex.EXCEPTION_DATE separator ',') as fechasExcepcion ");
+            builder.Append("from appointment_exception as apex group by IDAP) as Excepciones ");
+            builder.Append("ON SinAulas.IDAP = Excepciones.IDAP ");
             builder.Append("WHERE Inicio BETWEEN @fechaInicio and @fechaFin ");
             builder.Append("group by IDAP");
 
             return builder.ToString();
         }
 
-        private static List<Evento> armarEventosDesdeReader(MySqlDataReader reader)
+        private static List<Appointment> armarAppointmentsDesdeReader(MySqlDataReader reader)
         {
-            List<Evento> eventos = new List<Evento>();
+            List<Appointment> appointments = new List<Appointment>();
 
             while (reader.Read())
             {
-                Evento evento = new Evento();
+                Appointment appointment = new Appointment();
 
-                evento.IDEvento = reader.GetInt32("EVENTO");
-                evento.AppointmentId = reader.GetInt32("IDAP");
-                evento.Asignatura = ValidadorValoresNull.getString(reader, "Materia", configuracion.AsignaturaNoAsignada);
-                evento.Aulas = ValidadorValoresNull.getString(reader, "Aulas", configuracion.AulaNoAsignada);
-                evento.Docente = ValidadorValoresNull.getString(reader, "Docente", configuracion.DocenteNoAsignado);
-                evento.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra", configuracion.DocenteNoAsignado);
-                evento.Curso = ValidadorValoresNull.getString(reader, "Curso", configuracion.CursoNoAsignado);
+                appointment.IDEvento = reader.GetInt32("EVENTO");
+                appointment.AppointmentId = reader.GetInt32("IDAP");
+                appointment.Asignatura = ValidadorValoresNull.getString(reader, "Materia", configuracion.AsignaturaNoAsignada);
+                appointment.Aulas = ValidadorValoresNull.getString(reader, "Aulas", configuracion.AulaNoAsignada);
+                appointment.Excepciones = ValidadorValoresNull.getString(reader, "fechasExcepcion", "");
+                appointment.Docente = ValidadorValoresNull.getString(reader, "Docente", configuracion.DocenteNoAsignado);
+                appointment.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra", configuracion.DocenteNoAsignado);
+                appointment.Curso = ValidadorValoresNull.getString(reader, "Curso", configuracion.CursoNoAsignado);
 
-                string fechaEvento = reader.GetString("Inicio");
-                evento.FechaEvento = DateTime.Parse(fechaEvento).Date;
+                appointment.Inicio = ValidadorValoresNull.getDateTime(reader, "Inicio");
+                appointment.Fin = ValidadorValoresNull.getDateTime(reader, "Fin");
+                appointment.FinRepeticion = ValidadorValoresNull.getDateTime(reader, "FinRepeticion");
 
-                string inicioEsperado = reader.GetString("Inicio");
-                evento.InicioEsperado = DateTime.Parse(inicioEsperado).TimeOfDay;
-
-                string finEsperado = reader.GetString("Fin");
-                evento.FinEsperado = DateTime.Parse(finEsperado).TimeOfDay;
+                appointment.TipoRepeticion = ValidadorValoresNull.getString(reader, "TipoRepeticion", null);
+                appointment.CantidadRepeticiones = ValidadorValoresNull.getInt(reader, "Repeticiones", 0);
 
                 int esExamen = ValidadorValoresNull.getInt(reader, "esExamen", 0);
                 int esParcial = ValidadorValoresNull.getInt(reader, "esParcial", 0);
 
-                if (esExamen == 1)evento.EsExamen = true;
-                else evento.EsExamen = false;
+                if (esExamen == 1)appointment.EsExamen = true;
+                else appointment.EsExamen = false;
 
-                if (esParcial == 1) evento.EsParcial = true;
-                else evento.EsParcial = false;
+                if (esParcial == 1) appointment.EsParcial = true;
+                else appointment.EsParcial = false;
                 
-                eventos.Add(evento);
+                appointments.Add(appointment);
             }
 
-            return eventos;
+            return appointments;
         }
 
-        public static List<Evento> obtenerEventosEntreFechas(DateTime fechaInicio, DateTime fechaFin)
+        public static List<Appointment> obtenerAppointmentsEntreFechas(DateTime fechaInicio, DateTime fechaFin)
         {
             DateTime fechaHoraInicio;
             DateTime fechaHoraFin;
@@ -299,7 +304,7 @@ namespace AccesoDatos
             fechaHoraInicio = new DateTime(fechaInicio.Year, fechaInicio.Month, fechaInicio.Day, 0, 0, 0);
             fechaHoraFin = new DateTime(fechaFin.Year, fechaFin.Month, fechaFin.Day, 23, 59, 59);
 
-            return obtenerEventosDesde2016(fechaHoraInicio, fechaHoraFin);
+            return obtenerAppointmentsDesde2016(fechaHoraInicio, fechaHoraFin);
         }
     }
 }

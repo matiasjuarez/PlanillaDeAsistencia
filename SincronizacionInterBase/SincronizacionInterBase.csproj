@@ -43,6 +43,7 @@
     <Compile Include="ContenedorDatosSoporte.cs" />
     <Compile Include="ContenedorCambios.cs" />
     <Compile Include="ControladorSincronizacionInterBase.cs" />
+    <Compile Include="GeneradorAsistencias.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

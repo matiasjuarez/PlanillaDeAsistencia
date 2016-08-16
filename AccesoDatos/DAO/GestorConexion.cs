@@ -44,8 +44,13 @@ namespace AccesoDatos
 
             if (baseDeDatosAConectar == GestorConexion.ConexionRapla)
             {
-                server = "localhost";
+                /*server = "localhost";
                 database = "rapla2016";
+                uid = "matias";
+                password = "120491";*/
+
+                server = "localhost";
+                database = "rapla_test";
                 uid = "matias";
                 password = "120491";
 

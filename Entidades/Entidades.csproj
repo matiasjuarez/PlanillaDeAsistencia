@@ -52,7 +52,7 @@
     <Compile Include="Especialidad.cs" />
     <Compile Include="EstadoAsistencia.cs" />
     <Compile Include="CondicionAsistencia.cs" />
-    <Compile Include="Evento.cs" />
+    <Compile Include="Appointment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RangoHorario.cs" />
   </ItemGroup>

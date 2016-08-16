@@ -65,7 +65,7 @@ namespace SincronizacionInterBase
             return cursosPlanilla.obtenerDatos();
         }
 
-        public void sincronizar(List<Evento> eventos)
+        public void sincronizar(List<Appointment> eventos)
         {
             sincronizarDocentes(eventos);
             sincronizarAulas(eventos);
@@ -73,12 +73,12 @@ namespace SincronizacionInterBase
             sincronizarAsignaturas(eventos);
         }
 
-        private void sincronizarAsignaturas(List<Evento> eventos)
+        private void sincronizarAsignaturas(List<Appointment> eventos)
         {
             ContenedorCambios<Asignatura> cambios = new ContenedorCambios<Asignatura>();
             HashSet<string> nombresAsignaturasNuevas = new HashSet<string>();
 
-            foreach (Evento evento in eventos)
+            foreach (Appointment evento in eventos)
             {
                 string asignaturaRapla = evento.Asignatura;
                 if (asignaturaRapla == configuracion.AsignaturaNoAsignada)
@@ -143,11 +143,11 @@ namespace SincronizacionInterBase
          * Se fija si el aula que figura en el evento existe en la base de datos de la planilla de asistencias.
          * Si no existe, entonces ingresa una nueva aula en la base de datos. El evento se toma de la base de datos del rapla
          */
-        private void sincronizarAulas(List<Evento> eventos)
+        private void sincronizarAulas(List<Appointment> eventos)
         {
             HashSet<string> nombresAulasNuevas = new HashSet<string>();
 
-            foreach (Evento evento in eventos)
+            foreach (Appointment evento in eventos)
             {
                 if (evento.Aulas == configuracion.AulaNoAsignada)
                 {
@@ -198,11 +198,11 @@ namespace SincronizacionInterBase
          * Tambien se fija si el docente que figura como jefe de catedra existe en la base de datos.
          * Si no existe, entonces ingresa un nuevo docente en la base de datos. El evento se toma de la base de datos del rapla.
          */
-        private void sincronizarDocentes(List<Evento> eventos)
+        private void sincronizarDocentes(List<Appointment> eventos)
         {
             HashSet<string> nombresDocentesNuevos = new HashSet<string>();
 
-            foreach (Evento evento in eventos)
+            foreach (Appointment evento in eventos)
             {
                 string docenteRapla = evento.Docente;
                 string jefeCatedraRapla = evento.JefeCatedra;
@@ -260,11 +260,11 @@ namespace SincronizacionInterBase
             }
         }
 
-        private void sincronizarCursos(List<Evento> eventos)
+        private void sincronizarCursos(List<Appointment> eventos)
         {
             HashSet<string> nombresCursosNuevos = new HashSet<string>();
 
-            foreach (Evento evento in eventos)
+            foreach (Appointment evento in eventos)
             {
                 string cursoRapla = evento.Curso;
                 if (cursoRapla == configuracion.CursoNoAsignado)

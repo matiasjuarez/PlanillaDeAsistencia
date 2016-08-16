@@ -36,7 +36,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtDocumento = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.dtpNacimiento = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
             this.txtLegajo = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -58,6 +57,7 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.btnCancelar = new System.Windows.Forms.Button();
             this.btnGuardarCambios = new System.Windows.Forms.Button();
+            this.mkFechaNacimiento = new System.Windows.Forms.MaskedTextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -72,6 +72,7 @@
             this.listEncargados.Name = "listEncargados";
             this.listEncargados.Size = new System.Drawing.Size(165, 446);
             this.listEncargados.TabIndex = 0;
+            this.listEncargados.SelectedIndexChanged += new System.EventHandler(this.listEncargados_SelectedIndexChanged);
             // 
             // lblNombre
             // 
@@ -132,15 +133,6 @@
             this.label3.Size = new System.Drawing.Size(74, 13);
             this.label3.TabIndex = 7;
             this.label3.Text = "NACIMIENTO";
-            // 
-            // dtpNacimiento
-            // 
-            this.dtpNacimiento.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpNacimiento.Location = new System.Drawing.Point(374, 58);
-            this.dtpNacimiento.Name = "dtpNacimiento";
-            this.dtpNacimiento.Size = new System.Drawing.Size(166, 20);
-            this.dtpNacimiento.TabIndex = 8;
-            this.dtpNacimiento.CloseUp += new System.EventHandler(this.dtpNacimiento_CloseUp);
             // 
             // label4
             // 
@@ -227,11 +219,11 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.mkFechaNacimiento);
             this.groupBox2.Controls.Add(this.lblNombre);
             this.groupBox2.Controls.Add(this.txtNombre);
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.txtApellido);
-            this.groupBox2.Controls.Add(this.dtpNacimiento);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.txtDocumento);
             this.groupBox2.Controls.Add(this.label2);
@@ -358,6 +350,18 @@
             this.btnGuardarCambios.UseVisualStyleBackColor = true;
             this.btnGuardarCambios.Click += new System.EventHandler(this.btnGuardarCambios_Click);
             // 
+            // mkFechaNacimiento
+            // 
+            this.mkFechaNacimiento.Location = new System.Drawing.Point(374, 56);
+            this.mkFechaNacimiento.Mask = "00/00/0000";
+            this.mkFechaNacimiento.Name = "mkFechaNacimiento";
+            this.mkFechaNacimiento.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.mkFechaNacimiento.Size = new System.Drawing.Size(166, 20);
+            this.mkFechaNacimiento.TabIndex = 8;
+            this.mkFechaNacimiento.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.mkFechaNacimiento.ValidatingType = typeof(System.DateTime);
+            this.mkFechaNacimiento.TextChanged += new System.EventHandler(this.mkFechaNacimiento_TextChanged);
+            // 
             // ABMCEncargados
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -394,7 +398,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtDocumento;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.DateTimePicker dtpNacimiento;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtLegajo;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -416,5 +419,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button btnGuardarCambios;
         private System.Windows.Forms.Button btnCancelar;
+        private System.Windows.Forms.MaskedTextBox mkFechaNacimiento;
     }
 }
