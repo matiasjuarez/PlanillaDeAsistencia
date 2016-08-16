@@ -16,7 +16,6 @@ namespace PlanillaAsistencia
         [STAThread]
         static void Main()
         {
-            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -26,9 +25,8 @@ namespace PlanillaAsistencia
             // yyyy-mm-dd
             DateTime inicio = DateTime.Parse("2016-01-01");
             DateTime fin = DateTime.Parse("2016-12-30");
-            SincronizacionInterBase.ControladorSincronizacionInterBase.sincronizar(inicio, fin);
+            //SincronizacionInterBase.ControladorSincronizacionInterBase.sincronizar(inicio, fin);
             
-
             Application.Run(pantalla);
         }
     }

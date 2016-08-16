@@ -10,12 +10,12 @@ using ContenedoresDeDatos;
 using Utilidades;
 using Entidades;
 
-namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
+namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 {
-    public class ControladorModificacionAsistencias : IObservadorCamposPlanilla, Temporizador.ITemporizable
+    public class ControladorEditorAsistencias : IObservadorCamposPlanilla, Temporizador.ITemporizable
     {
-        private ModificacionAsistencias vista;
-        private ModeloModificacionAsistencias modelo;
+        private EditorAsistencias vista;
+        private ModeloEditorAsistencias modelo;
 
         // La asistencia sobre la que el usuario hizo click en la grilla
         private AsistenciaTabla asistenciaSeleccionada;
@@ -28,7 +28,7 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
 
         private Temporizador temporizador;
 
-        public ControladorModificacionAsistencias(ModificacionAsistencias vista, ModeloModificacionAsistencias modelo)
+        public ControladorEditorAsistencias(EditorAsistencias vista, ModeloEditorAsistencias modelo)
         {
             this.vista = vista;
             this.modelo = modelo;
@@ -207,22 +207,22 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
             {
                 if (hayAsistenciasModificadas())
                 {
-                    return ModificacionAsistencias.ESTADO_SICAMBIO_NOSELECCION;
+                    return EditorAsistencias.ESTADO_SICAMBIO_NOSELECCION;
                 }
                 else
                 {
-                    return ModificacionAsistencias.ESTADO_NOCAMBIO_NOSELECCION;
+                    return EditorAsistencias.ESTADO_NOCAMBIO_NOSELECCION;
                 }
             }
             else
             {
                 if (hayAsistenciasModificadas())
                 {
-                    return ModificacionAsistencias.ESTADO_SICAMBIO_SISELECCION;
+                    return EditorAsistencias.ESTADO_SICAMBIO_SISELECCION;
                 }
                 else
                 {
-                    return ModificacionAsistencias.ESTADO_NOCAMBIO_SISELECCION;
+                    return EditorAsistencias.ESTADO_NOCAMBIO_SISELECCION;
                 }
             }
         }

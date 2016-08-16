@@ -14,12 +14,20 @@ namespace Utilidades
     {
         private WebCam webcam;
         private BackgroundWorker bkgWorker;
-        private CamaraContenedorImagen destino;
+        private List<IObservadorCamara> observadores = new List<IObservadorCamara>();
 
         public CamaraWeb()
         {
             webcam = new WebCam();
             inicializarWorker();
+        }
+
+        public bool estaGrabando()
+        {
+            if (webcam == null) return false;
+
+            if (webcam.IsConnected()) return true;
+            return false;
         }
 
         private void inicializarWorker()
@@ -37,7 +45,7 @@ namespace Utilidades
                         webcam.Update();
                         try
                         {
-                            destino.Imagen = webcam.GetBitmap();
+                            notificarCapturaImagen( webcam.GetBitmap() );
                         }
                         catch (Exception e)
                         {
@@ -51,14 +59,11 @@ namespace Utilidades
             bkgWorker.RunWorkerCompleted += (o, i) =>
             {
                 webcam.Disconnect();
-                this.destino = null;
             };
         }
 
-        public void iniciarCaptura(ref CamaraContenedorImagen destino)
+        public void iniciarCaptura()
         {
-            this.destino = destino;
-
             if (!webcam.IsConnected())
             {
                 try
@@ -78,5 +83,31 @@ namespace Utilidades
         {
             bkgWorker.CancelAsync();
         }
+
+        public void agregarObservador(IObservadorCamara observador)
+        {
+            if (!this.observadores.Contains(observador))
+            {
+                this.observadores.Add(observador);
+            }
+        }
+
+        public bool quitarObservador(IObservadorCamara observador)
+        {
+            return this.observadores.Remove(observador);
+        }
+
+        private void notificarCapturaImagen(Image imagen)
+        {
+            foreach (IObservadorCamara observador in observadores)
+            {
+                observador.observarCapturaImagen(imagen);
+            }
+        }
+    }
+
+    public interface IObservadorCamara
+    {
+        void observarCapturaImagen(Image imagen);
     }
 }

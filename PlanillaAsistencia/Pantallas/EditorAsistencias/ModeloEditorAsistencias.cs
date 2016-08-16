@@ -8,12 +8,12 @@ using AccesoDatos;
 using Utilidades;
 using ContenedoresDeDatos;
 
-namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
+namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 {
-    public class ModeloModificacionAsistencias
+    public class ModeloEditorAsistencias
     {
-        private ControladorModificacionAsistencias controlador;
-        public ControladorModificacionAsistencias Controlador
+        private ControladorEditorAsistencias controlador;
+        public ControladorEditorAsistencias Controlador
         {
             set { controlador = value; }
         }
@@ -27,7 +27,7 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
         private ContenedorDocentes docentes;
         private ContenedorEstadosAsistencia estadosAsistencia;
 
-        public ModeloModificacionAsistencias()
+        public ModeloEditorAsistencias()
         {
             fechasSinAsistencias = new HashSet<DateTime>();
 

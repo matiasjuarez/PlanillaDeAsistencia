@@ -14,14 +14,6 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 {
     public partial class ABMCEncargados : ResizableControl
     {
-        private CamaraWeb camara;
-        private bool camaraFilmando = false;
-
-        private int ESTADO_INICIAL = 0;
-        private int ESTADO_ALTA = 1;
-        private int ESTADO_MODIFICACION = 2;
-        private int estadoActual = -1;
-
         private ControladorABMCEncargados controlador;
         public ControladorABMCEncargados Controlador
         {
@@ -31,9 +23,23 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
         public ABMCEncargados()
         {
             InitializeComponent();
-            camara = new CamaraWeb();
-
             inicializarEscalador();
+        }
+
+        public void inicializar()
+        {
+            List<Encargado> encargados = controlador.obtenerEncargados();
+            cargarListaEncargados(encargados);
+
+            ponerEnEstadoInicial();
+
+            tomarImagenEncargado(controlador.obtenerImagenInicial());
+        }
+
+        public void cargarListaEncargados(List<Encargado> encargados)
+        {
+            BindingList<Encargado> bindingEncargados = new BindingList<Encargado>(encargados);
+            listEncargados.DataSource = bindingEncargados;
         }
 
         public void tomarImagenEncargado(Image image)
@@ -41,37 +47,19 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             pbFoto.Image = image;
         }
 
+        public void tomarTextoBotonCamara(string texto)
+        {
+            this.btnTomarFoto.Text = texto;
+        }
+
         private void btnSeleccionarFoto_Click(object sender, EventArgs e)
         {
-            detenerFilmacion();
-
-            controlador.seleccionarImagen();            
-        }
-
-        private void iniciarFilmacion()
-        {
-            camaraFilmando = true;
-            btnTomarFoto.Text = "Capturar";
-            controlador.iniciarFilmacion();
-        }
-
-        private void detenerFilmacion()
-        {
-            camaraFilmando = false;
-            btnTomarFoto.Text = "Camara";
-            controlador.detenerFilmacion();
+            controlador.opcionSeleccionarImagen();            
         }
 
         private void btnTomarFoto_Click(object sender, EventArgs e)
         {
-            if (!camaraFilmando)
-            {
-                iniciarFilmacion();
-            }
-            else
-            {
-                detenerFilmacion();
-            }
+            controlador.opcionTomarFotoDesdeCamara();
         }
 
         private void limpiarCampos()
@@ -116,19 +104,14 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 
         public void ponerEnEstadoInicial()
         {
-            estadoActual = ESTADO_INICIAL;
-
             habilitarCampos(false);
             limpiarCampos();
 
             habilitarBotones(false, false, false, true, false, false, false, false);
-
         }
 
         public void ponerEnEstadoNuevoEncargado()
         {
-            estadoActual = ESTADO_ALTA;
-
             habilitarCampos(true);
             limpiarCampos();
 
@@ -137,8 +120,6 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 
         public void ponerEnEstadoModificarEncargado()
         {
-            estadoActual = ESTADO_MODIFICACION;
-
             habilitarCampos(true);
             limpiarCampos();
 
@@ -207,12 +188,9 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 
         private void btnModificarEncargado_Click(object sender, EventArgs e)
         {
-            estadoActual = ESTADO_MODIFICACION;
+            Encargado encargadoSeleccionado = (Encargado)this.listEncargados.SelectedValue;
 
-            limpiarCampos();
-            habilitarCampos(true);
-
-            habilitarBotones(true, true, true, false, false, false, true, true);
+            if (encargadoSeleccionado != null) controlador.opcionModificarEncargado(encargadoSeleccionado);
         }
 
         private void btnNuevoEncargado_Click(object sender, EventArgs e)
@@ -223,6 +201,11 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             controlador.opcionCancelar();
+        }
+
+        private void btnGuardarCambios_Click(object sender, EventArgs e)
+        {
+            controlador.opcionGuardar();
         }
     }
 }

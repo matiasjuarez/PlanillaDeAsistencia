@@ -71,12 +71,12 @@
     <Compile Include="Interfaces\IObservadorCamposPlanilla.cs" />
     <Compile Include="Interfaces\IObservadorModelo.cs" />
     <Compile Include="Interfaces\IObservadorTripleGrilla.cs" />
-    <Compile Include="Pantallas\ModificacionAsistencias\ControladorModificacionAsistenciacs.cs" />
-    <Compile Include="Pantallas\ModificacionAsistencias\ModificacionAsistencias.cs">
+    <Compile Include="Pantallas\EditorAsistencias\ControladorModificacionAsistenciacs.cs" />
+    <Compile Include="Pantallas\EditorAsistencias\EditorAsistencias.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Pantallas\ModificacionAsistencias\ModificacionAsistencias.Designer.cs">
-      <DependentUpon>ModificacionAsistencias.cs</DependentUpon>
+    <Compile Include="Pantallas\EditorAsistencias\EditorAsistencias.Designer.cs">
+      <DependentUpon>EditorAsistencias.cs</DependentUpon>
     </Compile>
     <Compile Include="Pantallas\ResizableControl.cs">
       <SubType>UserControl</SubType>
@@ -87,7 +87,7 @@
     <Compile Include="Principal\ControladorPrincipal.cs" />
     <Compile Include="Pantallas\ABMCEncargados\ControladorABMCEncargados.cs" />
     <Compile Include="Pantallas\ConsultaAsistencias\ControladorConsultaAsistencias.cs" />
-    <Compile Include="Pantallas\ModificacionAsistencias\ModeloModificacionAsistencias.cs" />
+    <Compile Include="Pantallas\EditorAsistencias\ModeloEditorAsistencias.cs" />
     <Compile Include="Pantallas\ConsultaAsistencias\ConsultaAsistencias.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -111,8 +111,8 @@
     <EmbeddedResource Include="ControlesPersonalizados\TripleGrillaAsistencias.resx">
       <DependentUpon>TripleGrillaAsistencias.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Pantallas\ModificacionAsistencias\ModificacionAsistencias.resx">
-      <DependentUpon>ModificacionAsistencias.cs</DependentUpon>
+    <EmbeddedResource Include="Pantallas\EditorAsistencias\EditorAsistencias.resx">
+      <DependentUpon>EditorAsistencias.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Pantallas\ConsultaAsistencias\ConsultaAsistencias.resx">
       <DependentUpon>ConsultaAsistencias.cs</DependentUpon>

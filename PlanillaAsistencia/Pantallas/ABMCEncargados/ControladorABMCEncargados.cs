@@ -5,20 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+
 using Utilidades;
 using Entidades;
+using AccesoDatos;
 
 namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 {
-    public class ControladorABMCEncargados : IObservadorContenedorImagenCamara
+    public class ControladorABMCEncargados : IObservadorCamara
     {
+        private const int ESTADO_INICIAL = 0;
+        private const int ESTADO_ALTA = 1;
+        private const int ESTADO_MODIFICACION = 2;
+        private int estadoActual = -1;
+
         private ABMCEncargados vista;
         private Image imagenInicial;
         private Image imagenSeleccionada;
         private CamaraWeb camara;
-        private CamaraContenedorImagen contenedorImagen;
 
-        private Encargado encargado;
+        private List<Encargado> encargados;
+        private Encargado encargadoSeleccionado;
 
         public ControladorABMCEncargados(ABMCEncargados vista)
         {
@@ -26,14 +33,35 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             vista.Controlador = this;
 
             camara = new CamaraWeb();
+            camara.agregarObservador(this);
 
-            imagenInicial = new Bitmap(PlanillaAsistencia.Properties.Resources.mystery);
-
-            vista.ponerEnEstadoInicial();
+            vista.inicializar();
         }
 
-        public void seleccionarImagen()
+        public Image obtenerImagenInicial()
         {
+            if (imagenInicial == null)
+            {
+                imagenInicial = new Bitmap(PlanillaAsistencia.Properties.Resources.mystery);
+            }
+
+            return imagenInicial;
+        }
+
+        public List<Encargado> obtenerEncargados()
+        {
+            if (encargados == null)
+            {
+                encargados = DAOEncargados.obtenerTodosLosEncargados();
+            }
+
+            return encargados;
+        }
+
+        public void opcionSeleccionarImagen()
+        {
+            if (camara.estaGrabando()) detenerFilmacion();
+
             OpenFileDialog fileDialog = new OpenFileDialog();
 
             if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -53,85 +81,138 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             }
         }
 
-        public void iniciarFilmacion()
+        public void opcionTomarFotoDesdeCamara()
         {
-            this.contenedorImagen = new CamaraContenedorImagen();
-            contenedorImagen.agregarObservador(this);
-
-            camara.iniciarCaptura(ref contenedorImagen);
+            if (camara.estaGrabando()) detenerFilmacion();
+            else iniciarFilmacion();
         }
 
-        public void detenerFilmacion()
+        private void iniciarFilmacion()
         {
-            this.contenedorImagen.quitarObservador(this);
-            this.imagenSeleccionada = contenedorImagen.Imagen;
+            camara.iniciarCaptura();
+
+            vista.tomarTextoBotonCamara("Capturar");
+        }
+
+        private void detenerFilmacion()
+        {
             camara.detenerCaptura();
 
-            this.contenedorImagen = null;
-        }
-
-        void IObservadorContenedorImagenCamara.observarCambioImagenContenedor(Image imagen)
-        {
-            this.vista.tomarImagenEncargado(imagen);
+            vista.tomarTextoBotonCamara("Camara");
         }
 
         public void opcionNuevoEncargado()
         {
+            this.estadoActual = ESTADO_ALTA;
+
             vista.ponerEnEstadoNuevoEncargado();
-            this.encargado = new Encargado();
+            this.encargadoSeleccionado = new Encargado();
         }
 
         public void opcionModificarEncargado(Encargado encargado)
         {
+            this.estadoActual = ESTADO_MODIFICACION;
+
             vista.ponerEnEstadoModificarEncargado();
-            this.encargado = encargado;
+            this.encargadoSeleccionado = encargado;
         }
 
         public void opcionCancelar()
         {
-            camara.detenerCaptura();
+            this.ponerEnEstadoInicial();
+
             vista.ponerEnEstadoInicial();
             vista.tomarImagenEncargado(this.imagenInicial);
         }
 
+        private void ponerEnEstadoInicial()
+        {
+            this.estadoActual = ESTADO_INICIAL;
+            this.encargadoSeleccionado = null;
+
+            camara.detenerCaptura();
+        }
+
+        public void opcionGuardar()
+        {
+            if (this.estadoActual == ESTADO_ALTA)
+            {
+                if (validarDatosEncargado())
+                {
+                    if (DAOEncargados.insertarEncargado(encargadoSeleccionado))
+                    {
+                        this.encargados.Add(encargadoSeleccionado);
+                        this.ponerEnEstadoInicial();
+                        vista.ponerEnEstadoInicial();
+                        vista.tomarImagenEncargado(this.imagenInicial);
+                        vista.cargarListaEncargados(this.obtenerEncargados());
+                    }
+                }
+            }
+            else if (this.estadoActual == ESTADO_MODIFICACION)
+            {
+
+            }
+        }
+
+        private bool validarDatosEncargado()
+        {
+            if (encargadoSeleccionado == null) return false;
+
+            if (encargadoSeleccionado.Apellido == "") return false;
+            if (encargadoSeleccionado.Nombre == "") return false;
+
+            if (encargadoSeleccionado.FechaNacimiento == null)
+            {
+                encargadoSeleccionado.FechaNacimiento = Configuracion.Config.getInstance().ValorParaFechaNula;
+            }
+
+            return true;
+        }
+
         public void tomarNombreEncargado(string nombre)
         {
-            encargado.Nombre = nombre;
+            encargadoSeleccionado.Nombre = nombre;
         }
 
         public void tomarApellidoEncargado(string apellido)
         {
-            encargado.Apellido = apellido;
+            encargadoSeleccionado.Apellido = apellido;
         }
 
         public void tomarDocumentoEncargado(string documento)
         {
-            encargado.Dni = documento;
+            encargadoSeleccionado.Dni = documento;
         }
 
         public void tomarFechaNacimientoEncargado(DateTime nacimiento)
         {
-            encargado.FechaNacimiento = nacimiento;
+            encargadoSeleccionado.FechaNacimiento = nacimiento;
         }
 
         public void tomarTelefonoEncargado(string telefono)
         {
-            encargado.Telefono = telefono;
+            encargadoSeleccionado.Telefono = telefono;
         }
 
         public void tomarMailBBSencargado(string mail)
         {
-            encargado.MailBBS = mail;
+            encargadoSeleccionado.MailBBS = mail;
         }
 
         public void tomarMailPersonalEncargado(string mail)
         {
-            encargado.MailGeneral = mail;
+            encargadoSeleccionado.MailGeneral = mail;
         }
 
         public void tomarLegajoEncargado(string legajo)
         {
-            encargado.Legajo = legajo;
+            encargadoSeleccionado.Legajo = legajo;
+        }
+
+        public void observarCapturaImagen(Image imagen)
+        {
+            this.vista.tomarImagenEncargado(imagen);
         }
     }
 }

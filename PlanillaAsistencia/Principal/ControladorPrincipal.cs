@@ -11,7 +11,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using PlanillaAsistencia.Pantallas.VistaGlobalAsistencias;
-using PlanillaAsistencia.Pantallas.ModificacionAsistencias;
+using PlanillaAsistencia.Pantallas.EditorAsistencias;
 using PlanillaAsistencia.Pantallas.ABMCEncargados;
 
 namespace PlanillaAsistencia.Principal
@@ -38,11 +38,11 @@ namespace PlanillaAsistencia.Principal
             return vista;
         }
 
-        public ModificacionAsistencias crearModificacionAsistencias()
+        public EditorAsistencias crearModificacionAsistencias()
         {
-            ModificacionAsistencias vista = new ModificacionAsistencias();
-            ModeloModificacionAsistencias modelo = new ModeloModificacionAsistencias();
-            ControladorModificacionAsistencias controlador = new ControladorModificacionAsistencias(vista, modelo);
+            EditorAsistencias vista = new EditorAsistencias();
+            ModeloEditorAsistencias modelo = new ModeloEditorAsistencias();
+            ControladorEditorAsistencias controlador = new ControladorEditorAsistencias(vista, modelo);
 
             return vista;
         }

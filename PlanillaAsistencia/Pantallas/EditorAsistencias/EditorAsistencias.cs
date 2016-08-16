@@ -11,13 +11,14 @@ using System.Windows.Forms;
 using Entidades;
 using Utilidades;
 using PlanillaAsistencia.ControlesPersonalizados;
+using PlanillaAsistencia.Pantallas;
 
-namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
+namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 {
-    public partial class ModificacionAsistencias : ResizableControl, IObservadorTripleGrilla
+    public partial class EditorAsistencias : ResizableControl, IObservadorTripleGrilla
     {
-        private ControladorModificacionAsistencias controlador;
-        public ControladorModificacionAsistencias Controlador
+        private ControladorEditorAsistencias controlador;
+        public ControladorEditorAsistencias Controlador
         {
             set { 
                 controlador = value;
@@ -37,7 +38,7 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
         public const int ESTADO_SICAMBIO_NOSELECCION = 2;
         public const int ESTADO_SICAMBIO_SISELECCION = 3;
 
-        public ModificacionAsistencias()
+        public EditorAsistencias()
         {
             InitializeComponent();
             inicializarEscalador();
@@ -211,9 +212,9 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
                 }
             }
 
-            private ModificacionAsistencias principal;
+            private EditorAsistencias principal;
 
-            public ManejadorCambiosEstado(ModificacionAsistencias principal)
+            public ManejadorCambiosEstado(EditorAsistencias principal)
             {
                 this.principal = principal;
             }
@@ -223,24 +224,24 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
                 int estadoAux = this.estadoActual;
                 this.estadoActual = estado;
 
-                if (estado == ModificacionAsistencias.ESTADO_NOCAMBIO_NOSELECCION)
+                if (estado == EditorAsistencias.ESTADO_NOCAMBIO_NOSELECCION)
                 {
                     principal.manejadorControles.habilitarBotonGuardado(false);
                     principal.manejadorControles.habilitarCampos(false);
                     principal.manejadorControles.resetearCampos();
                 }
-                else if (estado == ModificacionAsistencias.ESTADO_NOCAMBIO_SISELECCION)
+                else if (estado == EditorAsistencias.ESTADO_NOCAMBIO_SISELECCION)
                 {
                     principal.manejadorControles.habilitarBotonGuardado(false);
                     principal.manejadorControles.habilitarCampos(true);
                 }
-                else if (estado == ModificacionAsistencias.ESTADO_SICAMBIO_NOSELECCION)
+                else if (estado == EditorAsistencias.ESTADO_SICAMBIO_NOSELECCION)
                 {
                     principal.manejadorControles.habilitarBotonGuardado(true);
                     principal.manejadorControles.habilitarCampos(false);
                     principal.manejadorControles.resetearCampos();
                 }
-                else if (estado == ModificacionAsistencias.ESTADO_SICAMBIO_SISELECCION)
+                else if (estado == EditorAsistencias.ESTADO_SICAMBIO_SISELECCION)
                 {
                     principal.manejadorControles.habilitarBotonGuardado(true);
                     principal.manejadorControles.habilitarCampos(true);
@@ -254,9 +255,9 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
 
         private class MostradorDatos
         {
-            private ModificacionAsistencias principal;
+            private EditorAsistencias principal;
 
-            public MostradorDatos(ModificacionAsistencias principal)
+            public MostradorDatos(EditorAsistencias principal)
             {
                 this.principal = principal;
             }
@@ -350,7 +351,7 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
 
         private class ProcesadorEventos
         {
-            private ModificacionAsistencias principal;
+            private EditorAsistencias principal;
 
             private bool procesarEventosCamposEditables = true;
             public bool ProcesarEventosCamposEditables
@@ -359,7 +360,7 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
                 set { procesarEventosCamposEditables = value; }
             }
 
-            public ProcesadorEventos(ModificacionAsistencias principal)
+            public ProcesadorEventos(EditorAsistencias principal)
             {
                 this.principal = principal;
             }
@@ -463,14 +464,8 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
 
                 if (textoCampo != null && textoCampo != "")
                 {
-                    try
-                    {
-                        hora = TimeSpan.Parse(textoCampo);
-                    }
-                    catch
-                    {
-                        hora = new TimeSpan(0, 0, 0);
-                    }
+                    try { hora = TimeSpan.Parse(textoCampo); }
+                    catch { hora = new TimeSpan(0, 0, 0); }
                 }
 
                 return hora;
@@ -479,9 +474,9 @@ namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
 
         private class ManejadorControles
         {
-            private ModificacionAsistencias principal;
+            private EditorAsistencias principal;
 
-            public ManejadorControles(ModificacionAsistencias principal)
+            public ManejadorControles(EditorAsistencias principal)
             {
                 this.principal = principal;
             }

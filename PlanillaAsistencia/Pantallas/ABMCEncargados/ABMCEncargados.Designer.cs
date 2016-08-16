@@ -356,6 +356,7 @@
             this.btnGuardarCambios.TabIndex = 17;
             this.btnGuardarCambios.Text = "Guardar";
             this.btnGuardarCambios.UseVisualStyleBackColor = true;
+            this.btnGuardarCambios.Click += new System.EventHandler(this.btnGuardarCambios_Click);
             // 
             // ABMCEncargados
             // 

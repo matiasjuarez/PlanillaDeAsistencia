@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using PlanillaAsistencia.Pantallas.VistaGlobalAsistencias;
-using PlanillaAsistencia.Pantallas.ModificacionAsistencias;
+using PlanillaAsistencia.Pantallas.EditorAsistencias;
 using PlanillaAsistencia.Pantallas.ABMCEncargados;
 
 using Utilidades;
@@ -46,7 +46,7 @@ namespace PlanillaAsistencia.Principal
         {
             if (tabModificacionAsistencias == null)
             {
-                ModificacionAsistencias vista = controlador.crearModificacionAsistencias();
+                EditorAsistencias vista = controlador.crearModificacionAsistencias();
                 tabModificacionAsistencias = crearTab(vista, "Modificacion");
             }
         }

@@ -1,6 +1,6 @@
-﻿namespace PlanillaAsistencia.Pantallas.ModificacionAsistencias
+﻿namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 {
-    partial class ModificacionAsistencias
+    partial class EditorAsistencias
     {
         /// <summary> 
         /// Required designer variable.
