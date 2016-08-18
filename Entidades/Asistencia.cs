@@ -288,14 +288,38 @@ namespace Entidades
             return condicionAsistencia.esValidaParaGuardarse();
         }
 
+        public Asistencia hacerCopiaSuperficial()
+        {
+            Asistencia copia = new Asistencia();
+
+            copia.HoraEntradaEsperada = this.HoraEntradaEsperada;
+            copia.HoraSalidaEsperada = this.HoraSalidaEsperada;
+            copia.HoraEntradaReal = this.HoraEntradaReal;
+            copia.HoraSalidaReal = this.HoraSalidaReal;
+            copia.Fecha = this.Fecha;
+            copia.CantidadAlumnos = this.CantidadAlumnos;
+            copia.Docente = this.Docente;
+            copia.Asignatura = this.Asignatura;
+            copia.Encargado = this.Encargado;
+            copia.Curso = this.Curso;
+            copia.EstadoAsistencia = this.EstadoAsistencia;
+            copia.Aulas = this.Aulas;
+            copia.Observaciones = this.Observaciones;
+            copia.Id = this.Id;
+            copia.AppointmentId = this.AppointmentId;
+            copia.EventId = this.EventId;
+
+            return copia;
+        }
+
         [Serializable]
         private class AsistenciaMemento
         {
-            private TimeSpan comienzoClaseEsperado;
-            private TimeSpan finClaseEsperado;
-            private TimeSpan comienzoClaseReal;
-            private TimeSpan finClaseReal;
-            private DateTime diaDeAsistencia;
+            private TimeSpan horaEntradaEsperada;
+            private TimeSpan horaSalidaEsperada;
+            private TimeSpan horaEntradaReal;
+            private TimeSpan horaSalidaReal;
+            private DateTime fecha;
             private int cantidadAlumnos;
             private Docente docente;
             private Asignatura asignatura;
@@ -312,11 +336,11 @@ namespace Entidades
             {
                 Asistencia clon = asistencia.Clone();
 
-                this.comienzoClaseEsperado = clon.HoraEntradaEsperada;
-                this.finClaseEsperado = clon.HoraSalidaEsperada;
-                this.comienzoClaseReal = clon.HoraEntradaReal;
-                this.finClaseReal = clon.HoraSalidaReal;
-                this.diaDeAsistencia = clon.Fecha;
+                this.horaEntradaEsperada = clon.HoraEntradaEsperada;
+                this.horaSalidaEsperada = clon.HoraSalidaEsperada;
+                this.horaEntradaReal = clon.HoraEntradaReal;
+                this.horaSalidaReal = clon.HoraSalidaReal;
+                this.fecha = clon.Fecha;
                 this.cantidadAlumnos = clon.CantidadAlumnos;
                 this.docente = clon.Docente;
                 this.asignatura = clon.Asignatura;
@@ -335,11 +359,11 @@ namespace Entidades
                 asistencia.Id = this.id;
                 asistencia.AppointmentId = this.appointmentId;
                 asistencia.EventId = this.eventId;
-                asistencia.HoraEntradaEsperada = this.comienzoClaseEsperado;
-                asistencia.HoraSalidaEsperada = this.finClaseEsperado;
-                asistencia.HoraEntradaReal = this.comienzoClaseReal;
-                asistencia.HoraSalidaReal = this.finClaseReal;
-                asistencia.Fecha = this.diaDeAsistencia;
+                asistencia.HoraEntradaEsperada = this.horaEntradaEsperada;
+                asistencia.HoraSalidaEsperada = this.horaSalidaEsperada;
+                asistencia.HoraEntradaReal = this.horaEntradaReal;
+                asistencia.HoraSalidaReal = this.horaSalidaReal;
+                asistencia.Fecha = this.fecha;
                 asistencia.CantidadAlumnos = this.cantidadAlumnos;
                 asistencia.Docente = this.docente;
                 asistencia.Asignatura = this.asignatura;

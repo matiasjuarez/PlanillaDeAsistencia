@@ -10,40 +10,51 @@ namespace SincronizacionInterBase
 {
     public class GeneradorAsistencias
     {
-        private static ContenedorDatosSoporte contenedorDatosSoporte = ContenedorDatosSoporte.getInstance();
-
         public static List<Asistencia> generarAsistenciasDesdeAppointment(Appointment appointment)
         {
-            List<Asistencia> asistencias;
+            List<DateTime> fechasAppointment = obtenerFechasDelAppointmentSinConsiderarExcepciones(appointment);
+            List<DateTime> excepciones = obtenerFechasExcepcion(appointment);
+            List<DateTime> fechasFiltradas = filtrarFechasSegunExcepciones(fechasAppointment, excepciones);
 
-            asistencias = obtenerAsistenciasSinConsiderarExcepciones(appointment);
+            Asistencia asistenciaPrototipo = obtenerAsistenciaPrototipo(appointment);
+            List<Asistencia> asistenciasParaAppointment = new List<Asistencia>();
+
+            foreach (DateTime fechaFiltrada in fechasFiltradas)
+            {
+                Asistencia asistencia = asistenciaPrototipo.hacerCopiaSuperficial();
+                asistencia.Fecha = fechaFiltrada;
+                asistenciasParaAppointment.Add(asistencia);
+            }
+            return asistenciasParaAppointment;
         }
 
-        private static List<Asistencia> filtrarAsistenciasSegunExcepciones(List<Asistencia> asistencias, List<DateTime> excepciones)
+        private static List<DateTime> filtrarFechasSegunExcepciones(List<DateTime> fechas, List<DateTime> excepciones)
         {
-            List<Asistencia> asistenciasFiltradas = new List<Asistencia>();
+            List<DateTime> fechasFiltradas = new List<DateTime>();
 
-            for (int i = 0; i < asistencias.Count; i++)
+            foreach(DateTime fecha in fechas)
             {
-                bool hayQueFiltrar = false;
+                bool fechaValida = true;
                 foreach(DateTime excepcion in excepciones)
                 {
-                    if (asistencias.ElementAt<Asistencia>(i).Fecha == excepcion)
+                    if (fecha == excepcion)
                     {
-                        hayQueFiltrar = true;
-                        excepciones.Remove(excepcion);
+                        fechaValida = false;
                         break;
                     }
+                }
 
-                    if (!hayQueFiltrar)
-                    {
-                        asistenciasFiltradas.Add(asistencias.ElementAt(i));
-                    }
+                if (fechaValida)
+                {
+                    fechasFiltradas.Add(fecha);
+                    excepciones.Remove(fecha);
                 }
             }
+
+            return fechasFiltradas;
         }
 
-        private static List<DateTime> obtenerListaExcepciones(Appointment appointment)
+        private static List<DateTime> obtenerFechasExcepcion(Appointment appointment)
         {
             string[] excepcionesString = appointment.Excepciones.Split(',');
             List<DateTime> excepciones = new List<DateTime>();
@@ -57,29 +68,46 @@ namespace SincronizacionInterBase
             return excepciones;
         }
 
-        private static List<Asistencia> obtenerAsistenciasSinConsiderarExcepciones(Appointment appointment)
+        private static List<DateTime> obtenerFechasDelAppointmentSinConsiderarExcepciones(Appointment appointment)
         {
-            List<Asistencia> asistencias = new List<Asistencia>();
+            List<DateTime> fechasAppointment = new List<DateTime>();
 
+            int repeticiones = calcularCantidadRepeticiones(appointment);
             int diasEntreRepeticiones = obtenerDiasParaProximaRepeticion(appointment);
 
-            int cantidadRepeticiones = appointment.CantidadRepeticiones;
-
-            int i = 0;
-
-            do
+            for(int i = 0; i < repeticiones; i++)
             {
-                Asistencia asistenciaNueva = obtenerAsistenciaDesdeAppointment(appointment, diasEntreRepeticiones * i);
-                asistencias.Add(asistenciaNueva);
+                DateTime fechaAppointment = appointment.Inicio;
+                fechaAppointment.AddDays(diasEntreRepeticiones * i);
+                fechasAppointment.Add(fechaAppointment.Date);
+            }
 
-                i++;
-            } while (i < cantidadRepeticiones);
-
-            return asistencias;
+            return fechasAppointment;
         }
 
-        private static Asistencia obtenerAsistenciaDesdeAppointment(Appointment appointment, int diasAgregar)
+        private static int calcularCantidadRepeticiones(Appointment appointment)
         {
+            DateTime fechaInicio = appointment.Inicio.Date;
+            DateTime fechaFin = appointment.Fin.Date;
+
+            TimeSpan diferencia = fechaFin.Subtract(fechaInicio);
+
+            int diasEntreRepeticiones = obtenerDiasParaProximaRepeticion(appointment);
+            int cantidadRepeticiones = diferencia.Days / diasEntreRepeticiones;
+
+            /*
+             * Si tenemos que un appointment ocurre el 12/04 y tiene una repeticion el 19/04, cuando hagamos
+             * las operaciones de arriba nos queda una diferencia de 7 dias y al dividirlo entre la cantidad de
+             * dias entre repeticiones (7) nos d igual a 1. Esto es porque en las operaciones de arriba no se tiene
+             * en cuenta el dias 0 cuando arranca el appointment. Por eso se suma 1 en el return.
+             * */
+            return cantidadRepeticiones + 1;
+        }
+
+        private static Asistencia obtenerAsistenciaPrototipo(Appointment appointment)
+        {
+            ContenedorDatosSoporte contenedorDatosSoporte = ContenedorDatosSoporte.getInstance();
+
             Asistencia asistencia = new Asistencia();
 
             asistencia.AppointmentId = appointment.AppointmentId;
@@ -87,7 +115,7 @@ namespace SincronizacionInterBase
 
             asistencia.HoraEntradaEsperada = appointment.Inicio.TimeOfDay;
             asistencia.HoraSalidaEsperada = appointment.Fin.TimeOfDay;
-            asistencia.Fecha = appointment.Inicio.AddDays(diasAgregar);
+            asistencia.Fecha = appointment.Inicio;
 
             foreach (Docente docente in contenedorDatosSoporte.obtenerDocentes())
             {

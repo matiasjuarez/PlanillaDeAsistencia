@@ -49,16 +49,18 @@ namespace ContenedoresDeDatos
             return asistencias;
         }
         
-        public Asistencia obtenerAsistenciaSegunEvento(Appointment evento)
+        public List<Asistencia> obtenerAsistenciasPorAppointment(Appointment appointment)
         {
+            List<Asistencia> asistencias = new List<Asistencia>();
+
             foreach (Asistencia asistencia in obtenerDatos())
             {
-                if (asistencia.EventId == evento.IDEvento && asistencia.AppointmentId == evento.AppointmentId)
+                if (asistencia.EventId == appointment.IDEvento && asistencia.AppointmentId == appointment.AppointmentId)
                 {
-                    return asistencia;
+                    asistencias.Add(asistencia);
                 }
             }
-            return null;
+            return asistencias;
         }
 
         public List<DateTime> obtenerFechasDeAsistenciasAlmacenadas()
