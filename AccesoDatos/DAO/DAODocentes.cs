@@ -233,49 +233,37 @@ namespace AccesoDatos
         {
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
-            StringBuilder consultaBuilder = new StringBuilder(
-                              "insert into docente(nombre) " +
-                              "values(@nombre)"
-                              );
+            Insert insert = crearInsert(docente);
 
-            string consulta = consultaBuilder.ToString();
+            insert.ejecutar(gestorConexion.getConexionAbierta());
 
-            // Creamos el comando sql
-            MySqlCommand comando = new MySqlCommand();
-            comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
-
-            // Creamos sus parametros
-            MySqlParameter nombreParam = new MySqlParameter();
-            nombreParam.ParameterName = "@nombre";
-            nombreParam.Value = docente.Nombre;
-
-
-            // Agregamos los parametros a la consulta
-            comando.Parameters.Add(nombreParam);
-            
-            try
-            {
-                comando.ExecuteNonQuery();
-            }
-            catch (MySqlException e)
-            {
-                GestorExcepciones.mostrarExcepcion(e);
-            }
-            finally
-            {
-                gestorConexion.cerrarConexion();
-            }
-
+            gestorConexion.cerrarConexion();
         }
 
         public static void insertarDocentes(List<Docente> docentes)
         {
+            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
+
+            InsertMultiple insert = new InsertMultiple();
+
             foreach (Docente docente in docentes)
             {
-                insertarDocente(docente);
+                insert.agregarInsert(crearInsert(docente));
             }
+
+            insert.ejecutar(gestorConexion.getConexionAbierta());
+
+            gestorConexion.cerrarConexion();
         }
 
+        private static Insert crearInsert(Docente docente)
+        {
+            Insert insert = new Insert();
+            insert.setNombreTabla("docente");
+            insert.agregarCampo("nombre");
+            insert.agregarParametro("@nombre", docente.Nombre);
+
+            return insert;
+        }
     }
 }

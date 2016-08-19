@@ -198,14 +198,14 @@ namespace SincronizacionInterBase
          * Tambien se fija si el docente que figura como jefe de catedra existe en la base de datos.
          * Si no existe, entonces ingresa un nuevo docente en la base de datos. El evento se toma de la base de datos del rapla.
          */
-        private void sincronizarDocentes(List<Appointment> eventos)
+        private void sincronizarDocentes(List<Appointment> appointments)
         {
             HashSet<string> nombresDocentesNuevos = new HashSet<string>();
 
-            foreach (Appointment evento in eventos)
+            foreach (Appointment appointment in appointments)
             {
-                string docenteRapla = evento.Docente;
-                string jefeCatedraRapla = evento.JefeCatedra;
+                string docenteRapla = appointment.Docente;
+                string jefeCatedraRapla = appointment.JefeCatedra;
 
                 bool existeDocente = false;
                 bool existeJefe = false;
