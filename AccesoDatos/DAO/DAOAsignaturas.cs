@@ -2,57 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using Entidades;
-
 using MySql.Data.MySqlClient;
-
 using Utilidades;
 
 namespace AccesoDatos
 {
     public static class DAOAsignaturas
     {
-
         public static List<Asignatura> obtenerTodasLasAsignaturas()
         {
             List<Asignatura> asignaturas = new List<Asignatura>();
 
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
-            StringBuilder consultaBuilder = new StringBuilder(
-                               "SELECT id, nombre, idJefeCatedra " +
-                               "FROM asignatura " +
-                               "ORDER BY nombre"
-                               );
+            string consulta = "SELECT id, nombre, idJefeCatedra FROM asignatura ORDER BY nombre";
 
-            string consulta = consultaBuilder.ToString();
-
-            // Creamos el comando sql
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
             comando.Connection = gestorConexion.getConexionAbierta();
 
             try
             {
-                // Ejecutamos la consulta
                 MySqlDataReader reader = comando.ExecuteReader();
 
                 while (reader.Read())
                 {
                     Asignatura asignatura = armarAsignaturaDesdeReader(reader);
-
                     asignaturas.Add(asignatura);
                 }
             }
-            catch (MySqlException e)
-            {
-                GestorExcepciones.mostrarExcepcion(e);
-            }
-            finally
-            {
-                gestorConexion.cerrarConexion();
-            }
+            catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
+            finally { gestorConexion.cerrarConexion(); }
 
             return asignaturas;
         }
@@ -60,7 +41,6 @@ namespace AccesoDatos
         private static Asignatura armarAsignaturaDesdeReader(MySqlDataReader reader)
         {
             Asignatura asignatura = new Asignatura();
-
             asignatura.Id = reader.GetInt32("id");
             asignatura.Nombre = reader.GetString("nombre");
             asignatura.JefeCatedra = DAODocentes.obtenerDocentePorID(ValidadorValoresNull.getInt(reader, "idJefeCatedra", -1));
@@ -75,30 +55,15 @@ namespace AccesoDatos
 
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
-            StringBuilder consultaBuilder = new StringBuilder(
-                               "SELECT id, nombre, idJefeCatedra " +
-                               "FROM asignatura " +
-                               "WHERE id = @id"
-                               );
+            string consulta = "SELECT id, nombre, idJefeCatedra FROM asignatura WHERE id = @id";
 
-            string consulta = consultaBuilder.ToString();
-
-            // Creamos el comando sql
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
             comando.Connection = gestorConexion.getConexionAbierta();
-
-            // Creamos sus parametros
-            MySqlParameter idParam = new MySqlParameter();
-            idParam.ParameterName = "@id";
-            idParam.Value = id;
-
-            // Agregamos los parametros a la consulta
-            comando.Parameters.Add(idParam);
+            comando.Parameters.AddWithValue("@id", id);
 
             try
             {
-                // Ejecutamos la consulta
                 MySqlDataReader reader = comando.ExecuteReader();
 
                 while (reader.Read())
@@ -106,70 +71,35 @@ namespace AccesoDatos
                     asignatura = armarAsignaturaDesdeReader(reader);
                 }
             }
-            catch (MySqlException e)
-            {
-                GestorExcepciones.mostrarExcepcion(e);
-            }
-            finally
-            {
-                gestorConexion.cerrarConexion();
-            }
+            catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
+            finally { gestorConexion.cerrarConexion(); }
 
             return asignatura;
         }
 
-
-
         // Comprueba si existe la asignatura en la base de datos de la planilla de asistencias.
         // Basamos la comprobacion en el nombre de la asignatura guardado en la base de datos del rapla 
         // y en el id del jefe de catedra
-
         public static bool existeAsignatura(Asignatura asignatura)
         {
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
-            StringBuilder consultaBuilder = new StringBuilder(
-                               "SELECT nombre, idJefeCatedra " +
-                               "FROM asignatura " +
-                               "WHERE nombre = @nombre and idJefeCatedra = @idJefeCatedra"
-                               );
+            string consulta = "SELECT nombre, idJefeCatedra FROM asignatura " + 
+                "WHERE nombre = @nombre and idJefeCatedra = @idJefeCatedra";
 
-            string consulta = consultaBuilder.ToString();
-
-
-            // Creamos el comando sql
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
             comando.Connection = gestorConexion.getConexionAbierta();
-
-            // Creamos sus parametros
-            MySqlParameter nombreParam = new MySqlParameter();
-            nombreParam.ParameterName = "@nombre";
-            nombreParam.Value = asignatura.Nombre;
-
-            MySqlParameter idJefeCatedraParam = new MySqlParameter();
-            idJefeCatedraParam.ParameterName = "@idJefeCatedra";
-            idJefeCatedraParam.Value = asignatura.JefeCatedra.Id;
-
-            // Agregamos los parametros a la consulta
-            comando.Parameters.Add(nombreParam);
-            comando.Parameters.Add(idJefeCatedraParam);
-
+            comando.Parameters.AddWithValue("@nombre", asignatura.Nombre);
+            comando.Parameters.AddWithValue("@idJefeCatedra", asignatura.JefeCatedra.Id);
 
             try
             {
-                // Ejecutamos la consulta
                 MySqlDataReader reader = comando.ExecuteReader();
-
-                bool tieneFilas = reader.HasRows;
-                if (reader.HasRows)
-                {
-                    return true;
-                }
+                return reader.HasRows;
             }
             catch (MySqlException e)
             {
-                
                 GestorExcepciones.mostrarExcepcion(e);
                 return true;
             }
@@ -177,117 +107,88 @@ namespace AccesoDatos
             {
                 gestorConexion.cerrarConexion();
             }
-
-
-            return false;
         }
 
-
-        // Inserta la asignatura pasada como parametro en la base de datos
         public static void insertarAsignatura(Asignatura asignatura)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
-            StringBuilder consultaBuilder = new StringBuilder(
-                              "insert into asignatura(nombre, idJefeCatedra) " +
-                              "values(@nombre, @idJefeCatedra)"
-                              );
-
-            string consulta = consultaBuilder.ToString();
-
-            // Creamos el comando sql
-            MySqlCommand comando = new MySqlCommand();
-            comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
-
-            // Creamos sus parametros
-            MySqlParameter nombreParam = new MySqlParameter();
-            nombreParam.ParameterName = "@nombre";
-            nombreParam.Value = asignatura.Nombre;
-
-            MySqlParameter idJefeCatedraParam = new MySqlParameter();
-            idJefeCatedraParam.ParameterName = "@idJefeCatedra";
-            idJefeCatedraParam.Value = asignatura.JefeCatedra.Id;
-
-            // Agregamos los parametros a la consulta
-            comando.Parameters.Add(nombreParam);
-            comando.Parameters.Add(idJefeCatedraParam);
-
-            try
-            {
-                comando.ExecuteNonQuery();
-            }
-            catch (MySqlException e)
-            {
-                GestorExcepciones.mostrarExcepcion(e);
-            }
-            finally
-            {
-                gestorConexion.cerrarConexion();
-            }
+            insertarAsignaturas( new List<Asignatura> { asignatura } );
         }
 
         public static void insertarAsignaturas(List<Asignatura> asignaturas)
         {
-            foreach (Asignatura asignatura in asignaturas)
+            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
+
+            MySqlCommand comando = new MySqlCommand();
+            comando.Connection = gestorConexion.getConexionAbierta();
+
+            string consulta = "INSERT INTO asignatura(nombre, idJefeCatedra) VALUES";
+
+            for (int i = 0; i < asignaturas.Count; i++)
             {
-                insertarAsignatura(asignatura);
+                string parametroNombre = "@nombre" + i;
+                string parametroIdJefeCatedra = "@idJefeCatedra" + i;
+
+                consulta += "(" + parametroNombre + "," + parametroIdJefeCatedra + "),";
+
+                Asignatura asignatura = asignaturas.ElementAt(i);
+                comando.Parameters.AddWithValue(parametroNombre, asignatura.Nombre);
+                comando.Parameters.AddWithValue(parametroIdJefeCatedra, asignatura.JefeCatedra.Id);
             }
+
+            consulta = consulta.Substring(0, consulta.Length - 1);
+            comando.CommandText = consulta;
+
+            try { comando.ExecuteNonQuery(); }
+            catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
+            finally { gestorConexion.cerrarConexion(); }
         }
 
         public static void actualizarAsignatura(Asignatura asignatura)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
-            StringBuilder consultaBuilder = new StringBuilder(
-                              "UPDATE asignatura set nombre=@nombre, idJefeCatedra=@idJefeCatedra " +
-                              "where id = @id"
-                              );
-
-            string consulta = consultaBuilder.ToString();
-
-            // Creamos el comando sql
-            MySqlCommand comando = new MySqlCommand();
-            comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
-
-            // Creamos sus parametros
-            MySqlParameter nombreParam = new MySqlParameter();
-            nombreParam.ParameterName = "@nombre";
-            nombreParam.Value = asignatura.Nombre;
-
-            MySqlParameter idJefeCatedraParam = new MySqlParameter();
-            idJefeCatedraParam.ParameterName = "@idJefeCatedra";
-            idJefeCatedraParam.Value = asignatura.JefeCatedra.Id;
-
-            MySqlParameter idAsignatura = new MySqlParameter();
-            idAsignatura.ParameterName = "@id";
-            idAsignatura.Value = asignatura.Id;
-
-            // Agregamos los parametros a la consulta
-            comando.Parameters.Add(nombreParam);
-            comando.Parameters.Add(idJefeCatedraParam);
-            comando.Parameters.Add(idAsignatura);
-
-            try
-            {
-                comando.ExecuteNonQuery();
-            }
-            catch (MySqlException e)
-            {
-                GestorExcepciones.mostrarExcepcion(e);
-            }
-            finally
-            {
-                gestorConexion.cerrarConexion();
-            }
+            actualizarAsignaturas( new List<Asignatura> { asignatura } );
         }
 
         public static void actualizarAsignaturas(List<Asignatura> asignaturas)
         {
-            foreach (Asignatura asignatura in asignaturas)
+            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
+
+            using (var connection = gestorConexion.getConexionAbierta())
             {
-                actualizarAsignatura(asignatura);
+                MySqlTransaction transaction = connection.BeginTransaction();
+
+                try
+                {
+                    for (int i = 0; i < asignaturas.Count; i++)
+                    {
+                        string paramJefeCatedra = "@idJefeCatedra" + i;
+                        string paramNombre = "@nombre" + i;
+                        string paramId = "@id" + i;
+
+                        string consulta = "UPDATE asignatura SET " +
+                            "nombre=" + paramNombre + "," +
+                            "idJefeCatedra=" + paramJefeCatedra +
+                            " where id = " + paramId;
+
+                        MySqlCommand comando = new MySqlCommand();
+                        comando.Connection = connection;
+                        comando.CommandText = consulta;
+                        comando.Transaction = transaction;
+
+                        Asignatura asignatura = asignaturas.ElementAt(i);
+                        comando.Parameters.AddWithValue(paramJefeCatedra, asignatura.JefeCatedra.Id);
+                        comando.Parameters.AddWithValue(paramNombre, asignatura.Nombre);
+                        comando.Parameters.AddWithValue(paramId, asignatura.Id);
+
+                        comando.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                }
+                catch (MySqlException e)
+                {
+                    transaction.Rollback();
+                    GestorExcepciones.mostrarExcepcion(e);
+                }
             }
         }
     }

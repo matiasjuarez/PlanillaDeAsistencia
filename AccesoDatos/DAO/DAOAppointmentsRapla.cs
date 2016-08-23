@@ -241,7 +241,7 @@ namespace AccesoDatos
             builder.Append("from appointment_exception as apex group by IDAP) as Excepciones ");
             builder.Append("ON SinAulas.IDAP = Excepciones.IDAP ");
             builder.Append("WHERE Inicio BETWEEN @fechaInicio and @fechaFin ");
-            builder.Append("group by IDAP");
+            builder.Append("group by IDAP ");
 
             return builder.ToString();
         }
@@ -256,12 +256,12 @@ namespace AccesoDatos
 
                 appointment.IDEvento = reader.GetInt32("EVENTO");
                 appointment.AppointmentId = reader.GetInt32("IDAP");
-                appointment.Asignatura = ValidadorValoresNull.getString(reader, "Materia", configuracion.AsignaturaNoAsignada);
-                appointment.Aulas = ValidadorValoresNull.getString(reader, "Aulas", configuracion.AulaNoAsignada);
-                appointment.Excepciones = ValidadorValoresNull.getString(reader, "fechasExcepcion", "");
-                appointment.Docente = ValidadorValoresNull.getString(reader, "Docente", configuracion.DocenteNoAsignado);
-                appointment.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra", configuracion.DocenteNoAsignado);
-                appointment.Curso = ValidadorValoresNull.getString(reader, "Curso", configuracion.CursoNoAsignado);
+                appointment.Asignatura = ValidadorValoresNull.getString(reader, "Materia", null);
+                appointment.Aulas = ValidadorValoresNull.getString(reader, "Aulas", null);
+                appointment.Excepciones = ValidadorValoresNull.getString(reader, "fechasExcepcion", null);
+                appointment.Docente = ValidadorValoresNull.getString(reader, "Docente", null);
+                appointment.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra", null);
+                appointment.Curso = ValidadorValoresNull.getString(reader, "Curso", null);
 
                 appointment.Inicio = ValidadorValoresNull.getDateTime(reader, "Inicio");
                 appointment.Fin = ValidadorValoresNull.getDateTime(reader, "Fin");

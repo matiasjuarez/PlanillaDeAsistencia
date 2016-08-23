@@ -16,6 +16,13 @@ namespace SincronizacionInterBase
         private List<Valor> modificar = new List<Valor>();
         private List<Valor> eliminar = new List<Valor>();
 
+        public void mezclarContenedores(ContenedorCambios<Valor> otroContenedor)
+        {
+            foreach (Valor valor in otroContenedor.agregar) this.agregarValor(valor);
+            foreach (Valor valor in otroContenedor.modificar) this.modificarValor(valor);
+            foreach (Valor valor in otroContenedor.eliminar) this.eliminarValor(valor);
+        }
+
         public void agregarValor(Valor valor)
         {
             agregar.Add(valor);

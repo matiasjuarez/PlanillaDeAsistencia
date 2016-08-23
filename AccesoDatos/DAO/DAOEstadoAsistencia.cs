@@ -19,31 +19,21 @@ namespace AccesoDatos
 
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
-            StringBuilder consultaBuilder = new StringBuilder(
-                               "SELECT id, nombre " +
-                               "FROM estadoasistencia "
-                               );
+            string consulta = "SELECT id, nombre FROM estadoasistencia";
 
-            string consulta = consultaBuilder.ToString();
-
-            // Creamos el comando sql
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
             comando.Connection = gestorConexion.getConexionAbierta();
 
             try
             {
-                // Ejecutamos la consulta
                 MySqlDataReader reader = comando.ExecuteReader();
 
                 while (reader.Read())
                 {
                     EstadoAsistencia estadoAsistencia = new EstadoAsistencia();
-
                     estadoAsistencia.Id = reader.GetInt32("id");
                     estadoAsistencia.Nombre = reader.GetString("nombre");
-
-
                     estadosAsistencia.Add(estadoAsistencia);
                 }
             }

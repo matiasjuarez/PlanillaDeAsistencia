@@ -21,19 +21,12 @@ namespace AccesoDatos
 
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
-            StringBuilder consultaBuilder = new StringBuilder(
-                        "SELECT curso.id as IdCurso, curso.nombre as Nombre " +
-                        "FROM curso "
-            );
+            string consulta = "SELECT curso.id as IdCurso, curso.nombre as Nombre FROM curso";
 
-            string consulta = consultaBuilder.ToString();
-
-            // Creamos el comando sql
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
             comando.Connection = gestorConexion.getConexionAbierta();
 
-            // Ejecutamos la consulta
             MySqlDataReader reader = comando.ExecuteReader();
 
             try
@@ -41,21 +34,13 @@ namespace AccesoDatos
                 while (reader.Read())
                 {
                     Curso curso = new Curso();
-
                     curso.Id = ValidadorValoresNull.getInt(reader, "IdCurso", -1);
                     curso.Nombre = ValidadorValoresNull.getString(reader, "Nombre", configuracion.CursoNoAsignado);
-
                     cursos.Add(curso);
                 }
             }
-            catch (MySqlException e)
-            {
-                GestorExcepciones.mostrarExcepcion(e);
-            }
-            finally
-            {
-                gestorConexion.cerrarConexion();
-            }
+            catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
+            finally { gestorConexion.cerrarConexion(); }
 
             return cursos;
         }
@@ -65,40 +50,22 @@ namespace AccesoDatos
         {
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
-            StringBuilder consultaBuilder = new StringBuilder(
-                        "SELECT curso.id as IdCurso, curso.nombre as Nombre " +
-                        "FROM curso " +
-                        "WHERE id = @id"
-                        );
+            string consulta = "SELECT curso.id as IdCurso, curso.nombre as Nombre FROM curso WHERE id = @id";
 
-            string consulta = consultaBuilder.ToString();
-
-            // Creamos el comando sql
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
             comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Parameters.AddWithValue("@id", id);
 
-            // Creamos sus parametros
-            MySqlParameter idParam = new MySqlParameter();
-            idParam.ParameterName = "@id";
-            idParam.Value = id;
-
-            // Agregamos los parametros a la consulta
-            comando.Parameters.Add(idParam);
-
-            // Ejecutamos la consulta
             MySqlDataReader reader = comando.ExecuteReader();
-
 
             try
             {
                 if (reader.Read())
                 {
                     Curso curso = new Curso();
-
                     curso.Id = ValidadorValoresNull.getInt(reader, "IdCurso", -1);
                     curso.Nombre = ValidadorValoresNull.getString(reader, "Nombre", configuracion.CursoNoAsignado);
-
                     return curso;
                 }
             }
@@ -116,25 +83,30 @@ namespace AccesoDatos
 
         public static void insertarCurso(Curso curso)
         {
+            insertarCursos( new List<Curso> { curso } );
+        }
+
+        public static void insertarCursos(List<Curso> cursos)
+        {
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
-            StringBuilder consultaBuilder = new StringBuilder(
-                        "INSERT INTO curso(Nombre) values(@nombre)"
-                        );
-
-            string consulta = consultaBuilder.ToString();
-
-            // Creamos el comando sql
             MySqlCommand comando = new MySqlCommand();
-            comando.CommandText = consulta;
             comando.Connection = gestorConexion.getConexionAbierta();
 
-            // Creamos sus parametros
-            MySqlParameter nombreParam = new MySqlParameter();
-            nombreParam.ParameterName = "@nombre";
-            nombreParam.Value = curso.Nombre;
+            string consulta = "INSERT INTO curso(Nombre) VALUES";
 
-            comando.Parameters.Add(nombreParam);
+            for (int i = 0; i < cursos.Count; i++)
+            {
+                string parametroNombre = "@nombre" + i;
+
+                consulta += "(" + parametroNombre + "),";
+
+                Curso curso = cursos.ElementAt(i);
+                comando.Parameters.AddWithValue(parametroNombre, curso.Nombre);
+            }
+
+            consulta = consulta.Substring(0, consulta.Length - 1);
+            comando.CommandText = consulta;
 
             try
             {
@@ -149,17 +121,5 @@ namespace AccesoDatos
                 gestorConexion.cerrarConexion();
             }
         }
-
-        public static void insertarCursos(List<Curso> cursos)
-        {
-            foreach (Curso curso in cursos)
-            {
-                insertarCurso(curso);
-            }
-        }
-
     }
-
-
-
 }

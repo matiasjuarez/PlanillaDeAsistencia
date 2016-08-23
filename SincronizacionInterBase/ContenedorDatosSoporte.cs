@@ -73,70 +73,106 @@ namespace SincronizacionInterBase
             sincronizarAsignaturas(eventos);
         }
 
-        private void sincronizarAsignaturas(List<Appointment> eventos)
+        private void sincronizarAsignaturas(List<Appointment> appointments)
         {
-            ContenedorCambios<Asignatura> cambios = new ContenedorCambios<Asignatura>();
             HashSet<string> nombresAsignaturasNuevas = new HashSet<string>();
 
-            foreach (Appointment evento in eventos)
+            HashSet<string> nombresAsignaturas = new HashSet<string>();
+            foreach (Asignatura asignatura in asignaturasPlanilla.obtenerDatos())
             {
-                string asignaturaRapla = evento.Asignatura;
-                if (asignaturaRapla == configuracion.AsignaturaNoAsignada)
+                nombresAsignaturas.Add(asignatura.Nombre);
+            }
+
+            foreach (Appointment appointment in appointments)
+            {
+                string asignaturaRapla = appointment.Asignatura;
+                if (asignaturaRapla == null) continue;
+
+                if (!nombresAsignaturas.Contains(asignaturaRapla)) nombresAsignaturasNuevas.Add(asignaturaRapla);
+            }
+
+            if (nombresAsignaturasNuevas.Count > 0)
+            {
+                List<Asignatura> asignaturas = new List<Asignatura>();
+
+                foreach (string nombreAsignatura in nombresAsignaturasNuevas.ToList<string>())
                 {
-                    // Esto lo hacemos para no guardar una entrada que diga "asignatura no asignada"
+                    Asignatura asignaturaNueva = new Asignatura();
+                    asignaturaNueva.Nombre = nombreAsignatura;
+                    asignaturas.Add(asignaturaNueva);
+                }
+                DAOAsignaturas.insertarAsignaturas(asignaturas);
+
+                asignaturasPlanilla.refrescarDatos();
+            }
+
+            sincronizarJefesCatedraAsignaturas(appointments);
+        }
+
+        private void sincronizarJefesCatedraAsignaturas(List<Appointment> appointments)
+        {
+            Dictionary<string, Appointment> appointmentsMasRecientesPorMateria = obtenerAppointmentMasRecientePorMateria(appointments);
+
+            List<Asignatura> asignaturasModificadas = new List<Asignatura>();
+
+            foreach (Asignatura asignatura in asignaturasPlanilla.obtenerDatos())
+            {
+                Appointment salidaDiccionario = null;
+
+                if (appointmentsMasRecientesPorMateria.TryGetValue(asignatura.Nombre, out salidaDiccionario))
+                {
+                    foreach (Docente docente in docentesPlanilla.obtenerDatos())
+                    {
+                        if (docente.Nombre == salidaDiccionario.JefeCatedra)
+                        {
+                            if (asignatura.JefeCatedra == null || asignatura.JefeCatedra.Nombre != docente.Nombre)
+                            {
+                                asignatura.JefeCatedra = docente;
+                                asignaturasModificadas.Add(asignatura);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (asignaturasModificadas.Count != 0)
+            {
+                DAOAsignaturas.actualizarAsignaturas(asignaturasModificadas);
+            }
+        }
+
+        private Dictionary<string, Appointment> obtenerAppointmentMasRecientePorMateria(List<Appointment> appointments)
+        {
+            Dictionary<string, Appointment> appointmentsPorMateria = new Dictionary<string, Appointment>();
+
+            foreach (Appointment appointment in appointments)
+            {
+                if (appointment.Asignatura == null)
+                {
                     continue;
                 }
 
-                bool seEncontroAsignatura = false;
-                foreach (Asignatura asignaturaPlanilla in asignaturasPlanilla.obtenerDatos())
+                Appointment salidaDiccionario = null;
+                if (appointmentsPorMateria.TryGetValue(appointment.Asignatura, out salidaDiccionario))
                 {
-                    if (asignaturaRapla == asignaturaPlanilla.Nombre)
+                    // Si se cumple esta condicion, significa que el appointment que esta en el diccionario
+                    // tiene una fecha mas vieja que el appointmennt que estamos analizando ahora mismo. Lo que queremos
+                    // es obtener al appointment mas nuevo de una materia ya que supuestamente ese appointment deberia
+                    // tener al actual jefe de catedra
+                    if (salidaDiccionario.Inicio < appointment.Inicio)
                     {
-                        seEncontroAsignatura = true;
-
-                        /*
-                         * Nos fijamos si el jefe de catedra que figura en la planilla para esta asignatura
-                         * es el mismo jefe de catedra que el que trae el evento. Si no lo es, tenemos que 
-                         * hacer un update en la asignatura correspondiente
-                         * */
-                        if (evento.JefeCatedra != configuracion.DocenteNoAsignado)
-                        {
-                            if (asignaturaPlanilla.JefeCatedra == null) asignaturaPlanilla.JefeCatedra = new Docente();
-
-                            asignaturaPlanilla.JefeCatedra.Nombre = evento.JefeCatedra;
-                            cambios.modificarValor(asignaturaPlanilla);
-                        }
-
-                        break;
+                        appointmentsPorMateria[appointment.Asignatura] = appointment;
                     }
                 }
-
-                if (!seEncontroAsignatura)
+                else
                 {
-                    if (!nombresAsignaturasNuevas.Contains(asignaturaRapla))
-                    {
-                        nombresAsignaturasNuevas.Add(asignaturaRapla);
-                        Asignatura nuevaAsignatura = new Asignatura();
-                        nuevaAsignatura.Nombre = asignaturaRapla;
-
-                        foreach (Docente docente in docentesPlanilla.obtenerDatos())
-                        {
-                            if(docente.Nombre == evento.JefeCatedra){
-                                nuevaAsignatura.JefeCatedra = docente;
-                            }
-                        }
-
-                        cambios.agregarValor(nuevaAsignatura);
-                    }
+                    appointmentsPorMateria.Add(appointment.Asignatura, appointment);
                 }
             }
 
-            if (cambios.contieneCambios())
-            {
-                DAOAsignaturas.insertarAsignaturas(cambios.obtenerValoresAgregar());
-                DAOAsignaturas.actualizarAsignaturas(cambios.obtenerValoresModificar());
-                asignaturasPlanilla.refrescarDatos();
-            }
+            return appointmentsPorMateria;
         }
 
         /*
@@ -147,41 +183,29 @@ namespace SincronizacionInterBase
         {
             HashSet<string> nombresAulasNuevas = new HashSet<string>();
 
+            HashSet<string> nombresAulas = new HashSet<string>();
+            foreach (Aula aula in aulasPlanilla.obtenerDatos())
+            {
+                nombresAulas.Add(aula.Nombre);
+            }
+
             foreach (Appointment evento in eventos)
             {
-                if (evento.Aulas == configuracion.AulaNoAsignada)
-                {
-                    continue;
-                }
+                if (evento.Aulas == null) continue;
 
                 string[] aulasRaplaNombre = evento.Aulas.Split(',');
 
                 foreach (string aulaRaplaNombre in aulasRaplaNombre)
                 {
-                    bool existeAula = false;
-
-                    foreach (Aula aulaPlanilla in aulasPlanilla.obtenerDatos())
-                    {
-                        if (aulaRaplaNombre == aulaPlanilla.Nombre)
-                        {
-                            existeAula = true;
-                            break;
-                        }
-                    }
-
-                    if (!existeAula)
-                    {
-                        nombresAulasNuevas.Add(aulaRaplaNombre);
-                    }
+                    if (!nombresAulas.Contains(aulaRaplaNombre)) nombresAulasNuevas.Add(aulaRaplaNombre);
                 }
             }
 
             if (nombresAulasNuevas.Count > 0)
             {
-                List<string> nombresAulas = nombresAulasNuevas.ToList<string>();
                 List<Aula> aulasNuevas = new List<Aula>();
 
-                foreach(string nombreAula in nombresAulas)
+                foreach(string nombreAula in nombresAulasNuevas.ToList<string>())
                 {
                     Aula aulaNueva = new Aula();
                     aulaNueva.Nombre = nombreAula;
@@ -202,54 +226,33 @@ namespace SincronizacionInterBase
         {
             HashSet<string> nombresDocentesNuevos = new HashSet<string>();
 
+            HashSet<string> nombresDocentes = new HashSet<string>();
+            foreach (Docente docente in docentesPlanilla.obtenerDatos()) 
+            {
+                nombresDocentes.Add(docente.Nombre);
+            }
+
             foreach (Appointment appointment in appointments)
             {
                 string docenteRapla = appointment.Docente;
                 string jefeCatedraRapla = appointment.JefeCatedra;
 
-                bool existeDocente = false;
-                bool existeJefe = false;
-
-                foreach (Docente docentePlanilla in docentesPlanilla.obtenerDatos())
+                if (!nombresDocentes.Contains(docenteRapla) && docenteRapla != null)
                 {
-                    if (docentePlanilla.Nombre == docenteRapla)
-                    {
-                        existeDocente = true;
-                    }
-                    if (docentePlanilla.Nombre == jefeCatedraRapla)
-                    {
-                        existeJefe = true;
-                    }
-
-                    if (existeJefe && existeDocente)
-                    {
-                        break;
-                    }
+                    nombresDocentesNuevos.Add(docenteRapla);
                 }
-
-                if (!existeDocente)
+                    
+                if (!nombresDocentes.Contains(jefeCatedraRapla) && jefeCatedraRapla != null)
                 {
-                    if (docenteRapla != configuracion.DocenteNoAsignado)
-                    {
-                        nombresDocentesNuevos.Add(docenteRapla);
-                    }
-                }
-
-                if (!existeJefe)
-                {
-                    if (jefeCatedraRapla != configuracion.DocenteNoAsignado)
-                    {
-                        nombresDocentesNuevos.Add(jefeCatedraRapla);
-                    }
+                    nombresDocentesNuevos.Add(jefeCatedraRapla);
                 }
             }
 
             if (nombresDocentesNuevos.Count > 0)
             {
-                List<string> nombresDocentes = nombresDocentesNuevos.ToList<string>();
                 List<Docente> docentesNuevos = new List<Docente>();
 
-                foreach (string nombreDocente in nombresDocentes)
+                foreach (string nombreDocente in nombresDocentesNuevos.ToList<string>())
                 {
                     Docente docenteNuevo = new Docente(nombreDocente);
                     docentesNuevos.Add(docenteNuevo);
@@ -264,37 +267,26 @@ namespace SincronizacionInterBase
         {
             HashSet<string> nombresCursosNuevos = new HashSet<string>();
 
+            HashSet<string> nombresCursos = new HashSet<string>();
+            foreach (Curso curso in cursosPlanilla.obtenerDatos())
+            {
+                nombresCursos.Add(curso.Nombre);
+            }
+
             foreach (Appointment evento in eventos)
             {
                 string cursoRapla = evento.Curso;
-                if (cursoRapla == configuracion.CursoNoAsignado)
-                {
-                    continue;
-                }
 
-                bool seEncontroCurso = false;
+                if (cursoRapla == null) continue;
 
-                foreach (Curso cursoPlanilla in cursosPlanilla.obtenerDatos())
-                {
-                    if (cursoRapla == cursoPlanilla.Nombre)
-                    {
-                        seEncontroCurso = true;
-                        break;
-                    }
-                }
-
-                if (!seEncontroCurso)
-                {
-                    nombresCursosNuevos.Add(cursoRapla);
-                }
+                if (!nombresCursos.Contains(cursoRapla)) nombresCursosNuevos.Add(cursoRapla);
             }
 
             if (nombresCursosNuevos.Count > 0)
             {
-                List<string> nombresCursos = nombresCursosNuevos.ToList<string>();
                 List<Curso> cursosNuevos = new List<Curso>();
 
-                foreach (string nombreCurso in nombresCursos)
+                foreach (string nombreCurso in nombresCursosNuevos.ToList<string>())
                 {
                     Curso cursoNuevo = new Curso();
                     cursoNuevo.Nombre = nombreCurso;

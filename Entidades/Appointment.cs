@@ -9,10 +9,10 @@ namespace Entidades
     {
         private int idEvento;
         private int appointmentId;
-        private String docente;
-        private String jefeCatedra;
-        private String curso;
-        private String tipoRepeticion;
+        private string docente;
+        private string jefeCatedra;
+        private string curso;
+        private string tipoRepeticion;
         private DateTime finRepeticion;
         private DateTime inicio;
         private DateTime fin;
@@ -20,7 +20,7 @@ namespace Entidades
         private string materia;
         private bool esParcial;
         private bool esExamen;
-        private String excepciones;
+        private string excepciones;
 
         public int AppointmentId
         {
@@ -28,7 +28,7 @@ namespace Entidades
             set { appointmentId = value; }
         }
 
-        public String TipoRepeticion
+        public string TipoRepeticion
         {
             get { return tipoRepeticion; }
             set { tipoRepeticion = value; }
@@ -59,19 +59,22 @@ namespace Entidades
             set { idEvento = value; }
         }
 
-        public String Docente
+        public string Docente
         {
             get { return docente; }
             set { docente = value; }
         }
 
-        public String JefeCatedra
+        public string JefeCatedra
         {
-            get { return jefeCatedra; }
+            get 
+            {
+                return jefeCatedra; 
+            }
             set { jefeCatedra = value; }
         }
 
-        public String Curso
+        public string Curso
         {
             get { return curso; }
             set { curso = value; }

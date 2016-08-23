@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using MySql.Data.MySqlClient;
-
 using Entidades;
-
 using Utilidades;
-
 using Configuracion;
 
 namespace AccesoDatos
@@ -23,34 +19,16 @@ namespace AccesoDatos
 
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
-            StringBuilder consultaBuilder = new StringBuilder(
-                    obtenerSentenciaSelectSinRestriccion() +
-                    " where asistencias.comienzoClaseEsperado BETWEEN @fechaInicio and @fechaFin"
-             );
+            string consulta = obtenerSentenciaSelectSinRestricciones();
+            consulta += " WHERE comienzoClaseEsperado BETWEEN @fechaInicio and @fechaFin";
 
-            string consulta = consultaBuilder.ToString();
+            MySqlCommand command = new MySqlCommand();
+            command.Connection = gestorConexion.getConexionAbierta();
+            command.CommandText = consulta;
+            command.Parameters.AddWithValue("@fechaInicio", fechaHoraInicio);
+            command.Parameters.AddWithValue("@fechaFin", fechaHoraFin);
 
-            // Creamos el comando sql
-            MySqlCommand comando = new MySqlCommand();
-            comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
-
-            // Creamos sus parametros
-            MySqlParameter fechaInicioParam = new MySqlParameter();
-            fechaInicioParam.ParameterName = "@fechaInicio";
-            fechaInicioParam.Value = fechaHoraInicio;
-
-            MySqlParameter fechaFinParam = new MySqlParameter();
-            fechaFinParam.ParameterName = "@fechaFin";
-            fechaFinParam.Value = fechaHoraFin;
-
-
-            // Agregamos los parametros a la consulta
-            comando.Parameters.Add(fechaInicioParam);
-            comando.Parameters.Add(fechaFinParam);
-
-            // Ejecutamos la consulta
-            MySqlDataReader reader = comando.ExecuteReader();
+            MySqlDataReader reader = command.ExecuteReader();
 
             try
             {
@@ -60,41 +38,43 @@ namespace AccesoDatos
                     asistencias.Add(asistencia);
                 }
             }
-            catch (MySqlException e)
-            {
-                GestorExcepciones.mostrarExcepcion(e);
-            }
-            finally
-            {
-                gestorConexion.cerrarConexion();
-            }
+            catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
+            finally { gestorConexion.cerrarConexion(); }
 
             return asistencias;
         }
 
-        private static List<Asistencia> obtenerAsistencias(RestriccionIN restriccion)
+        private static List<Asistencia> obtenerAsistenciasParaFechas(List<DateTime> fechas)
         {
             List<Asistencia> asistencias = new List<Asistencia>();
 
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
-            StringBuilder consultaBuilder = new StringBuilder();
-            consultaBuilder.Append(obtenerSentenciaSelectSinRestriccion());
-            consultaBuilder.Append(" WHERE ");
-            consultaBuilder.Append(restriccion.obtenerRestriccion());
+            MySqlCommand command = new MySqlCommand();
+            command.Connection = gestorConexion.getConexionAbierta();
 
-            string consulta = consultaBuilder.ToString();
+            StringBuilder restriccionIN = new StringBuilder("IN(");
 
-            // Creamos el comando sql
-            MySqlCommand comando = new MySqlCommand();
-            comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            for (int i = 0; i < fechas.Count; i++)
+            {
+                string nuevoParametro = "@fecha" + i;
 
-            // Creamos sus parametros
-            restriccion.obtenerComandoParametrizado(comando);
+                restriccionIN.Append(nuevoParametro);
+                restriccionIN.Append(",");
 
-            // Ejecutamos la consulta
-            MySqlDataReader reader = comando.ExecuteReader();
+                command.Parameters.AddWithValue(nuevoParametro, fechas.ElementAt(i).Date);
+            }
+
+            restriccionIN.Remove(restriccionIN.Length - 1, 1);
+            restriccionIN.Append(")");
+
+            string consulta = obtenerSentenciaSelectSinRestricciones();
+            consulta += " WHERE asistencias.comienzoClaseEsperado ";
+            consulta += restriccionIN.ToString();
+
+            command.CommandText = consulta;
+
+            MySqlDataReader reader = command.ExecuteReader();
 
             try
             {
@@ -104,23 +84,16 @@ namespace AccesoDatos
                     asistencias.Add(asistencia);
                 }
             }
-            catch (MySqlException e)
-            {
-                GestorExcepciones.mostrarExcepcion(e);
-            }
-            finally
-            {
-                gestorConexion.cerrarConexion();
-            }
+            catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
+            finally { gestorConexion.cerrarConexion(); }
 
             return asistencias;
         }
 
         // Obtiene la sentencia Select que se debe utilizar para obtener todas las asistencias de la base de datos
-        private static string obtenerSentenciaSelectSinRestriccion()
+        private static string obtenerSentenciaSelectSinRestricciones()
         {
-            StringBuilder consultaBuilder = new StringBuilder(
-                    "select asistencias.asistenciaId as Id, asistencias.APID as AppointmentId, asistencias.eventId, " +
+            String consulta = "select asistencias.asistenciaId as Id, asistencias.APID as AppointmentId, asistencias.eventId, " +
                     "asistencias.comienzoClaseEsperado as InicioEsperado, " +
                     "asistencias.finClaseEsperado as FinEsperado, asistencias.comienzoClaseReal as InicioReal, " +
                     "asistencias.finClaseReal as FinReal, asistencias.cantidadAlumnos as Alumnos, " +
@@ -149,10 +122,9 @@ namespace AccesoDatos
                     "join aula a on a.id = axa.idAula " +
                     "group by axa.idAsistencia " +
                     ") as aulas " +
-                    "ON aulas.idAsistencia = asistencias.asistenciaId "
-             );
+                    "ON aulas.idAsistencia = asistencias.asistenciaId";
 
-            return consultaBuilder.ToString();
+            return consulta;
         }
 
         // Toma un objeto de tipo MySqlDataReader y teniendo en cuenta la posicion del puntero del mismo
@@ -227,9 +199,7 @@ namespace AccesoDatos
             {
                 fechasFormateadas.Add(String.Format("{0:yyyy/MM/dd}", fecha));
             }
-
-            RestriccionIN restriccion = new RestriccionIN("DATE(asistencias.comienzoClaseEsperado)", fechasFormateadas);
-            return obtenerAsistencias(restriccion);
+            return obtenerAsistenciasParaFechas(fechas);
         }
 
         public static List<Asistencia> obtenerAsistenciasParaUnaSemana(DateTime fecha)
@@ -287,77 +257,32 @@ namespace AccesoDatos
 
             string consultaPrincipal = consultaBuilder.ToString();
 
-            // Creamos el comando sql
+            MySqlTransaction transaction = connection.BeginTransaction();
+
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consultaPrincipal;
-            MySqlTransaction transaction = connection.BeginTransaction();
             comando.Connection = connection;
             comando.Transaction = transaction;
-            
-            // Creamos sus parametros
-            MySqlParameter eventId = new MySqlParameter();
-            eventId.ParameterName = "@eventId";
-            eventId.Value = asistencia.EventId;
 
-            MySqlParameter appointmentId = new MySqlParameter();
-            appointmentId.ParameterName = "@appointmentId";
-            appointmentId.Value = asistencia.AppointmentId;
+            comando.Parameters.AddWithValue("@eventId", asistencia.EventId);
+            comando.Parameters.AddWithValue("@appointmentId", asistencia.AppointmentId);
+            comando.Parameters.AddWithValue("@comienzoClaseEsperado", asistencia.Fecha.Add(asistencia.HoraEntradaEsperada));
+            comando.Parameters.AddWithValue("@finClaseEsperado", asistencia.Fecha.Add(asistencia.HoraSalidaEsperada));
+            comando.Parameters.AddWithValue("@comienzoClaseReal", asistencia.Fecha.Add(asistencia.HoraEntradaReal));
+            comando.Parameters.AddWithValue("@finClaseReal", asistencia.Fecha.Add(asistencia.HoraSalidaReal));
+            comando.Parameters.AddWithValue("@cantidadAlumnos", asistencia.CantidadAlumnos);
+            comando.Parameters.AddWithValue("@idDocente", asistencia.Docente.Id);
+            comando.Parameters.AddWithValue("@idAsignatura", asistencia.Asignatura.Id);
 
-            MySqlParameter comienzoClaseEsperadoParam = new MySqlParameter();
-            comienzoClaseEsperadoParam.ParameterName = "@comienzoClaseEsperado";
-            comienzoClaseEsperadoParam.Value = asistencia.Fecha.Add(asistencia.HoraEntradaEsperada);
+            int valorIdEncargado = configuracion.IdEncargadoNoAsignado;
+            if (asistencia.Encargado != null) valorIdEncargado = asistencia.Encargado.Id;
+            comando.Parameters.AddWithValue("@idEncargado", valorIdEncargado);
 
-            MySqlParameter finClaseEsperadoParam = new MySqlParameter();
-            finClaseEsperadoParam.ParameterName = "@finClaseEsperado";
-            finClaseEsperadoParam.Value = asistencia.Fecha.Add(asistencia.HoraSalidaEsperada);
+            int valorIdEstadoAsistencia = configuracion.IdEstadoAsistenciaNoAsignado;
+            if (asistencia.EstadoAsistencia != null) valorIdEstadoAsistencia = asistencia.EstadoAsistencia.Id;
+            comando.Parameters.AddWithValue("@idEstadoAsistencia", valorIdEstadoAsistencia);
 
-            MySqlParameter comienzoClaseRealParam = new MySqlParameter();
-            comienzoClaseRealParam.ParameterName = "@comienzoClaseReal";
-            comienzoClaseRealParam.Value = asistencia.Fecha.Add(asistencia.HoraEntradaReal);
-
-            MySqlParameter finClaseRealParam = new MySqlParameter();
-            finClaseRealParam.ParameterName = "@finClaseReal";
-            finClaseRealParam.Value = asistencia.Fecha.Add(asistencia.HoraSalidaReal);
-
-            MySqlParameter cantidadAlumnosParam = new MySqlParameter();
-            cantidadAlumnosParam.ParameterName = "@cantidadAlumnos";
-            cantidadAlumnosParam.Value = asistencia.CantidadAlumnos;
-
-            MySqlParameter idDocenteParam = new MySqlParameter();
-            idDocenteParam.ParameterName = "@idDocente";
-            idDocenteParam.Value = asistencia.Docente.Id;
-
-            MySqlParameter idAsignaturaParam = new MySqlParameter();
-            idAsignaturaParam.ParameterName = "@idAsignatura";
-            idAsignaturaParam.Value = asistencia.Asignatura.Id;
-
-            MySqlParameter idEncargadoParam = new MySqlParameter();
-            idEncargadoParam.ParameterName = "@idEncargado";
-            idEncargadoParam.Value = configuracion.IdEncargadoNoAsignado;
-            if(asistencia.Encargado != null) idEncargadoParam.Value = asistencia.Encargado.Id;
-
-            MySqlParameter idEstadoAsistenciaParam = new MySqlParameter();
-            idEstadoAsistenciaParam.ParameterName = "@idEstadoAsistencia";
-            idEstadoAsistenciaParam.Value = configuracion.IdEstadoAsistenciaNoAsignado;
-            if(asistencia.EstadoAsistencia != null) idEstadoAsistenciaParam.Value = asistencia.EstadoAsistencia.Id;
-
-            MySqlParameter idCursoParam = new MySqlParameter();
-            idCursoParam.ParameterName = "@idCurso";
-            idCursoParam.Value = asistencia.Curso.Id;
-
-            // Agregamos los parametros a la consulta
-            comando.Parameters.Add(comienzoClaseEsperadoParam);
-            comando.Parameters.Add(finClaseEsperadoParam);
-            comando.Parameters.Add(comienzoClaseRealParam);
-            comando.Parameters.Add(finClaseRealParam);
-            comando.Parameters.Add(cantidadAlumnosParam);
-            comando.Parameters.Add(idDocenteParam);
-            comando.Parameters.Add(idAsignaturaParam);
-            comando.Parameters.Add(idEncargadoParam);
-            comando.Parameters.Add(idEstadoAsistenciaParam);
-            comando.Parameters.Add(idCursoParam);
-            comando.Parameters.Add(appointmentId);
-            comando.Parameters.Add(eventId);
+            comando.Parameters.AddWithValue("@idCurso", asistencia.Curso.Id);
 
             try
             {
@@ -381,7 +306,6 @@ namespace AccesoDatos
             {
                 gestorConexion.cerrarConexion();
             }
-
         }
 
         private static void insertarAulasDeAsistencia(Asistencia asistencia)
@@ -407,8 +331,8 @@ namespace AccesoDatos
                     textoInsert.Append(parametroIdAsistencia + ", ");
                     textoInsert.Append(parametroIdAula + ");");
 
-                    comando.Parameters.Add(new MySqlParameter(parametroIdAsistencia, asistencia.Id));
-                    comando.Parameters.Add(new MySqlParameter(parametroIdAula, asistencia.Aulas.ElementAt<Aula>(i).Id));
+                    comando.Parameters.AddWithValue(parametroIdAsistencia, asistencia.Id);
+                    comando.Parameters.AddWithValue(parametroIdAula, asistencia.Aulas.ElementAt<Aula>(i).Id);
                 }
 
                 comando.CommandText = textoInsert.ToString();
@@ -511,7 +435,6 @@ namespace AccesoDatos
             {
                 gestorConexion.cerrarConexion();
             }
-            
         }
 
         private static void eliminarAulasDeAsistencia(Asistencia asistencia)
@@ -557,12 +480,7 @@ namespace AccesoDatos
             comando.Connection = gestorConexion.getConexionAbierta();
             comando.Transaction = transaction;
 
-            // Creamos sus parametros
-            MySqlParameter idParam = new MySqlParameter();
-            idParam.ParameterName = "@id";
-            idParam.Value = asistencia.Id;
-
-            comando.Parameters.Add(idParam);
+            comando.Parameters.AddWithValue("@id", asistencia.Id);
 
             try
             {
@@ -579,6 +497,5 @@ namespace AccesoDatos
                 gestorConexion.cerrarConexion();
             }
         }
-
     }
 }

@@ -45,29 +45,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DAO\DAOCambiosPendientesAsistenciaEvento.cs" />
-    <Compile Include="Utilidades\BuilderRestricciones.cs" />
     <Compile Include="DAO\DAOAsignaturas.cs" />
     <Compile Include="DAO\DAOAsistencias.cs" />
     <Compile Include="DAO\DAOAulas.cs" />
     <Compile Include="DAO\DAOCursos.cs" />
     <Compile Include="DAO\DAOEncargados.cs" />
-    <Compile Include="DAO\DAOEspecialidades.cs" />
     <Compile Include="DAO\DAOEstadoAsistencia.cs" />
     <Compile Include="DAO\DAOAppointmentsRapla.cs" />
     <Compile Include="DAO\DAODocentes.cs" />
     <Compile Include="DAO\GestorConexion.cs" />
-    <Compile Include="Utilidades\Campo.cs" />
-    <Compile Include="Utilidades\Insert.cs" />
-    <Compile Include="Utilidades\InsertMultiple.cs" />
-    <Compile Include="Utilidades\IRestriccion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilidades\ItemConsulta.cs" />
-    <Compile Include="Utilidades\MultiUpdateBuilder.cs" />
-    <Compile Include="Utilidades\restriccionBetween.cs" />
-    <Compile Include="Utilidades\RestriccionIN.cs" />
-    <Compile Include="Utilidades\UpdateBuilder.cs" />
-    <Compile Include="Utilidades\ValidadorValoresNull.cs" />
-    <Compile Include="Utilidades\Where.cs" />
+    <Compile Include="DAO\ValidadorValoresNull.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Configuracion\Configuracion.csproj">

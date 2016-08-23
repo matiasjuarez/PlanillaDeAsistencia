@@ -12,6 +12,10 @@ namespace SincronizacionInterBase
     {
         public static List<Asistencia> generarAsistenciasDesdeAppointment(Appointment appointment)
         {
+            if (appointment.TipoRepeticion != null)
+            {
+                int a = 2;
+            }
             List<DateTime> fechasAppointment = obtenerFechasDelAppointmentSinConsiderarExcepciones(appointment);
             List<DateTime> excepciones = obtenerFechasExcepcion(appointment);
             List<DateTime> fechasFiltradas = filtrarFechasSegunExcepciones(fechasAppointment, excepciones);
@@ -47,7 +51,6 @@ namespace SincronizacionInterBase
                 if (fechaValida)
                 {
                     fechasFiltradas.Add(fecha);
-                    excepciones.Remove(fecha);
                 }
             }
 
@@ -56,8 +59,12 @@ namespace SincronizacionInterBase
 
         private static List<DateTime> obtenerFechasExcepcion(Appointment appointment)
         {
-            string[] excepcionesString = appointment.Excepciones.Split(',');
             List<DateTime> excepciones = new List<DateTime>();
+
+            string stringExcepciones = appointment.Excepciones.Trim();
+            if(stringExcepciones == string.Empty) return excepciones;
+
+            string[] excepcionesString = appointment.Excepciones.Split(',');
 
             foreach (string excepcionString in excepcionesString)
             {
@@ -88,12 +95,14 @@ namespace SincronizacionInterBase
         private static int calcularCantidadRepeticiones(Appointment appointment)
         {
             DateTime fechaInicio = appointment.Inicio.Date;
-            DateTime fechaFin = appointment.Fin.Date;
+            DateTime fechaFin = appointment.FinRepeticion.Date;
 
             TimeSpan diferencia = fechaFin.Subtract(fechaInicio);
 
             int diasEntreRepeticiones = obtenerDiasParaProximaRepeticion(appointment);
-            int cantidadRepeticiones = diferencia.Days / diasEntreRepeticiones;
+
+            int cantidadRepeticiones = 0;
+            if(diasEntreRepeticiones != 0) cantidadRepeticiones = diferencia.Days / diasEntreRepeticiones;
 
             /*
              * Si tenemos que un appointment ocurre el 12/04 y tiene una repeticion el 19/04, cuando hagamos
