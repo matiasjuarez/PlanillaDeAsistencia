@@ -254,20 +254,21 @@ namespace AccesoDatos
             {
                 Appointment appointment = new Appointment();
 
+                
                 appointment.IDEvento = reader.GetInt32("EVENTO");
                 appointment.AppointmentId = reader.GetInt32("IDAP");
-                appointment.Asignatura = ValidadorValoresNull.getString(reader, "Materia", null);
-                appointment.Aulas = ValidadorValoresNull.getString(reader, "Aulas", null);
-                appointment.Excepciones = ValidadorValoresNull.getString(reader, "fechasExcepcion", null);
-                appointment.Docente = ValidadorValoresNull.getString(reader, "Docente", null);
-                appointment.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra", null);
-                appointment.Curso = ValidadorValoresNull.getString(reader, "Curso", null);
+                appointment.Asignatura = ValidadorValoresNull.getString(reader, "Materia", "");
+                appointment.Aulas = ValidadorValoresNull.getString(reader, "Aulas", "");
+                appointment.Excepciones = ValidadorValoresNull.getString(reader, "fechasExcepcion", "");
+                appointment.Docente = ValidadorValoresNull.getString(reader, "Docente", "");
+                appointment.JefeCatedra = ValidadorValoresNull.getString(reader, "JefeCatedra", "");
+                appointment.Curso = ValidadorValoresNull.getString(reader, "Curso", "");
 
                 appointment.Inicio = ValidadorValoresNull.getDateTime(reader, "Inicio");
                 appointment.Fin = ValidadorValoresNull.getDateTime(reader, "Fin");
                 appointment.FinRepeticion = ValidadorValoresNull.getDateTime(reader, "FinRepeticion");
 
-                appointment.TipoRepeticion = ValidadorValoresNull.getString(reader, "TipoRepeticion", null);
+                appointment.TipoRepeticion = ValidadorValoresNull.getString(reader, "TipoRepeticion", "");
                 appointment.CantidadRepeticiones = ValidadorValoresNull.getInt(reader, "Repeticiones", 0);
 
                 int esExamen = ValidadorValoresNull.getInt(reader, "esExamen", 0);

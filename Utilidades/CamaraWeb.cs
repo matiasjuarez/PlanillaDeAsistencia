@@ -50,6 +50,7 @@ namespace Utilidades
                         catch (Exception e)
                         {
                             GestorExcepciones.mostrarMensajeDeError("Hubo un problema con la camara. Vuelva a iniciar la grabacion");
+                            System.Console.Write(e.StackTrace);
                             detenerCaptura();
                         }
                     }
@@ -73,6 +74,7 @@ namespace Utilidades
                 catch (Exception e)
                 {
                     GestorExcepciones.mostrarMensajeDeError("Compruebe que tiene una camara instalada");
+                    System.Console.Write(e.StackTrace);
                 }
             }
 

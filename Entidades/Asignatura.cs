@@ -40,7 +40,7 @@ namespace Entidades
         public Asignatura()
         {
             id = 0;
-            nombre = "";
+            nombre = String.Empty;
             jefeCatedra = new Docente();
             especialidad = new Especialidad();
         }

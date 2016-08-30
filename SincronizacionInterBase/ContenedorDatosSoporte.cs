@@ -117,13 +117,14 @@ namespace SincronizacionInterBase
 
             foreach (Asignatura asignatura in asignaturasPlanilla.obtenerDatos())
             {
-                Appointment salidaDiccionario = null;
-
-                if (appointmentsMasRecientesPorMateria.TryGetValue(asignatura.Nombre, out salidaDiccionario))
+                Appointment appointmentDelDiccionario = null;
+                if (appointmentsMasRecientesPorMateria.TryGetValue(asignatura.Nombre, out appointmentDelDiccionario))
                 {
+                    if (appointmentDelDiccionario.JefeCatedra == null) continue;
+
                     foreach (Docente docente in docentesPlanilla.obtenerDatos())
                     {
-                        if (docente.Nombre == salidaDiccionario.JefeCatedra)
+                        if (docente.Nombre == appointmentDelDiccionario.JefeCatedra)
                         {
                             if (asignatura.JefeCatedra == null || asignatura.JefeCatedra.Nombre != docente.Nombre)
                             {
@@ -154,14 +155,14 @@ namespace SincronizacionInterBase
                     continue;
                 }
 
-                Appointment salidaDiccionario = null;
-                if (appointmentsPorMateria.TryGetValue(appointment.Asignatura, out salidaDiccionario))
+                Appointment appointmentDelDiccionario = null;
+                if (appointmentsPorMateria.TryGetValue(appointment.Asignatura, out appointmentDelDiccionario))
                 {
                     // Si se cumple esta condicion, significa que el appointment que esta en el diccionario
                     // tiene una fecha mas vieja que el appointmennt que estamos analizando ahora mismo. Lo que queremos
                     // es obtener al appointment mas nuevo de una materia ya que supuestamente ese appointment deberia
                     // tener al actual jefe de catedra
-                    if (salidaDiccionario.Inicio < appointment.Inicio)
+                    if (appointmentDelDiccionario.Inicio < appointment.Inicio && appointment.JefeCatedra != null)
                     {
                         appointmentsPorMateria[appointment.Asignatura] = appointment;
                     }
@@ -191,7 +192,7 @@ namespace SincronizacionInterBase
 
             foreach (Appointment evento in eventos)
             {
-                if (evento.Aulas == null) continue;
+                if (evento.Aulas == null || evento.Aulas == "") continue;
 
                 string[] aulasRaplaNombre = evento.Aulas.Split(',');
 

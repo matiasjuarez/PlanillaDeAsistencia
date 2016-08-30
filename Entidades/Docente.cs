@@ -33,7 +33,7 @@ namespace Entidades
             set { id = value; }
         }
 
-        public Docente() { }
+        public Docente() : this(String.Empty){ }
 
         public Docente(string nombre) {
             Nombre = nombre;

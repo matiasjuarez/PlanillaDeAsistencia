@@ -11,6 +11,11 @@ namespace Entidades
         private int id;
         private string nombre;
 
+        public Curso()
+        {
+            nombre = "";
+        }
+
         public string Nombre
         {
             get { return nombre; }

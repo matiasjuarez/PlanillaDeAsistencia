@@ -18,7 +18,7 @@ namespace AccesoDatos
             List<Asistencia> asistencias = new List<Asistencia>();
 
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
+            
             string consulta = obtenerSentenciaSelectSinRestricciones();
             consulta += " WHERE comienzoClaseEsperado BETWEEN @fechaInicio and @fechaFin";
 
@@ -117,12 +117,12 @@ namespace AccesoDatos
                     "left join encargado on encargado.id = asistencia.idEncargado " +
                     ") as asistencias " +
                     "LEFT join ( " +
-                    "SELECT idAsistencia, group_concat(idAula) aulasId, group_concat(a.nombre) aulasNombre " +
+                    "SELECT idAppointmentAsistencia, group_concat(idAula) aulasId, group_concat(a.nombre) aulasNombre " +
                     "FROM aulasporasistencia axa " +
                     "join aula a on a.id = axa.idAula " +
-                    "group by axa.idAsistencia " +
+                    "group by axa.idAppointmentAsistencia " +
                     ") as aulas " +
-                    "ON aulas.idAsistencia = asistencias.asistenciaId";
+                    "ON aulas.idAppointmentAsistencia = asistencias.APID";
 
             return consulta;
         }
@@ -139,23 +139,25 @@ namespace AccesoDatos
             Especialidad especialidad = new Especialidad();
             EstadoAsistencia estadoAsistencia = new EstadoAsistencia();
 
-            docente.Nombre = ValidadorValoresNull.getString(reader, "docenteNombre", configuracion.DocenteNoAsignado);
+            docente.Nombre = ValidadorValoresNull.getString(reader, "docenteNombre", "");
             docente.Id = ValidadorValoresNull.getInt(reader, "docenteId", configuracion.IdDocenteNoAsignado);
 
-            asignatura.Nombre = ValidadorValoresNull.getString(reader, "asignaturaNombre", configuracion.AsignaturaNoAsignada);
+            asignatura.Nombre = ValidadorValoresNull.getString(reader, "asignaturaNombre", "");
             asignatura.Id = ValidadorValoresNull.getInt(reader, "asignaturaId", configuracion.IdAsignaturaNoAsignada);
 
-            encargado.Nombre = ValidadorValoresNull.getString(reader, "encargado", configuracion.EncargadoNoAsignado);
+            encargado.Nombre = ValidadorValoresNull.getString(reader, "encargado", "");
             encargado.Id = ValidadorValoresNull.getInt(reader, "idEncargado", configuracion.IdEncargadoNoAsignado);
 
             curso.Id = ValidadorValoresNull.getInt(reader, "cursoId", configuracion.IdCursoNoAsignado);
-            curso.Nombre = ValidadorValoresNull.getString(reader, "cursoNombre", configuracion.CursoNoAsignado);
+            curso.Nombre = ValidadorValoresNull.getString(reader, "cursoNombre", "");
 
-            string nombreAulas = ValidadorValoresNull.getString(reader, "aulasNombre", configuracion.AulaNoAsignada);
-            string[] listaNombresAulas = nombreAulas.Split(',');
+            string nombreAulas = ValidadorValoresNull.getString(reader, "aulasNombre", "");
+            string[] listaNombresAulas = new string[0];
+            if (nombreAulas != null) listaNombresAulas = nombreAulas.Split(',');
 
             string idAulas = ValidadorValoresNull.getString(reader, "aulasId", "");
-            string[] listaIdsAulas = idAulas.Split(',');
+            string[] listaIdsAulas = new string[0];
+            if (idAulas != null) listaIdsAulas = idAulas.Split(',');
 
             for (int i = 0; i < listaIdsAulas.Length; i++)
             {
@@ -170,7 +172,7 @@ namespace AccesoDatos
             }
 
             estadoAsistencia.Id = ValidadorValoresNull.getInt(reader, "estadoAsistenciaId", configuracion.IdEstadoAsistenciaNoAsignado);
-            estadoAsistencia.Nombre = ValidadorValoresNull.getString(reader, "estadoAsistenciaNombre", configuracion.EstadoAsistenciaNoAsignado);
+            estadoAsistencia.Nombre = ValidadorValoresNull.getString(reader, "estadoAsistenciaNombre", "");
 
             asistencia.Asignatura = asignatura;
             asistencia.Curso = curso;
@@ -241,108 +243,208 @@ namespace AccesoDatos
             return obtenerAsistencias(fechaHoraInicio, fechaHoraFin);
         }
 
-        public static void insertarNuevaAsistencia(Asistencia asistencia)
+        public static List<Asistencia> obtenerAsistenciasPorAppointmentId(List<int> ids)
         {
+            List<Asistencia> asistencias = new List<Asistencia>();
+            if (ids.Count == 0) return asistencias;
+
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-            MySqlConnection connection = gestorConexion.getConexionAbierta();
 
-            StringBuilder consultaBuilder = new StringBuilder();
-                        consultaBuilder.Append("INSERT INTO asistencia(eventId, appointmentId, comienzoClaseEsperado, finClaseEsperado, comienzoClaseReal, ");
-                        consultaBuilder.Append("finClaseReal, cantidadAlumnos, idDocente, ");
-                        consultaBuilder.Append("idAsignatura, idEncargado, idEstadoAsistencia, idCurso) ");
-                        consultaBuilder.Append("VALUES(@eventId, @appointmentId, @comienzoClaseEsperado, @finClaseEsperado, @comienzoClaseReal, ");
-                        consultaBuilder.Append("@finClaseReal, @cantidadAlumnos, @idDocente, @idAsignatura, ");
-                        consultaBuilder.Append("@idEncargado, @idEstadoAsistencia, @idCurso);");
-                        consultaBuilder.Append("select last_insert_id();");
+            MySqlCommand command = new MySqlCommand();
+            command.Connection = gestorConexion.getConexionAbierta();
 
-            string consultaPrincipal = consultaBuilder.ToString();
+            StringBuilder restriccionIN = new StringBuilder("IN(");
 
-            MySqlTransaction transaction = connection.BeginTransaction();
+            for (int i = 0; i < ids.Count; i++)
+            {
+                string nuevoParametro = "@a" + i;
 
-            MySqlCommand comando = new MySqlCommand();
-            comando.CommandText = consultaPrincipal;
-            comando.Connection = connection;
-            comando.Transaction = transaction;
+                restriccionIN.Append(nuevoParametro);
+                restriccionIN.Append(",");
 
-            comando.Parameters.AddWithValue("@eventId", asistencia.EventId);
-            comando.Parameters.AddWithValue("@appointmentId", asistencia.AppointmentId);
-            comando.Parameters.AddWithValue("@comienzoClaseEsperado", asistencia.Fecha.Add(asistencia.HoraEntradaEsperada));
-            comando.Parameters.AddWithValue("@finClaseEsperado", asistencia.Fecha.Add(asistencia.HoraSalidaEsperada));
-            comando.Parameters.AddWithValue("@comienzoClaseReal", asistencia.Fecha.Add(asistencia.HoraEntradaReal));
-            comando.Parameters.AddWithValue("@finClaseReal", asistencia.Fecha.Add(asistencia.HoraSalidaReal));
-            comando.Parameters.AddWithValue("@cantidadAlumnos", asistencia.CantidadAlumnos);
-            comando.Parameters.AddWithValue("@idDocente", asistencia.Docente.Id);
-            comando.Parameters.AddWithValue("@idAsignatura", asistencia.Asignatura.Id);
+                command.Parameters.AddWithValue(nuevoParametro, ids.ElementAt(i));
+            }
 
-            int valorIdEncargado = configuracion.IdEncargadoNoAsignado;
-            if (asistencia.Encargado != null) valorIdEncargado = asistencia.Encargado.Id;
-            comando.Parameters.AddWithValue("@idEncargado", valorIdEncargado);
+            restriccionIN.Remove(restriccionIN.Length - 1, 1);
+            restriccionIN.Append(")");
 
-            int valorIdEstadoAsistencia = configuracion.IdEstadoAsistenciaNoAsignado;
-            if (asistencia.EstadoAsistencia != null) valorIdEstadoAsistencia = asistencia.EstadoAsistencia.Id;
-            comando.Parameters.AddWithValue("@idEstadoAsistencia", valorIdEstadoAsistencia);
+            string consulta = obtenerSentenciaSelectSinRestricciones();
+            consulta += " WHERE asistencias.APID ";
+            consulta += restriccionIN.ToString();
 
-            comando.Parameters.AddWithValue("@idCurso", asistencia.Curso.Id);
+            command.CommandText = consulta;
+
+            MySqlDataReader reader = command.ExecuteReader();
 
             try
             {
-                int id = Convert.ToInt32(comando.ExecuteScalar());
-                transaction.Commit();
-
-                asistencia.Id = id;
-
-                if (asistencia.Aulas != null && asistencia.Aulas.Count > 0)
+                while (reader.Read())
                 {
-                    insertarAulasDeAsistencia(asistencia);
+                    Asistencia asistencia = armarAsistenciaDesdeReader(reader);
+                    asistencias.Add(asistencia);
+                }
+            }
+            catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
+            finally { gestorConexion.cerrarConexion(); }
+
+            return asistencias;
+        }
+
+        public static void insertar(Asistencia asistencia)
+        {
+            insertar(new List<Asistencia> { asistencia });
+        }
+
+        public static void insertar(List<Asistencia> asistencias)
+        {
+            insertarAsistencias(asistencias);
+
+            insertarAulasDeAsistencias(asistencias);
+        }
+
+        private static void insertarAsistencias(List<Asistencia> asistencias)
+        {
+            if (asistencias.Count == 0) return;
+
+            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
+            MySqlConnection connection = gestorConexion.getConexionAbierta();
+            MySqlTransaction transaction = connection.BeginTransaction();
+            int i = 0;
+            foreach (Asistencia asistencia in asistencias)
+            {
+                string consulta = "";
+                consulta += "INSERT INTO asistencia(eventId, appointmentId, comienzoClaseEsperado, finClaseEsperado, comienzoClaseReal, ";
+                consulta += "finClaseReal, cantidadAlumnos, idDocente, ";
+                consulta += "idAsignatura, idEncargado, idEstadoAsistencia, idCurso) VALUES";
+
+                string parametroEventId = "@eventId";
+                string parametroAppointmentId = "@appointmentId";
+                string parametroComienzoClaseEsperado = "@comienzoClaseEsperado";
+                string parametroFinClaseEsperado = "@finClaseEsperado";
+                string parametroComienzoClaseReal = "@comienzoClaseReal";
+                string parametroFinClaseReal = "@finClaseReal";
+                string parametroCantidadAlumnos = "@cantidadAlumnos";
+                string parametroIdDocente = "@idDocente";
+                string parametroIdAsignatura = "@idAsignatura";
+                string parametroIdEncargado = "@idEncargado";
+                string parametroIdEstadoAsistencia = "@idEstadoAsistencia";
+                string parametroIdCurso = "@idCurso";
+
+                consulta += "(";
+                consulta += parametroEventId + ",";
+                consulta += parametroAppointmentId + ",";
+                consulta += parametroComienzoClaseEsperado + ",";
+                consulta += parametroFinClaseEsperado + ",";
+                consulta += parametroComienzoClaseReal + ",";
+                consulta += parametroFinClaseReal + ",";
+                consulta += parametroCantidadAlumnos + ",";
+                consulta += parametroIdDocente + ",";
+                consulta += parametroIdAsignatura + ",";
+                consulta += parametroIdEncargado + ",";
+                consulta += parametroIdEstadoAsistencia + ",";
+                consulta += parametroIdCurso + ");";
+
+                MySqlCommand comando = new MySqlCommand(consulta, connection, transaction);
+
+                comando.Parameters.AddWithValue(parametroEventId, asistencia.EventId);
+                comando.Parameters.AddWithValue(parametroAppointmentId, asistencia.AppointmentId);
+                comando.Parameters.AddWithValue(parametroComienzoClaseEsperado, asistencia.Fecha.Add(asistencia.HoraEntradaEsperada));
+                comando.Parameters.AddWithValue(parametroFinClaseEsperado, asistencia.Fecha.Add(asistencia.HoraSalidaEsperada));
+                comando.Parameters.AddWithValue(parametroComienzoClaseReal, asistencia.Fecha.Add(asistencia.HoraEntradaReal));
+                comando.Parameters.AddWithValue(parametroFinClaseReal, asistencia.Fecha.Add(asistencia.HoraSalidaReal));
+                comando.Parameters.AddWithValue(parametroCantidadAlumnos, asistencia.CantidadAlumnos);
+                comando.Parameters.AddWithValue(parametroIdDocente, asistencia.Docente.Id);
+                comando.Parameters.AddWithValue(parametroIdAsignatura, asistencia.Asignatura.Id);
+
+                int valorIdEncargado = configuracion.IdEncargadoNoAsignado;
+                if (asistencia.Encargado != null) valorIdEncargado = asistencia.Encargado.Id;
+                comando.Parameters.AddWithValue(parametroIdEncargado, valorIdEncargado);
+
+                int valorIdEstadoAsistencia = configuracion.IdEstadoAsistenciaNoAsignado;
+                if (asistencia.EstadoAsistencia != null) valorIdEstadoAsistencia = asistencia.EstadoAsistencia.Id;
+                comando.Parameters.AddWithValue(parametroIdEstadoAsistencia, valorIdEstadoAsistencia);
+
+                comando.Parameters.AddWithValue(parametroIdCurso, asistencia.Curso.Id);
+
+                try
+                {
+                    comando.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    GestorExcepciones.mostrarExcepcion(e);
                 }
 
+                System.Diagnostics.Debug.WriteLine("Consulta numero: " + i); i++;
             }
-            catch (MySqlException e)
-            {
+            
+            try { transaction.Commit(); }
+            catch (MySqlException e) {
                 transaction.Rollback();
-                GestorExcepciones.mostrarExcepcion(e);
+                GestorExcepciones.mostrarExcepcion(e); 
             }
-            finally
-            {
-                gestorConexion.cerrarConexion();
-            }
+            finally { gestorConexion.cerrarConexion(); }
         }
 
         private static void insertarAulasDeAsistencia(Asistencia asistencia)
         {
+            insertarAulasDeAsistencias(new List<Asistencia> { asistencia });
+        }
+
+        public static void insertarAulasDeAsistencias(List<Asistencia> asistencias)
+        {
+            if (asistencias.Count == 0) return;
+
+            Dictionary<int, Asistencia> asistenciaPorAppointment = new Dictionary<int, Asistencia>();
+            foreach (Asistencia asistencia in asistencias)
+            {
+                if (!asistenciaPorAppointment.Keys.Contains(asistencia.AppointmentId))
+                {
+                    asistenciaPorAppointment.Add(asistencia.AppointmentId, asistencia);
+                }
+            }
+
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
             MySqlConnection connection = gestorConexion.getConexionAbierta();
 
             MySqlCommand comando = new MySqlCommand();
-            MySqlTransaction transaction = connection.BeginTransaction();
             comando.Connection = connection;
-            comando.Transaction = transaction;
 
-            StringBuilder textoInsert = new StringBuilder();
-            try
+            bool insertar = false;
+
+            string consulta = "INSERT INTO aulasPorAsistencia (idAppointmentAsistencia, idAula) VALUES";
+
+            int i = 0;
+            foreach(KeyValuePair<int, Asistencia> entrada in asistenciaPorAppointment)
             {
-                for (int i = 0; i < asistencia.Aulas.Count; i++)
+                //id appointment asistencia
+                string parametroIdAsistencia = "@idaa" + i;
+                comando.Parameters.AddWithValue(parametroIdAsistencia, entrada.Key);
+
+                for (int j = 0; j < entrada.Value.Aulas.Count; j++)
                 {
-                    string parametroIdAsistencia = "@idAsistencia" + i;
-                    string parametroIdAula = "@idAula" + i;
+                    insertar = true;
+                    //id aula
+                    string parametroIdAula = "@ida" + i + "_" + j;
 
-                    textoInsert.Append("INSERT INTO aulasPorAsistencia ");
-                    textoInsert.Append("(idAsistencia, idAula) VALUES(" );
-                    textoInsert.Append(parametroIdAsistencia + ", ");
-                    textoInsert.Append(parametroIdAula + ");");
+                    consulta += "(" + parametroIdAsistencia + "," + parametroIdAula + "),";
 
-                    comando.Parameters.AddWithValue(parametroIdAsistencia, asistencia.Id);
-                    comando.Parameters.AddWithValue(parametroIdAula, asistencia.Aulas.ElementAt<Aula>(i).Id);
+                    comando.Parameters.AddWithValue(parametroIdAula, entrada.Value.Aulas.ElementAt<Aula>(j).Id);
                 }
 
-                comando.CommandText = textoInsert.ToString();
-                comando.ExecuteNonQuery();
-
-                transaction.Commit();
+                i++;
             }
-            catch(Exception e)
+
+            consulta = consulta.Substring(0, consulta.Length - 1);
+            comando.CommandText = consulta;
+
+            try
             {
-                transaction.Rollback();
+                eliminarAulasDeAsistencias(asistencias);
+                if (insertar) comando.ExecuteNonQuery();  
+            }
+            catch (Exception e)
+            {
                 GestorExcepciones.mostrarExcepcion(e);
             }
             finally
@@ -357,10 +459,8 @@ namespace AccesoDatos
 
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
             MySqlConnection connection = gestorConexion.getConexionAbierta();
-            MySqlTransaction transaction = connection.BeginTransaction();
 
             MySqlCommand comando = new MySqlCommand();
-            comando.Transaction = transaction;
             comando.Connection = connection;
 
             StringBuilder query = new StringBuilder();
@@ -414,7 +514,6 @@ namespace AccesoDatos
             try
             {
                 comando.ExecuteNonQuery();
-                transaction.Commit();
 
                 foreach (Asistencia asistencia in asistencias)
                 {
@@ -428,7 +527,6 @@ namespace AccesoDatos
             }
             catch (Exception e)
             {
-                transaction.Rollback();
                 GestorExcepciones.mostrarExcepcion(e);
             }
             finally
@@ -439,26 +537,42 @@ namespace AccesoDatos
 
         private static void eliminarAulasDeAsistencia(Asistencia asistencia)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-            MySqlTransaction transaction = gestorConexion.getConexionAbierta().BeginTransaction();
+            eliminarAulasDeAsistencias(new List<Asistencia> { asistencia });
+        }
 
-            string query = "DELETE FROM aulasPorAsistencia WHERE idAsistencia=@id;";
+        public static void eliminarAulasDeAsistencias(List<Asistencia> asistencias)
+        {
+            if (asistencias.Count == 0) return;
+
+            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             MySqlCommand comando = new MySqlCommand();
+
+            string query = "DELETE FROM aulasPorAsistencia WHERE idAppointmentAsistencia IN(";
+
+            int i = 0;
+            foreach (Asistencia asistencia in asistencias)
+            {
+                string parametroIdAppointmentAsistencia = "@id" + i;
+                query += parametroIdAppointmentAsistencia + ",";
+
+                comando.Parameters.AddWithValue(parametroIdAppointmentAsistencia, asistencia.AppointmentId);
+
+                i++;
+            }
+
+            query = query.Substring(0, query.Length - 1);
+            query += ")";
+
             comando.CommandText = query;
             comando.Connection = gestorConexion.getConexionAbierta();
-            comando.Transaction = transaction;
-
-            comando.Parameters.AddWithValue("@id", asistencia.Id);
 
             try
             {
                 comando.ExecuteNonQuery();
-                transaction.Commit();
             }
             catch (MySqlException e)
             {
-                transaction.Rollback();
                 GestorExcepciones.mostrarExcepcion(e);
             }
             finally
@@ -469,22 +583,32 @@ namespace AccesoDatos
 
         public static void eliminarAsistencia(Asistencia asistencia)
         {
+            eliminarAsistencias(new List<Asistencia> { asistencia });
+        }
+
+        public static void eliminarAsistencias(List<Asistencia> asistencias)
+        {
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-            MySqlTransaction transaction = gestorConexion.getConexionAbierta().BeginTransaction();
+            MySqlConnection connection = gestorConexion.getConexionAbierta();
+            MySqlTransaction transaction = connection.BeginTransaction();
 
-            string consulta = "DELETE FROM asistencia WHERE id=@id;" +
-                              "DELETE FROM aulasPorAsistencia WHERE idAsistencia=@id;";
+            string consulta = "DELETE FROM asistencia WHERE id=@id;";
 
-            MySqlCommand comando = new MySqlCommand();
-            comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
-            comando.Transaction = transaction;
+            foreach (Asistencia asistencia in asistencias)
+            {
+                MySqlCommand comando = new MySqlCommand();
+                comando.CommandText = consulta;
+                comando.Connection = connection;
+                comando.Transaction = transaction;
 
-            comando.Parameters.AddWithValue("@id", asistencia.Id);
+                comando.Parameters.AddWithValue("@id", asistencia.Id);
+                //comando.Parameters.AddWithValue("@idAppointment", asistencia.AppointmentId);
 
+                comando.ExecuteNonQuery();
+            }
+            
             try
             {
-                comando.ExecuteNonQuery();
                 transaction.Commit();
             }
             catch (MySqlException e)

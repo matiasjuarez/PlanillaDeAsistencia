@@ -40,6 +40,9 @@ namespace Entidades
 
         public EstadoAsistencia()
         {
+            this.abreviacion = "";
+            this.descripcion = "";
+            this.nombre = "";
         }
 
         public bool Equals(EstadoAsistencia other)

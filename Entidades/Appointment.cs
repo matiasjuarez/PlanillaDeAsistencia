@@ -31,7 +31,11 @@ namespace Entidades
         public string TipoRepeticion
         {
             get { return tipoRepeticion; }
-            set { tipoRepeticion = value; }
+            set 
+            {
+                if (tipoRepeticion == String.Empty) tipoRepeticion = null;
+                else tipoRepeticion = value; 
+            }
         }
         private int cantidadRepeticiones;
 
@@ -62,7 +66,11 @@ namespace Entidades
         public string Docente
         {
             get { return docente; }
-            set { docente = value; }
+            set 
+            {
+                if (value == null) docente = String.Empty;
+                else docente = value; 
+            }
         }
 
         public string JefeCatedra
@@ -71,13 +79,21 @@ namespace Entidades
             {
                 return jefeCatedra; 
             }
-            set { jefeCatedra = value; }
+            set 
+            {
+                if (value == null) jefeCatedra = String.Empty;
+                else jefeCatedra = value; 
+            }
         }
 
         public string Curso
         {
             get { return curso; }
-            set { curso = value; }
+            set 
+            {
+                if (value == null) curso = String.Empty;
+                else curso = value; 
+            }
         }
 
         public DateTime Inicio
@@ -101,19 +117,31 @@ namespace Entidades
         public string Aulas
         {
             get { return aulas; }
-            set { aulas = value; }
+            set 
+            {
+                if (value == null) aulas = String.Empty;
+                else aulas = value; 
+            }
         }
 
         public string Excepciones
         {
             get { return excepciones; }
-            set { excepciones = value; }
+            set 
+            {
+                if (value == null) excepciones = String.Empty;
+                else excepciones = value; 
+            }
         }
 
         public string Asignatura
         {
             get { return materia; }
-            set { materia = value; }
+            set 
+            {
+                if (value == null) materia = String.Empty;
+                else materia = value; 
+            }
         }
     }
 }

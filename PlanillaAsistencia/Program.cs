@@ -28,17 +28,9 @@ namespace PlanillaAsistencia
             DAOAsistencias.obtenerAsistenciasParaListadoDeFechas(new List<DateTime>{DateTime.Now});
             Docente docente = DAODocentes.obtenerDocentePorID(892);
 
-            if ("Odetti, Maria Alejandra" == "Odetti, Maria Alejandra")
-            {
-                int a = 2;
-            }
-            else
-            {
-                int b = 3;
-            }
             // yyyy-mm-dd
             DateTime inicio = DateTime.Parse("2016-01-01");
-            DateTime fin = DateTime.Parse("2016-12-30");
+            DateTime fin = DateTime.Parse("2016-07-30");
             SincronizacionInterBase.ControladorSincronizacionInterBase.sincronizar(inicio, fin);
             
             Application.Run(pantalla);

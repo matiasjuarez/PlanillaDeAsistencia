@@ -20,6 +20,17 @@ namespace Entidades
         private string mailBBS;
         private Image foto;
 
+        public Encargado()
+        {
+            nombre = "";
+            apellido = "";
+            telefono = "";
+            dni = "";
+            legajo = "";
+            mailBBS = "";
+            mailGeneral = "";
+        }
+
         public int Id
         {
             get { return id; }
