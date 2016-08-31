@@ -9,11 +9,14 @@ using AccesoDatos;
 using ContenedoresDeDatos;
 using Utilidades;
 using Entidades;
+using Configuracion;
 
 namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 {
     public class ControladorEditorAsistencias : IObservadorCamposPlanilla, Temporizador.ITemporizable
     {
+        private Config config = Config.getInstance();
+
         private EditorAsistencias vista;
         private ModeloEditorAsistencias modelo;
 
@@ -22,9 +25,9 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
         // Las asistencias que se han ido cargando en las grillas luego de apretado el boton de guardado
         private ContenedorAsistencias asistenciasTrabajadas;
 
-        private RangoHorario rangoHorarioManana = new RangoHorario("00:00:00", "12:00:00");
-        private RangoHorario rangoHorarioTarde = new RangoHorario("12:00:00", "18:00:00");
-        private RangoHorario rangoHorarioNoche = new RangoHorario("18:00:00", "23:59:59");
+        private RangoHorario rangoHorarioManana;
+        private RangoHorario rangoHorarioTarde;
+        private RangoHorario rangoHorarioNoche;
 
         private Temporizador temporizador;
 
@@ -41,9 +44,13 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             modelo.inicializar();
             vista.inicializar();
 
-            temporizador = new Temporizador(5000);
+            temporizador = new Temporizador(2);
             temporizador.agregarObjetoTemporizable(this);
             temporizador.habilitar(true);
+
+            rangoHorarioManana = config.RangoManana;
+            rangoHorarioTarde = config.RangoTarde;
+            rangoHorarioNoche = config.RangoNoche;
         }
 
         public void manejarGuardarCambios()
@@ -64,11 +71,9 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 
             foreach (Asistencia asistencia in asistenciasTrabajadas.obtenerDatos())
             {
-                asistencia.calcularCondicion();
-
-                if (asistencia.estaModificada())
+                if (asistencia.esModificada())
                 {
-                    if (asistencia.esValidaParaGuardarse())
+                    if (esAsistenciaValidaParaGuardar(asistencia))
                     {
                         asistenciasModificadasValidasParaGuardar.Add(asistencia);
                     }
@@ -98,6 +103,15 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             {
                 asistencia.guardarEstado();
             }
+        }
+
+        private bool esAsistenciaValidaParaGuardar(Asistencia asistencia)
+        {
+            if (asistencia.CantidadAlumnos == 0) return false;
+            if (asistencia.HoraEntradaReal.Equals(new TimeSpan(0, 0, 0))) return false;
+            if (asistencia.esSinHoraSalidaReal_PostHoraSalidaEsperada()) return false;
+
+            return true;
         }
 
         public List<Asignatura> obtenerAsignaturas()
@@ -137,7 +151,7 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
         {
             foreach (Asistencia asistencia in asistenciasTrabajadas.obtenerDatos())
             {
-                if (asistencia.estaModificada()) return true;
+                if (asistencia.esModificada()) return true;
             }
             return false;
         }
@@ -158,7 +172,6 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
                     this.asistenciasTrabajadas.guardarDato(asistencia.Id, asistencia);
 
                     AsistenciaTabla nuevaAsistenciaTabla = new AsistenciaTabla(asistencia);
-                    asistencia.calcularCondicion();
 
                     TimeSpan horaClase = asistencia.HoraEntradaEsperada;
 
@@ -229,8 +242,6 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 
         private void procesarModificacionDeAsistencia()
         {
-            this.asistenciaSeleccionada.obtenerAsistencia().calcularCondicion();
-
             vista.ponerEnEstado(determinarEstadoPlanillaAsistencia());
         }
 
@@ -279,6 +290,26 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
         void Temporizador.ITemporizable.procesarTick()
         {
             actualizarModelo();
+
+            if (this.asistenciaSeleccionada != null)
+            {
+                Asistencia asistencia = modelo.obtenerAsistencia(asistenciaSeleccionada.obtenerAsistencia().Id);
+                AsistenciaTabla asistenciaTabla = new AsistenciaTabla(asistencia);
+                this.asistenciaSeleccionada = asistenciaTabla;
+            }
+
+            this.mostrarAsistenciasDeFecha(vista.obtenerFechaSeleccionada());
+        }
+
+        private void actualizarVista()
+        {
+            DateTime fechaSeleccionada = vista.obtenerFechaSeleccionada();
+            this.mostrarAsistenciasDeFecha(fechaSeleccionada);
+
+            if (fechaSeleccionada.Date.Equals(asistenciaSeleccionada.Fecha))
+            {
+                this.vista.mostrarDatosDeAsistencia(asistenciaSeleccionada.obtenerAsistencia());
+            }
         }
     }
 }

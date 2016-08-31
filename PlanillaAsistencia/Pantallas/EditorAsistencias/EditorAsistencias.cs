@@ -101,6 +101,11 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             mostradorDatos.mostrarDatosAsistencia(asistencia);
         }
 
+        public void actualizar()
+        {
+            this.tripleGrillaAsistencias.refrescarGrillas();
+        }
+
         // *************************************************************************************
         // *******LOS MANEJADORES DE EVENTOS DE LOS CAMPOS DE LA PLANILLA***********************
         // *************************************************************************************

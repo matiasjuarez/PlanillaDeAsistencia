@@ -52,6 +52,8 @@ namespace Utilidades
             float widthRatio = parentControl.Width / this.originalWidth;
             float heightRatio = parentControl.Height / this.originalHeight;
 
+            if (widthRatio <= 0 || heightRatio <= 0) return;
+
             foreach (OriginalDimension dimension in originalDimensions)
             {
                 Control ctrl = dimension.Control;

@@ -28,12 +28,12 @@ namespace Entidades
         private Encargado encargado;
         private Curso curso;
         private EstadoAsistencia estadoAsistencia;
-        private CondicionAsistencia condicionAsistencia;
         private List<Aula> aulas;
         private int id;
         private int eventId;    
         private int appointmentId;
         private string observaciones;
+        private bool esParcial;
 
         public Asistencia()
         {
@@ -46,8 +46,13 @@ namespace Entidades
             encargado = new Encargado();
             curso = new Curso();
             estadoAsistencia = new EstadoAsistencia();
-            condicionAsistencia = new CondicionAsistencia(this);
             aulas = new List<Aula>();
+        }
+
+        public bool EsParcial
+        {
+            get { return esParcial; }
+            set { esParcial = value; }
         }
 
         public int EventId
@@ -185,6 +190,14 @@ namespace Entidades
             return this.fecha.Add(this.horaSalidaReal);
         }
 
+        public bool EqualsEstadoInicial(Asistencia otra)
+        {
+            Asistencia aux = new Asistencia();
+            estadoGuardado.restaurarEstado(aux);
+
+            return aux.Equals(otra);
+        }
+
         public bool Equals(Asistencia otra)
         {
             if (otra == null) return false;
@@ -239,12 +252,42 @@ namespace Entidades
             estadoGuardado = new AsistenciaMemento(this);
         }
 
-        public bool estaModificada()
+        public bool esModificada()
         {
             Asistencia aux = new Asistencia();
             estadoGuardado.restaurarEstado(aux);
 
             return !aux.Equals(this);
+        }
+
+        public bool esSinHoraEntradaReal_PostHoraEntradaEsperada()
+        {
+            DateTime fechaHoraActual = DateTime.Now;
+
+            if (fechaHoraActual >= obtenerEntradaEsperada())
+            {
+                if (HoraEntradaReal.Equals(new TimeSpan(0, 0, 0)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool esSinHoraSalidaReal_PostHoraSalidaEsperada()
+        {
+            DateTime fechaHoraActual = DateTime.Now;
+
+            if (fechaHoraActual >= obtenerSalidaEsperada())
+            {
+                if (HoraSalidaReal.Equals(new TimeSpan(0, 0, 0)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public Asistencia Clone()
@@ -263,32 +306,7 @@ namespace Entidades
             }
         }
 
-        public void calcularCondicion()
-        {
-            condicionAsistencia.calcularCondicion();
-        }
-
-        public bool esModificada()
-        {
-            return condicionAsistencia.esModificada();
-        }
-
-        public bool esSinHoraEntradaReal_PostHoraEntradaEsperada()
-        {
-            return condicionAsistencia.esSinHoraEntradaReal_PostHoraEntradaEsperada();
-        }
-
-        public bool esSinHoraSalidaReal_PostHoraSalidaEsperada()
-        {
-            return condicionAsistencia.esSinHoraSalidaReal_PostHoraSalidaEsperada();
-        }
-
-        public bool esValidaParaGuardarse()
-        {
-            return condicionAsistencia.esValidaParaGuardarse();
-        }
-
-        public Asistencia hacerCopiaSuperficial()
+        public Asistencia cloneSuperficial()
         {
             Asistencia copia = new Asistencia();
 
@@ -310,69 +328,6 @@ namespace Entidades
             copia.EventId = this.EventId;
 
             return copia;
-        }
-
-        [Serializable]
-        private class AsistenciaMemento
-        {
-            private TimeSpan horaEntradaEsperada;
-            private TimeSpan horaSalidaEsperada;
-            private TimeSpan horaEntradaReal;
-            private TimeSpan horaSalidaReal;
-            private DateTime fecha;
-            private int cantidadAlumnos;
-            private Docente docente;
-            private Asignatura asignatura;
-            private Encargado encargado;
-            private Curso curso;
-            private EstadoAsistencia estadoAsistencia;
-            private List<Aula> aulas;
-            private string observaciones;
-            private int id;
-            private int appointmentId;
-            private int eventId;
-
-            public AsistenciaMemento(Asistencia asistencia)
-            {
-                Asistencia clon = asistencia.Clone();
-
-                this.horaEntradaEsperada = clon.HoraEntradaEsperada;
-                this.horaSalidaEsperada = clon.HoraSalidaEsperada;
-                this.horaEntradaReal = clon.HoraEntradaReal;
-                this.horaSalidaReal = clon.HoraSalidaReal;
-                this.fecha = clon.Fecha;
-                this.cantidadAlumnos = clon.CantidadAlumnos;
-                this.docente = clon.Docente;
-                this.asignatura = clon.Asignatura;
-                this.encargado = clon.Encargado;
-                this.curso = clon.Curso;
-                this.estadoAsistencia = clon.EstadoAsistencia;
-                this.aulas = clon.Aulas;
-                this.observaciones = clon.Observaciones;
-                this.id = clon.Id;
-                this.appointmentId = clon.AppointmentId;
-                this.eventId = clon.EventId;
-            }
-
-            public void restaurarEstado(Asistencia asistencia)
-            {
-                asistencia.Id = this.id;
-                asistencia.AppointmentId = this.appointmentId;
-                asistencia.EventId = this.eventId;
-                asistencia.HoraEntradaEsperada = this.horaEntradaEsperada;
-                asistencia.HoraSalidaEsperada = this.horaSalidaEsperada;
-                asistencia.HoraEntradaReal = this.horaEntradaReal;
-                asistencia.HoraSalidaReal = this.horaSalidaReal;
-                asistencia.Fecha = this.fecha;
-                asistencia.CantidadAlumnos = this.cantidadAlumnos;
-                asistencia.Docente = this.docente;
-                asistencia.Asignatura = this.asignatura;
-                asistencia.Encargado = this.encargado;
-                asistencia.Curso = this.curso;
-                asistencia.EstadoAsistencia = this.estadoAsistencia;
-                asistencia.Aulas = this.aulas;
-                asistencia.Observaciones = this.observaciones;
-            }
         }
     }
 }

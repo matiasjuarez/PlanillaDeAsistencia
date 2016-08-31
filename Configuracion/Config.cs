@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entidades;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -89,5 +90,34 @@ namespace Configuracion
             get { return new TimeSpan(0, 0, 0); }
         }
 
+        private RangoHorario rangoManana;
+        public RangoHorario RangoManana
+        {
+            get
+            {
+                if (rangoManana == null) rangoManana = new RangoHorario("00:00:00", "13:00:00");
+                return rangoManana;
+            }
+        }
+
+        private RangoHorario rangoTarde;
+        public RangoHorario RangoTarde
+        {
+            get
+            {
+                if (rangoTarde == null) rangoTarde = new RangoHorario("13:00:00", "18:00:00");
+                return rangoTarde;
+            }
+        }
+
+        private RangoHorario rangoNoche;
+        public RangoHorario RangoNoche
+        {
+            get
+            {
+                if (rangoNoche == null) rangoNoche = new RangoHorario("18:00:00", "23:59:59");
+                return rangoNoche;
+            }
+        }
     }
 }

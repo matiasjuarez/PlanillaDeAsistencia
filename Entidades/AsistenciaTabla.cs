@@ -50,6 +50,19 @@ namespace Entidades
             }
         }
 
+        public String Curso
+        {
+            get
+            {
+                if (asistencia.Curso != null) return asistencia.Curso.Nombre;
+                else return stringPorDefecto;
+            }
+            set
+            {
+                asistencia.Curso.Nombre = value;
+            }
+        }
+
         public String HoraEntradaEsperada
         {
             get {
@@ -278,9 +291,11 @@ namespace Entidades
             return asistencia.esSinHoraSalidaReal_PostHoraSalidaEsperada();
         }
 
-        public bool esValidaParaGuardarse()
+        private bool esValidaParaGuardar;
+        public bool EsValidaParaGuardar
         {
-            return asistencia.esValidaParaGuardarse();
+            get { return esValidaParaGuardar; }
+            set { esValidaParaGuardar = value; }
         }
     }
 }

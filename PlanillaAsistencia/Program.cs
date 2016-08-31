@@ -25,7 +25,7 @@ namespace PlanillaAsistencia
             PantallaPrincipal pantalla = new PantallaPrincipal();
             ControladorPrincipal controlador = new ControladorPrincipal(pantalla);
 
-            DAOAsistencias.obtenerAsistenciasParaListadoDeFechas(new List<DateTime>{DateTime.Now});
+            DAOAsistencias.obtenerAsistenciasDeFechas(new List<DateTime>{DateTime.Now});
             Docente docente = DAODocentes.obtenerDocentePorID(892);
 
             // yyyy-mm-dd

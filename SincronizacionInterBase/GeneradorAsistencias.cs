@@ -28,7 +28,7 @@ namespace SincronizacionInterBase
             List<Asistencia> asistenciasParaAppointment = new List<Asistencia>();
             foreach (DateTime fecha in fechasAppointment)
             {
-                Asistencia asistencia = asistenciaPrototipo.hacerCopiaSuperficial();
+                Asistencia asistencia = asistenciaPrototipo.cloneSuperficial();
                 asistencia.Fecha = fecha;
                 asistenciasParaAppointment.Add(asistencia);
             }

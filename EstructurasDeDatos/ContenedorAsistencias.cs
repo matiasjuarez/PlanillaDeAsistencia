@@ -79,7 +79,7 @@ namespace ContenedoresDeDatos
         {
             List<DateTime> fechasDeAsistencias = obtenerFechasDeAsistenciasAlmacenadas();
 
-            List<Asistencia> asistenciasBaseDatos = DAOAsistencias.obtenerAsistenciasParaListadoDeFechas(fechasDeAsistencias);
+            List<Asistencia> asistenciasBaseDatos = DAOAsistencias.obtenerAsistenciasDeFechas(fechasDeAsistencias);
 
             limpiarContenedor();
 

@@ -99,6 +99,7 @@ namespace PlanillaAsistencia.ControlesPersonalizados
             catch (Exception ex)
             {
                 //GestorExcepciones.mostrarExcepcion(ex);
+                Console.Write(ex.StackTrace);
             }
         }
 
@@ -204,6 +205,7 @@ namespace PlanillaAsistencia.ControlesPersonalizados
                 grilla.AutoGenerateColumns = false;
 
                 grilla.Columns.Add(crearColumna("NombreAsignatura", "Nombre asignatura"));
+                grilla.Columns.Add(crearColumna("Curso", "Curso"));
                 grilla.Columns.Add(crearColumna("Aula", "Aula"));
                 grilla.Columns.Add(crearColumna("Fecha", "Fecha"));
                 grilla.Columns.Add(crearColumna("HoraEntradaEsperada", "Hora de entrada esperada"));
@@ -391,7 +393,7 @@ namespace PlanillaAsistencia.ControlesPersonalizados
 
                 if (asistenciaActual.esModificada())
                 {
-                    if (asistenciaActual.esValidaParaGuardarse()) pintarFilaComoModificada(fila);
+                    if (asistenciaActual.EsValidaParaGuardar) pintarFilaComoModificada(fila);
                     else pintarFilaComoNoValidaParaGuardarse(fila);
                 }
                 else if (asistenciaActual.esSinHoraEntradaReal_PostHoraEntradaEsperada() || 

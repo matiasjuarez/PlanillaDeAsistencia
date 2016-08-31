@@ -9,6 +9,7 @@ namespace Entidades
     {
         private int idEvento;
         private int appointmentId;
+        private int estadoReserva;
         private string docente;
         private string jefeCatedra;
         private string curso;
@@ -26,6 +27,12 @@ namespace Entidades
         {
             get { return appointmentId; }
             set { appointmentId = value; }
+        }
+
+        public int EstadoReserva
+        {
+            get { return estadoReserva; }
+            set { estadoReserva = value; }
         }
 
         public string TipoRepeticion
@@ -142,6 +149,13 @@ namespace Entidades
                 if (value == null) materia = String.Empty;
                 else materia = value; 
             }
+        }
+
+        public bool tieneEstadoConfirmado()
+        {
+            if (this.estadoReserva == 260 || this.estadoReserva == 261) return true;
+
+            return false;
         }
     }
 }

@@ -208,7 +208,7 @@ namespace AccesoDatos
         private static string obtenerSentenciaSelect2016()
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("SELECT EVENTO, REPETITION_TYPE as TipoRepeticion, REPETITION_NUMBER as Repeticiones, REPETITION_END as FinRepeticion, ");
+            builder.Append("SELECT EVENTO, estadoReserva, REPETITION_TYPE as TipoRepeticion, REPETITION_NUMBER as Repeticiones, REPETITION_END as FinRepeticion, ");
             builder.Append("SinAulas.IDAP, Inicio, Fin, Materia, esExamen, esParcial, ");
             builder.Append("Docente, JefeCatedra, Curso, Aulas, Excepciones.fechasExcepcion FROM( ");
             builder.Append("SELECT evento.ID as EVENTO, ap.ID IDAP, ap.APPOINTMENT_START Inicio, ap.APPOINTMENT_END Fin, ");
@@ -218,9 +218,11 @@ namespace AccesoDatos
             builder.Append("IF(cMat.LABEL IS NULL or cMat.LABEL<> 'PARCIAL', False, True) as esParcial, ");
             builder.Append("IF(eavDoc.ATTRIBUTE_VALUE REGEXP '^[0-9]+$', cDoc.Label, eavDoc.ATTRIBUTE_VALUE) as Docente, ");
             builder.Append("IF(eavJef.ATTRIBUTE_VALUE REGEXP '^[0-9]+$', cJef.Label, eavJef.ATTRIBUTE_VALUE) as JefeCatedra, ");
-            builder.Append("eavCur.ATTRIBUTE_VALUE as curso ");
+            builder.Append("eavCur.ATTRIBUTE_VALUE as curso, ");
+            builder.Append("eavEstado.ATTRIBUTE_VALUE as estadoReserva ");
             builder.Append("FROM event as evento ");
             builder.Append("left join appointment ap on ap.EVENT_ID = evento.ID ");
+            builder.Append("left join event_attribute_value as eavEstado on eavEstado.ATTRIBUTE_KEY like 'estado%' and eavEstado.EVENT_ID = evento.ID ");
             builder.Append("left join event_attribute_value as eavDoc on eavDoc.ATTRIBUTE_KEY like 'docen%' and eavDoc.EVENT_ID = evento.ID ");
             builder.Append("left join category cDoc on cDoc.ID = eavDoc.ATTRIBUTE_VALUE ");
             builder.Append("left join event_attribute_value as eavMat on eavMat.ATTRIBUTE_KEY like 'espec%' and eavMat.EVENT_ID = evento.ID ");
@@ -254,9 +256,9 @@ namespace AccesoDatos
             {
                 Appointment appointment = new Appointment();
 
-                
                 appointment.IDEvento = reader.GetInt32("EVENTO");
                 appointment.AppointmentId = reader.GetInt32("IDAP");
+                appointment.EstadoReserva = ValidadorValoresNull.getInt(reader, "estadoReserva", -1);
                 appointment.Asignatura = ValidadorValoresNull.getString(reader, "Materia", "");
                 appointment.Aulas = ValidadorValoresNull.getString(reader, "Aulas", "");
                 appointment.Excepciones = ValidadorValoresNull.getString(reader, "fechasExcepcion", "");

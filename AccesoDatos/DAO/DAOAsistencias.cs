@@ -44,9 +44,11 @@ namespace AccesoDatos
             return asistencias;
         }
 
-        private static List<Asistencia> obtenerAsistenciasParaFechas(List<DateTime> fechas)
+        public static List<Asistencia> obtenerAsistenciasDeFechas(List<DateTime> fechas)
         {
             List<Asistencia> asistencias = new List<Asistencia>();
+
+            if (fechas.Count == 0) return asistencias;
 
             GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
@@ -69,7 +71,7 @@ namespace AccesoDatos
             restriccionIN.Append(")");
 
             string consulta = obtenerSentenciaSelectSinRestricciones();
-            consulta += " WHERE asistencias.comienzoClaseEsperado ";
+            consulta += " WHERE asistencias.fecha ";
             consulta += restriccionIN.ToString();
 
             command.CommandText = consulta;
@@ -94,14 +96,14 @@ namespace AccesoDatos
         private static string obtenerSentenciaSelectSinRestricciones()
         {
             String consulta = "select asistencias.asistenciaId as Id, asistencias.APID as AppointmentId, asistencias.eventId, " +
-                    "asistencias.comienzoClaseEsperado as InicioEsperado, " +
+                    "asistencias.fecha, asistencias.comienzoClaseEsperado as InicioEsperado, " +
                     "asistencias.finClaseEsperado as FinEsperado, asistencias.comienzoClaseReal as InicioReal, " +
                     "asistencias.finClaseReal as FinReal, asistencias.cantidadAlumnos as Alumnos, " +
                     "asistencias.encargadoNombre as Encargado, asistencias.idEncargado, asistencias.docenteNombre, " +
                     "asistencias.docenteId, asistencias.asignaturaNombre, asistencias.asignaturaId, " +
                     "asistencias.estadoAsistenciaNombre, asistencias.estadoAsistenciaId, " +
                     "asistencias.cursoId, asistencias.cursoNombre, aulas.aulasId, aulas.aulasNombre, asistencias.observaciones FROM ( " +
-                    "select asistencia.id as asistenciaId, asistencia.appointmentId as APID, asistencia.eventId as eventId, " +
+                    "select asistencia.id as asistenciaId, asistencia.appointmentId as APID, asistencia.eventId as eventId, fecha, " +
                     "comienzoClaseEsperado, finClaseEsperado, " +
                     "comienzoClaseReal, finClaseReal, cantidadAlumnos, " +
                     "(encargado.nombre + ' ' + encargado.apellido) as encargadoNombre, idEncargado, " +
@@ -180,7 +182,7 @@ namespace AccesoDatos
             asistencia.Encargado = encargado;
             asistencia.EstadoAsistencia = estadoAsistencia;
             asistencia.CantidadAlumnos = ValidadorValoresNull.getInt(reader, "alumnos", 0);
-            asistencia.Fecha = ValidadorValoresNull.getDateTime(reader, "InicioEsperado");
+            asistencia.Fecha = ValidadorValoresNull.getDateTime(reader, "Fecha");
             asistencia.HoraEntradaEsperada = ValidadorValoresNull.getTimeSpan(reader, "InicioEsperado");
             asistencia.HoraEntradaReal = ValidadorValoresNull.getTimeSpan(reader, "InicioReal");
             asistencia.HoraSalidaEsperada = ValidadorValoresNull.getTimeSpan(reader, "FinEsperado");
@@ -193,16 +195,7 @@ namespace AccesoDatos
             return asistencia;
         }
 
-        public static List<Asistencia> obtenerAsistenciasParaListadoDeFechas(List<DateTime> fechas)
-        {
-            List<string> fechasFormateadas = new List<string>();
-
-            foreach (DateTime fecha in fechas)
-            {
-                fechasFormateadas.Add(String.Format("{0:yyyy/MM/dd}", fecha));
-            }
-            return obtenerAsistenciasParaFechas(fechas);
-        }
+        
 
         public static List<Asistencia> obtenerAsistenciasParaUnaSemana(DateTime fecha)
         {
@@ -313,12 +306,13 @@ namespace AccesoDatos
             foreach (Asistencia asistencia in asistencias)
             {
                 string consulta = "";
-                consulta += "INSERT INTO asistencia(eventId, appointmentId, comienzoClaseEsperado, finClaseEsperado, comienzoClaseReal, ";
+                consulta += "INSERT INTO asistencia(eventId, appointmentId, fecha, comienzoClaseEsperado, finClaseEsperado, comienzoClaseReal, ";
                 consulta += "finClaseReal, cantidadAlumnos, idDocente, ";
                 consulta += "idAsignatura, idEncargado, idEstadoAsistencia, idCurso) VALUES";
 
                 string parametroEventId = "@eventId";
                 string parametroAppointmentId = "@appointmentId";
+                string parametroFecha = "@fecha";
                 string parametroComienzoClaseEsperado = "@comienzoClaseEsperado";
                 string parametroFinClaseEsperado = "@finClaseEsperado";
                 string parametroComienzoClaseReal = "@comienzoClaseReal";
@@ -333,6 +327,7 @@ namespace AccesoDatos
                 consulta += "(";
                 consulta += parametroEventId + ",";
                 consulta += parametroAppointmentId + ",";
+                consulta += parametroFecha + ",";
                 consulta += parametroComienzoClaseEsperado + ",";
                 consulta += parametroFinClaseEsperado + ",";
                 consulta += parametroComienzoClaseReal + ",";
@@ -348,6 +343,7 @@ namespace AccesoDatos
 
                 comando.Parameters.AddWithValue(parametroEventId, asistencia.EventId);
                 comando.Parameters.AddWithValue(parametroAppointmentId, asistencia.AppointmentId);
+                comando.Parameters.AddWithValue(parametroFecha, asistencia.Fecha);
                 comando.Parameters.AddWithValue(parametroComienzoClaseEsperado, asistencia.Fecha.Add(asistencia.HoraEntradaEsperada));
                 comando.Parameters.AddWithValue(parametroFinClaseEsperado, asistencia.Fecha.Add(asistencia.HoraSalidaEsperada));
                 comando.Parameters.AddWithValue(parametroComienzoClaseReal, asistencia.Fecha.Add(asistencia.HoraEntradaReal));

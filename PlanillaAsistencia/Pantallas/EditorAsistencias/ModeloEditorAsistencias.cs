@@ -55,7 +55,71 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 
         public void refrescarAsistencias()
         {
-            asistencias.refrescarDatos();
+            List<DateTime> fechasDeAsistencias = asistencias.obtenerFechasDeAsistenciasAlmacenadas();
+            List<Asistencia> asistenciasMemoria = asistencias.obtenerDatos();
+            List<Asistencia> asistenciasBase = DAOAsistencias.obtenerAsistenciasDeFechas(fechasDeAsistencias);
+            List<Asistencia> resultadoComparacion = new List<Asistencia>();
+
+            Dictionary<int, Asistencia> asistenciasMemoriaDic = new Dictionary<int, Asistencia>();
+            foreach (Asistencia asistencia in asistenciasMemoria)
+            {
+                asistenciasMemoriaDic.Add(asistencia.Id, asistencia);
+            }
+
+            Dictionary<int, Asistencia> asistenciasBaseDic = new Dictionary<int, Asistencia>();
+            foreach (Asistencia asistencia in asistenciasBase)
+            {
+                asistenciasBaseDic.Add(asistencia.Id, asistencia);
+            }
+
+            // Recorremos todas las entradas del diccionario de asistencias de la base de datos
+            foreach(KeyValuePair<int, Asistencia> valorBase in asistenciasBaseDic)
+            {
+                Asistencia asistenciaBase = valorBase.Value;
+                Asistencia asistenciaMemoria;
+
+                // Intentamos obtener una asistencia de la memoria que coincida con la asistencia de la base de datos
+                if (asistenciasMemoriaDic.TryGetValue(valorBase.Key, out asistenciaMemoria))
+                {
+                    if (asistenciaMemoria.esModificada())
+                    {
+                        /*
+                         * Si la asistencia en memoria fue modificada por el usuario y aun no la guardo, verificamos
+                         * que la asistencia que acabamos de traer de la base de datos sea igual a la asistencia modificada
+                         * por el usuario pero en su estado inicial (Usamos un memento).
+                         * */
+                        if (asistenciaMemoria.EqualsEstadoInicial(asistenciaBase))
+                        {
+                            // Si efectivamente son iguales, dejamos la asistencia en memoria tal y como estaba (modificada)
+                            resultadoComparacion.Add(asistenciaMemoria);
+                        }
+                        else
+                        {
+                            // Si no son iguales, damos prioridad a los cambios existentes en la asistencia de la base de datos
+                            // y usamos esta asistencia en lugar de la que esta en memoria.
+                            resultadoComparacion.Add(asistenciaBase);
+                        }
+                    }
+                    else
+                    {
+                        // Aca metemos la asistencia de la base de datos directamente porque puede pasar que la asistencia
+                        // que vino de la base de datos tenga algun cambio
+                        resultadoComparacion.Add(asistenciaBase);
+                    }
+                }
+                else
+                {
+                    // En caso de que en el diccionario de asistencia de la base de datos venga una asistencia
+                    // que no figure en el diccionario de asistencias en memoria, la almacenamos en memoria sin
+                    // preguntar nada
+                    resultadoComparacion.Add(valorBase.Value);
+                }
+            }
+
+            foreach (Asistencia asistencia in asistencias.obtenerDatos())
+            {
+                asistencia.guardarEstado();
+            }
         }
 
         /*
@@ -138,6 +202,11 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
         public List<EstadoAsistencia> obtenerEstadosAsistencia()
         {
             return estadosAsistencia.obtenerDatos();
+        }
+
+        private class SincronizadorSoporte
+        {
+
         }
     }
 }
