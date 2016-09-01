@@ -53,8 +53,19 @@
     <Compile Include="GestorExcepciones.cs" />
     <Compile Include="Imagenes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResizableControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ResizableControl.Designer.cs">
+      <DependentUpon>ResizableControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Temporizador.cs" />
     <Compile Include="CamaraWeb.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ResizableControl.resx">
+      <DependentUpon>ResizableControl.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

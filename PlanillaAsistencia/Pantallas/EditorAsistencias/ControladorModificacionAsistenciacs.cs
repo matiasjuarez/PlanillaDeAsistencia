@@ -196,12 +196,6 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
                 a2.obtenerAsistencia().obtenerEntradaEsperada());
         }
 
-        private void actualizarModelo()
-        {
-            modelo.refrescarDatosSoporte();
-            modelo.sincronizarAsistencias();
-        }
-
         private int determinarEstadoPlanillaAsistencia()
         {
             bool existenAsistenciasModificadas = hayAsistenciasModificadas();
@@ -288,7 +282,10 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 
         void Temporizador.ITemporizable.procesarTick()
         {
-            actualizarModelo();
+            modelo.refrescarDatosSoporte();
+
+            bool seSincronizaronAsistencias = modelo.sincronizarAsistencias();
+            if (!seSincronizaronAsistencias) return;
 
             if (this.asistenciaSeleccionada != null)
             {

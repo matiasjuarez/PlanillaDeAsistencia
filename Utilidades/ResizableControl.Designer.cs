@@ -1,4 +1,4 @@
-﻿namespace PlanillaAsistencia.Pantallas
+﻿namespace Utilidades
 {
     partial class ResizableControl
     {

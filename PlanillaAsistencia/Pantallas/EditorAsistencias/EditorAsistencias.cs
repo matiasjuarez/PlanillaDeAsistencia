@@ -99,6 +99,7 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
         public void mostrarDatosDeAsistencia(Asistencia asistencia)
         {
             mostradorDatos.mostrarDatosAsistencia(asistencia);
+            this.tripleGrillaAsistencias.marcarAsistenciaComoSeleccionada(asistencia);
         }
 
         public void actualizar()

@@ -10,9 +10,9 @@ using System.Windows.Forms;
 using Utilidades;
 using Entidades;
 
-namespace PlanillaAsistencia.Pantallas.ABMCEncargados
+namespace AdministracionUsuarios
 {
-    public partial class ABMCEncargados : ResizableControl
+    public partial class PantallaAdministracionUsuarios : ResizableControl
     {
         private bool escucharEventos = true;
 
@@ -22,7 +22,7 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             set { controlador = value; }
         }
 
-        public ABMCEncargados()
+        public PantallaAdministracionUsuarios()
         {
             InitializeComponent();
             inicializarEscalador();
@@ -154,7 +154,7 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
 
             string nacimiento = "";
             try { nacimiento = encargado.FechaNacimiento.ToString("dd/MM/yyyy"); }
-            catch { nacimiento = Configuracion.Config.getInstance().ValorParaFechaNula.ToString("dd/MM/yyyy"); }
+            catch { nacimiento = DateTime.Now.ToString("dd/MM/yyyy"); }
             mkFechaNacimiento.Text = nacimiento;
 
             pbFoto.Image = encargado.Foto;

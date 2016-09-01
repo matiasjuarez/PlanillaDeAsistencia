@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CD0C34FD-52F9-4124-9D8A-8B48337A54DD}</ProjectGuid>
+    <ProjectGuid>{4C75E6FF-0C01-46D0-98BA-86667B3CC32F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PlanillaAsistencia</RootNamespace>
-    <AssemblyName>PlanillaAsistencia</AssemblyName>
+    <RootNamespace>AdministracionUsuarios</RootNamespace>
+    <AssemblyName>AdministracionUsuarios</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -35,9 +35,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MetriCam">
-      <HintPath>C:\Program Files (x86)\Metrilus GmbH\MetriCam\SDK\MetriCam.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,63 +45,33 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebCam">
-      <HintPath>C:\Program Files (x86)\Metrilus GmbH\MetriCam\SDK\WebCam.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControlesPersonalizados\LabelConEfectos.cs">
+    <Compile Include="Administracion\PantallaAdministracionUsuarios.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ControlesPersonalizados\LabelConEfectos.Designer.cs">
-      <DependentUpon>LabelConEfectos.cs</DependentUpon>
+    <Compile Include="Administracion\PantallaAdministracionUsuarios.Designer.cs">
+      <DependentUpon>PantallaAdministracionUsuarios.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlesPersonalizados\TripleGrillaAsistencias.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="Administracion\ControladorABMCEncargados.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ControlesPersonalizados\TripleGrillaAsistencias.Designer.cs">
-      <DependentUpon>TripleGrillaAsistencias.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Interfaces\IObservadorCamposPlanilla.cs" />
-    <Compile Include="Interfaces\IObservadorModelo.cs" />
-    <Compile Include="Interfaces\IObservadorTripleGrilla.cs" />
-    <Compile Include="Pantallas\EditorAsistencias\ControladorModificacionAsistenciacs.cs" />
-    <Compile Include="Pantallas\EditorAsistencias\EditorAsistencias.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Pantallas\EditorAsistencias\EditorAsistencias.Designer.cs">
-      <DependentUpon>EditorAsistencias.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Principal\PlanillaAsistencias.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Principal\PlanillaAsistencias.Designer.cs">
-      <DependentUpon>PlanillaAsistencias.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Principal\ControladorPrincipal.cs" />
-    <Compile Include="Pantallas\ConsultaAsistencias\ControladorConsultaAsistencias.cs" />
-    <Compile Include="Pantallas\EditorAsistencias\ModeloEditorAsistencias.cs" />
-    <Compile Include="Pantallas\ConsultaAsistencias\ConsultaAsistencias.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Pantallas\ConsultaAsistencias\ConsultaAsistencias.Designer.cs">
-      <DependentUpon>ConsultaAsistencias.cs</DependentUpon>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ControlesPersonalizados\LabelConEfectos.resx">
-      <DependentUpon>LabelConEfectos.cs</DependentUpon>
+    <Compile Include="Sesion\VentanaSesion.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Sesion\VentanaSesion.Designer.cs">
+      <DependentUpon>VentanaSesion.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Administracion\PantallaAdministracionUsuarios.resx">
+      <DependentUpon>PantallaAdministracionUsuarios.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ControlesPersonalizados\TripleGrillaAsistencias.resx">
-      <DependentUpon>TripleGrillaAsistencias.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Pantallas\EditorAsistencias\EditorAsistencias.resx">
-      <DependentUpon>EditorAsistencias.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Pantallas\ConsultaAsistencias\ConsultaAsistencias.resx">
-      <DependentUpon>ConsultaAsistencias.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Principal\PlanillaAsistencias.resx">
-      <DependentUpon>PlanillaAsistencias.cs</DependentUpon>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -116,6 +83,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Sesion\VentanaSesion.resx">
+      <DependentUpon>VentanaSesion.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -134,17 +104,9 @@
       <Project>{beea5f26-3a6f-4a01-8d62-ef0c27e929bf}</Project>
       <Name>AccesoDatos</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Configuracion\Configuracion.csproj">
-      <Project>{71941b97-e905-4be2-82ab-8114f57be27c}</Project>
-      <Name>Configuracion</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Entidades\Entidades.csproj">
       <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
       <Name>Entidades</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SincronizacionInterBase\SincronizacionInterBase.csproj">
-      <Project>{9b0c567e-ce8f-4eb3-b23d-90c3e1256aab}</Project>
-      <Name>SincronizacionInterBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilidades\Utilidades.csproj">
       <Project>{7fcc5895-70d4-4825-a03c-e4d88eaca187}</Project>
@@ -152,22 +114,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\search.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\EmptyPhoto.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\mystery.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\1654307.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\background.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\save.png" />
+    <None Include="Resources\greencheck.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Utilidades;
 
-namespace PlanillaAsistencia.Pantallas
+namespace Utilidades
 {
     public partial class ResizableControl : UserControl
     {

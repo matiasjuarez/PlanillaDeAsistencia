@@ -9,8 +9,9 @@ using System.Drawing;
 using Utilidades;
 using Entidades;
 using AccesoDatos;
+using System.Diagnostics;
 
-namespace PlanillaAsistencia.Pantallas.ABMCEncargados
+namespace AdministracionUsuarios
 {
     public class ControladorABMCEncargados : IObservadorCamara
     {
@@ -19,14 +20,14 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
         private const int ESTADO_MODIFICACION = 2;
         private int estadoActual = -1;
 
-        private ABMCEncargados vista;
+        private PantallaAdministracionUsuarios vista;
         private Image imagenInicial;
         private CamaraWeb camara;
 
         private List<Encargado> encargados;
         private Encargado encargadoSeleccionado;
 
-        public ControladorABMCEncargados(ABMCEncargados vista)
+        public ControladorABMCEncargados(PantallaAdministracionUsuarios vista)
         {
             this.vista = vista;
             vista.Controlador = this;
@@ -41,7 +42,7 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
         {
             if (imagenInicial == null)
             {
-                imagenInicial = new Bitmap(PlanillaAsistencia.Properties.Resources.mystery);
+                imagenInicial = new Bitmap(AdministracionUsuarios.Properties.Resources.mystery);
             }
 
             return imagenInicial;
@@ -166,11 +167,6 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             if (encargadoSeleccionado.Apellido == "") return false;
             if (encargadoSeleccionado.Nombre == "") return false;
 
-            if (encargadoSeleccionado.FechaNacimiento == null)
-            {
-                encargadoSeleccionado.FechaNacimiento = Configuracion.Config.getInstance().ValorParaFechaNula;
-            }
-
             Image imagenSeleccionada = vista.obtenerImagenSeleccionada();
             if (imagenSeleccionada != this.imagenInicial)
             {
@@ -208,7 +204,7 @@ namespace PlanillaAsistencia.Pantallas.ABMCEncargados
             }
             catch (Exception e)
             {
-
+                Debug.Write(e.StackTrace);
             }
             
         }

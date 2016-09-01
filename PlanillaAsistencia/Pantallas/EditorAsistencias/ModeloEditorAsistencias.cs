@@ -184,8 +184,11 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             this.estadosAsistencia = DAOEstadoAsistencia.obtenerTodosLosEstadosAsistencia();
         }
 
-        public void sincronizarAsistencias()
+        // El valor devuelto indica si fue necesario sincronizar el modelo o no
+        public bool sincronizarAsistencias()
         {
+            bool seSincronizo = false;
+
             List<Asistencia> asistenciasSincronizadas = new List<Asistencia>();
 
             List<Asistencia> asistenciasBase = 
@@ -201,25 +204,12 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
                 // Intentamos obtener una asistencia de la memoria que coincida con la asistencia de la base de datos
                 if (this.diccionarioAsistencias.TryGetValue(asistenciaBase.Id, out asistenciaMemoria))
                 {
-                    if (asistenciaMemoria.esModificada())
+                    if (!asistenciaMemoria.EqualsEstadoInicial(asistenciaBase))
                     {
-                        /*
-                         * Si la asistencia en memoria fue modificada por el usuario y aun no la guardo, verificamos
-                         * que la asistencia que acabamos de traer de la base de datos sea igual a la asistencia modificada
-                         * por el usuario pero en su estado inicial (Usamos un memento).
-                         * */
-                        if (!asistenciaMemoria.EqualsEstadoInicial(asistenciaBase))
-                        {
-                            // Si no son iguales, damos prioridad a los cambios existentes en la asistencia de la base de datos
-                            // y usamos esta asistencia en lugar de la que esta en memoria.
-                            asistenciasSincronizadas.Add(asistenciaBase);
-                        }
-                    }
-                    else
-                    {
-                        // Aca metemos la asistencia de la base de datos directamente porque puede pasar que la asistencia
-                        // que vino de la base de datos tenga algun cambio
+                        // Si no son iguales, damos prioridad a los cambios existentes en la asistencia de la base de datos
+                        // y usamos esta asistencia en lugar de la que esta en memoria.
                         asistenciasSincronizadas.Add(asistenciaBase);
+                        seSincronizo = true;
                     }
                 }
                 else
@@ -228,6 +218,7 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
                     // que no figure en el diccionario de asistencias en memoria, la almacenamos en memoria sin
                     // preguntar nada
                     asistenciasSincronizadas.Add(asistenciaBase);
+                    seSincronizo = true;
                 }
             }
 
@@ -240,6 +231,7 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
                 if (!diccionarioAsistenciasBase.ContainsKey(asistenciaMemoria.Id))
                 {
                     quitarAsistencia(asistenciaMemoria.Id);
+                    seSincronizo = true;
                 }
             }
 
@@ -248,6 +240,8 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             {
                 asistencia.guardarEstado();
             }
+
+            return seSincronizo;
         }
 
         /*

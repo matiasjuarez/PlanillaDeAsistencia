@@ -18,6 +18,7 @@ namespace PlanillaAsistencia.ControlesPersonalizados
         private ControladorRecargaDeGrillas controladorRecarga;
         private ManejadorBindings manejadorBindings;
         private ManejadorGrillas manejadorGrillas;
+        private Asistencia asistenciaSeleccionada;
 
         private List<IObservadorTripleGrilla> observadores;
         
@@ -55,6 +56,24 @@ namespace PlanillaAsistencia.ControlesPersonalizados
         public void refrescarGrillas()
         {
             manejadorGrillas.refrescarGrillas();
+        }
+
+        public void marcarAsistenciaComoSeleccionada(Asistencia asistencia)
+        {
+            this.asistenciaSeleccionada = asistencia;
+        }
+
+        private void pintarAsistenciaComoSeleccionada(Asistencia asistencia)
+        {
+            DataGridViewRow fila = buscarFilaAsistencia(asistenciaSeleccionada, dgvTurnoManana);
+
+                if (fila == null) buscarFilaAsistencia(asistenciaSeleccionada, dgvTurnoTarde);
+                if (fila == null) buscarFilaAsistencia(asistenciaSeleccionada, dgvTurnoNoche);
+
+                if (fila != null)
+                {
+                    this.presentador.mostrarFilaComoSeleccionada(fila);
+                }
         }
 
         private DataGridViewRow buscarFilaAsistencia(Asistencia asistencia, DataGridView grilla)
@@ -135,6 +154,8 @@ namespace PlanillaAsistencia.ControlesPersonalizados
                 repintarGrilla(tripleGrilla.dgvTurnoManana);
                 repintarGrilla(tripleGrilla.dgvTurnoTarde);
                 repintarGrilla(tripleGrilla.dgvTurnoNoche);
+
+                tripleGrilla.pintarAsistenciaComoSeleccionada(tripleGrilla.asistenciaSeleccionada);
             }
 
             private void repintarGrilla(DataGridView grilla)
@@ -152,6 +173,8 @@ namespace PlanillaAsistencia.ControlesPersonalizados
                 grilla.Update();
                 grilla.Refresh();
             }
+
+            
 
             private void configurarTimerRefresco()
             {
@@ -457,7 +480,10 @@ namespace PlanillaAsistencia.ControlesPersonalizados
                 }
             }
 
-            
+            public void mostrarFilaComoSeleccionada(DataGridViewRow fila)
+            {
+                fila.Selected = true;
+            }
         }
 
         public void observarCambioDocente(Docente docente)

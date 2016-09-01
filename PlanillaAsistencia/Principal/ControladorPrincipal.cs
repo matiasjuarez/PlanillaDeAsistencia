@@ -12,22 +12,17 @@ using System.Windows.Forms;
 
 using PlanillaAsistencia.Pantallas.VistaGlobalAsistencias;
 using PlanillaAsistencia.Pantallas.EditorAsistencias;
-using PlanillaAsistencia.Pantallas.ABMCEncargados;
 
 namespace PlanillaAsistencia.Principal
 {
     public class ControladorPrincipal
     {
-        private PantallaPrincipal pantalla;
+        private PlanillaAsistencias pantalla;
 
-        public ControladorPrincipal(PantallaPrincipal pantalla)
+        public ControladorPrincipal(PlanillaAsistencias pantalla)
         {
             this.pantalla = pantalla;
             pantalla.Controlador = this;
-
-            pantalla.mostrarPantallaModificacion();
-            pantalla.mostrarPantallaConsulta();
-            pantalla.mostrarPantallaEncargados();
         }
 
         public ConsultaAsistencias crearConsultaAsistencias()
@@ -43,14 +38,6 @@ namespace PlanillaAsistencia.Principal
             EditorAsistencias vista = new EditorAsistencias();
             ModeloEditorAsistencias modelo = new ModeloEditorAsistencias();
             ControladorEditorAsistencias controlador = new ControladorEditorAsistencias(vista, modelo);
-
-            return vista;
-        }
-
-        public ABMCEncargados crearABMCencargados()
-        {
-            ABMCEncargados vista = new ABMCEncargados();
-            ControladorABMCEncargados controlador = new ControladorABMCEncargados(vista);
 
             return vista;
         }
