@@ -5,7 +5,6 @@ using System.Text;
 
 using Entidades;
 using AccesoDatos;
-using ContenedoresDeDatos;
 using Configuracion;
 namespace SincronizacionInterBase
 {
@@ -17,22 +16,17 @@ namespace SincronizacionInterBase
 
         private static ContenedorDatosSoporte contenedor;
 
-        private ContenedorDocentes docentesPlanilla;
-        private ContenedorAsignaturas asignaturasPlanilla;
-        private ContenedorAulas aulasPlanilla;
-        private ContenedorCursos cursosPlanilla;
+        private List<Docente> docentesPlanilla = new List<Docente>();
+        private List<Asignatura> asignaturasPlanilla = new List<Asignatura>();
+        private List<Aula> aulasPlanilla = new List<Aula>();
+        private List<Curso> cursosPlanilla = new List<Curso>();
 
         private ContenedorDatosSoporte() 
         {
-            docentesPlanilla = new ContenedorDocentes();
-            asignaturasPlanilla = new ContenedorAsignaturas();
-            aulasPlanilla = new ContenedorAulas();
-            cursosPlanilla = new ContenedorCursos();
-
-            docentesPlanilla.refrescarDatos();
-            asignaturasPlanilla.refrescarDatos();
-            aulasPlanilla.refrescarDatos();
-            cursosPlanilla.refrescarDatos();
+            recargarDocentes();
+            recargarAsignaturas();
+            recargarAulas();
+            recargarCursos();
         }
 
         public static ContenedorDatosSoporte getInstance()
@@ -45,24 +39,44 @@ namespace SincronizacionInterBase
             return contenedor;
         }
 
+        private void recargarAulas()
+        {
+            aulasPlanilla = DAOAulas.obtenerTodasLasAulas();
+        }
+
+        private void recargarCursos()
+        {
+            cursosPlanilla = DAOCursos.obtenerTodosLosCursos();
+        }
+
+        private void recargarDocentes()
+        {
+            docentesPlanilla = DAODocentes.obtenerTodosLosDocentes();
+        }
+
+        private void recargarAsignaturas()
+        {
+            asignaturasPlanilla = DAOAsignaturas.obtenerTodasLasAsignaturas();
+        }
+
         public List<Docente> obtenerDocentes()
         {
-            return docentesPlanilla.obtenerDatos();
+            return docentesPlanilla;
         }
 
         public List<Asignatura> obtenerAsignaturas()
         {
-            return asignaturasPlanilla.obtenerDatos();
+            return asignaturasPlanilla;
         }
 
         public List<Aula> obtenerAulas()
         {
-            return aulasPlanilla.obtenerDatos();
+            return aulasPlanilla;
         }
 
         public List<Curso> obtenerCursos()
         {
-            return cursosPlanilla.obtenerDatos();
+            return cursosPlanilla;
         }
 
         public void sincronizar(List<Appointment> eventos)
@@ -78,7 +92,7 @@ namespace SincronizacionInterBase
             HashSet<string> nombresAsignaturasNuevas = new HashSet<string>();
 
             HashSet<string> nombresAsignaturas = new HashSet<string>();
-            foreach (Asignatura asignatura in asignaturasPlanilla.obtenerDatos())
+            foreach (Asignatura asignatura in asignaturasPlanilla)
             {
                 nombresAsignaturas.Add(asignatura.Nombre);
             }
@@ -103,7 +117,7 @@ namespace SincronizacionInterBase
                 }
                 DAOAsignaturas.insertarAsignaturas(asignaturas);
 
-                asignaturasPlanilla.refrescarDatos();
+                recargarAsignaturas();
             }
 
             sincronizarJefesCatedraAsignaturas(appointments);
@@ -115,14 +129,14 @@ namespace SincronizacionInterBase
 
             List<Asignatura> asignaturasModificadas = new List<Asignatura>();
 
-            foreach (Asignatura asignatura in asignaturasPlanilla.obtenerDatos())
+            foreach (Asignatura asignatura in asignaturasPlanilla)
             {
                 Appointment appointmentDelDiccionario = null;
                 if (appointmentsMasRecientesPorMateria.TryGetValue(asignatura.Nombre, out appointmentDelDiccionario))
                 {
                     if (appointmentDelDiccionario.JefeCatedra == null) continue;
 
-                    foreach (Docente docente in docentesPlanilla.obtenerDatos())
+                    foreach (Docente docente in docentesPlanilla)
                     {
                         if (docente.Nombre == appointmentDelDiccionario.JefeCatedra)
                         {
@@ -185,7 +199,7 @@ namespace SincronizacionInterBase
             HashSet<string> nombresAulasNuevas = new HashSet<string>();
 
             HashSet<string> nombresAulas = new HashSet<string>();
-            foreach (Aula aula in aulasPlanilla.obtenerDatos())
+            foreach (Aula aula in aulasPlanilla)
             {
                 nombresAulas.Add(aula.Nombre);
             }
@@ -214,7 +228,7 @@ namespace SincronizacionInterBase
                 }
 
                 DAOAulas.insertarAulas(aulasNuevas);
-                aulasPlanilla.refrescarDatos();
+                recargarAulas();
             }            
         }
 
@@ -228,7 +242,7 @@ namespace SincronizacionInterBase
             HashSet<string> nombresDocentesNuevos = new HashSet<string>();
 
             HashSet<string> nombresDocentes = new HashSet<string>();
-            foreach (Docente docente in docentesPlanilla.obtenerDatos()) 
+            foreach (Docente docente in docentesPlanilla) 
             {
                 nombresDocentes.Add(docente.Nombre);
             }
@@ -260,7 +274,7 @@ namespace SincronizacionInterBase
                 }
 
                 DAODocentes.insertarDocentes(docentesNuevos);
-                docentesPlanilla.refrescarDatos();
+                recargarDocentes();
             }
         }
 
@@ -269,7 +283,7 @@ namespace SincronizacionInterBase
             HashSet<string> nombresCursosNuevos = new HashSet<string>();
 
             HashSet<string> nombresCursos = new HashSet<string>();
-            foreach (Curso curso in cursosPlanilla.obtenerDatos())
+            foreach (Curso curso in cursosPlanilla)
             {
                 nombresCursos.Add(curso.Nombre);
             }
@@ -295,7 +309,7 @@ namespace SincronizacionInterBase
                 }
 
                 DAOCursos.insertarCursos(cursosNuevos);
-                cursosPlanilla.refrescarDatos();
+                recargarCursos();
             }
         }
     }

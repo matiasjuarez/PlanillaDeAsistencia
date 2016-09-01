@@ -6,37 +6,143 @@ using System.Text;
 using Entidades;
 using AccesoDatos;
 using Utilidades;
-using ContenedoresDeDatos;
 
 namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 {
     public class ModeloEditorAsistencias
     {
+        private HashSet<DateTime> fechasSinAsistencias;
+
         private ControladorEditorAsistencias controlador;
         public ControladorEditorAsistencias Controlador
         {
             set { controlador = value; }
         }
 
-        private HashSet<DateTime> fechasSinAsistencias;
+        private List<Asignatura> asignaturas = new List<Asignatura>();
+        public List<Asignatura> Asignaturas
+        {
+            get { return asignaturas; }
+            set { asignaturas = value; }
+        }
 
-        private ContenedorAsignaturas asignaturas;
-        private ContenedorAsistencias asistencias;
-        private ContenedorAulas aulas;
-        private ContenedorCursos cursos;
-        private ContenedorDocentes docentes;
-        private ContenedorEstadosAsistencia estadosAsistencia;
+        private Dictionary<int, Asistencia> diccionarioAsistencias = new Dictionary<int, Asistencia>();
+        public List<Asistencia> Asistencias
+        {
+            get { return diccionarioAsistencias.Values.ToList<Asistencia>(); }
+            set 
+            {
+                diccionarioAsistencias.Clear();
+                agregarAsistencias(value);
+            }
+        }
+
+        public void agregarAsistencias(List<Asistencia> asistencias)
+        {
+            foreach (Asistencia asistencia in asistencias)
+            {
+                agregarAsistencia(asistencia);
+            }
+        }
+
+        public void agregarAsistencia(Asistencia asistencia)
+        {
+            if (diccionarioAsistencias.ContainsKey(asistencia.Id))
+            {
+                diccionarioAsistencias[asistencia.Id] = asistencia;
+            }
+            else
+            {
+                diccionarioAsistencias.Add(asistencia.Id, asistencia);
+            }
+        }
+
+        public Asistencia obtenerAsistencia(int idAsistencia)
+        {
+            Asistencia asistencia;
+
+            this.diccionarioAsistencias.TryGetValue(idAsistencia, out asistencia);
+
+            return asistencia;
+        }
+
+        public List<Asistencia> obtenerAsistencias(List<int> idsAsistencias)
+        {
+            List<Asistencia> asistenciasDevolver = new List<Asistencia>();
+
+            foreach (int idAsistencia in idsAsistencias)
+            {
+                Asistencia asistencia = obtenerAsistencia(idAsistencia);
+
+                if (asistencia != null) asistenciasDevolver.Add(asistencia);
+            }
+
+            return asistenciasDevolver;
+        }
+
+        public List<Asistencia> obtenerAsistencias(List<Asistencia> asistencias)
+        {
+            List<int> idAsistencias = new List<int>();
+            foreach (Asistencia asistencia in asistencias)
+            {
+                idAsistencias.Add(asistencia.Id);
+            }
+
+            return obtenerAsistencias(idAsistencias);
+        }
+
+        public bool quitarAsistencia(int idAsistencia)
+        {
+            return this.diccionarioAsistencias.Remove(idAsistencia);
+        }
+
+        public void quitarAsistencias(List<Asistencia> asistencias)
+        {
+            foreach (Asistencia asistencia in asistencias)
+            {
+                quitarAsistencia(asistencia.Id);
+            }
+        }
+
+        public void quitarAsistencias(List<int> idsSsistencias)
+        {
+            foreach (int id in idsSsistencias)
+            {
+                quitarAsistencia(id);
+            }
+        }
+
+        private List<Aula> aulas = new List<Aula>();
+        public List<Aula> Aulas
+        {
+            get { return aulas; }
+            set { aulas = value; }
+        }
+
+        private List<Curso> cursos = new List<Curso>();
+        public List<Curso> Cursos
+        {
+            get { return cursos; }
+            set { cursos = value; }
+        }
+
+        private List<Docente> docentes = new List<Docente>();
+        public List<Docente> Docentes
+        {
+            get { return docentes; }
+            set { docentes = value; }
+        }
+
+        private List<EstadoAsistencia> estadosAsistencia = new List<EstadoAsistencia>();
+        public List<EstadoAsistencia> EstadosAsistencia
+        {
+            get { return estadosAsistencia; }
+            set { estadosAsistencia = value; }
+        }
 
         public ModeloEditorAsistencias()
         {
             fechasSinAsistencias = new HashSet<DateTime>();
-
-            asignaturas = new ContenedorAsignaturas();
-            asistencias = new ContenedorAsistencias();
-            aulas = new ContenedorAulas();
-            cursos = new ContenedorCursos();
-            docentes = new ContenedorDocentes();
-            estadosAsistencia = new ContenedorEstadosAsistencia();
         }
 
         public void inicializar()
@@ -46,40 +152,54 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 
         public void refrescarDatosSoporte()
         {
-            asignaturas.refrescarDatos();
-            aulas.refrescarDatos();
-            cursos.refrescarDatos();
-            docentes.refrescarDatos();
-            estadosAsistencia.refrescarDatos();
+            recargarAsignaturas();
+            recargarAulas();
+            recargarCursos();
+            recargarDocentes();
+            recargarEstadosAsistencia();
         }
 
-        public void refrescarAsistencias()
+        private void recargarAsignaturas()
         {
-            List<DateTime> fechasDeAsistencias = asistencias.obtenerFechasDeAsistenciasAlmacenadas();
-            List<Asistencia> asistenciasMemoria = asistencias.obtenerDatos();
-            List<Asistencia> asistenciasBase = DAOAsistencias.obtenerAsistenciasDeFechas(fechasDeAsistencias);
-            List<Asistencia> resultadoComparacion = new List<Asistencia>();
+            this.asignaturas = DAOAsignaturas.obtenerTodasLasAsignaturas();
+        }
 
-            Dictionary<int, Asistencia> asistenciasMemoriaDic = new Dictionary<int, Asistencia>();
-            foreach (Asistencia asistencia in asistenciasMemoria)
-            {
-                asistenciasMemoriaDic.Add(asistencia.Id, asistencia);
-            }
+        private void recargarAulas()
+        {
+            this.aulas = DAOAulas.obtenerTodasLasAulas();
+        }
 
-            Dictionary<int, Asistencia> asistenciasBaseDic = new Dictionary<int, Asistencia>();
-            foreach (Asistencia asistencia in asistenciasBase)
-            {
-                asistenciasBaseDic.Add(asistencia.Id, asistencia);
-            }
+        private void recargarCursos()
+        {
+            this.cursos = DAOCursos.obtenerTodosLosCursos();
+        }
 
-            // Recorremos todas las entradas del diccionario de asistencias de la base de datos
-            foreach(KeyValuePair<int, Asistencia> valorBase in asistenciasBaseDic)
+        private void recargarDocentes()
+        {
+            this.docentes = DAODocentes.obtenerTodosLosDocentes();
+        }
+
+        private void recargarEstadosAsistencia()
+        {
+            this.estadosAsistencia = DAOEstadoAsistencia.obtenerTodosLosEstadosAsistencia();
+        }
+
+        public void sincronizarAsistencias()
+        {
+            List<Asistencia> asistenciasSincronizadas = new List<Asistencia>();
+
+            List<Asistencia> asistenciasBase = 
+                DAOAsistencias.obtenerAsistenciasPorId(this.diccionarioAsistencias.Keys.ToList<int>());
+
+            Dictionary<int, Asistencia> diccionarioAsistenciasBase = new Dictionary<int, Asistencia>();
+            foreach (Asistencia asistenciaBase in asistenciasBase)
             {
-                Asistencia asistenciaBase = valorBase.Value;
+                diccionarioAsistenciasBase.Add(asistenciaBase.Id, asistenciaBase);
+
                 Asistencia asistenciaMemoria;
 
                 // Intentamos obtener una asistencia de la memoria que coincida con la asistencia de la base de datos
-                if (asistenciasMemoriaDic.TryGetValue(valorBase.Key, out asistenciaMemoria))
+                if (this.diccionarioAsistencias.TryGetValue(asistenciaBase.Id, out asistenciaMemoria))
                 {
                     if (asistenciaMemoria.esModificada())
                     {
@@ -88,125 +208,138 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
                          * que la asistencia que acabamos de traer de la base de datos sea igual a la asistencia modificada
                          * por el usuario pero en su estado inicial (Usamos un memento).
                          * */
-                        if (asistenciaMemoria.EqualsEstadoInicial(asistenciaBase))
-                        {
-                            // Si efectivamente son iguales, dejamos la asistencia en memoria tal y como estaba (modificada)
-                            resultadoComparacion.Add(asistenciaMemoria);
-                        }
-                        else
+                        if (!asistenciaMemoria.EqualsEstadoInicial(asistenciaBase))
                         {
                             // Si no son iguales, damos prioridad a los cambios existentes en la asistencia de la base de datos
                             // y usamos esta asistencia en lugar de la que esta en memoria.
-                            resultadoComparacion.Add(asistenciaBase);
+                            asistenciasSincronizadas.Add(asistenciaBase);
                         }
                     }
                     else
                     {
                         // Aca metemos la asistencia de la base de datos directamente porque puede pasar que la asistencia
                         // que vino de la base de datos tenga algun cambio
-                        resultadoComparacion.Add(asistenciaBase);
+                        asistenciasSincronizadas.Add(asistenciaBase);
                     }
                 }
                 else
                 {
-                    // En caso de que en el diccionario de asistencia de la base de datos venga una asistencia
+                    // En caso que en las asistencias de la base de datos venga una asistencia
                     // que no figure en el diccionario de asistencias en memoria, la almacenamos en memoria sin
                     // preguntar nada
-                    resultadoComparacion.Add(valorBase.Value);
+                    asistenciasSincronizadas.Add(asistenciaBase);
                 }
             }
 
-            foreach (Asistencia asistencia in asistencias.obtenerDatos())
+            /*
+             * Si alguna de las asistencias que tenemos en memoria no figura entre las asistencias
+             * que trajimos de la base de datos, la eliminamos.
+             * */
+            foreach (Asistencia asistenciaMemoria in Asistencias)
+            {
+                if (!diccionarioAsistenciasBase.ContainsKey(asistenciaMemoria.Id))
+                {
+                    quitarAsistencia(asistenciaMemoria.Id);
+                }
+            }
+
+            agregarAsistencias(asistenciasSincronizadas);
+            foreach (Asistencia asistencia in asistenciasSincronizadas)
             {
                 asistencia.guardarEstado();
             }
         }
 
         /*
-         * Toma una fecha por parametro y busca en el contenedor de asistencias aquellas asistencias
-         * cuya fecha sea igual a la pasada por parametro. Si no hay ninguna asistencia que coincida
-         * con el criterio de busqueda, se consulta la base de datos y se trae todas las asistencias
-         * que se encuentren dentro de la misma semana a la que pertenece la fecha parametro. Si tras
-         * esta busqueda resulta que en esa fecha no hay asistencias, entonces agregamos dicha fecha
-         * al hashSet 'fechasSinAsistencias' para que en el futuro no sea necesario hacer una nueva
-         * busqueda para las fechas que figuran en este hashSet.
+         * Toma una fecha por parametro y busca en la lista de asistencias local aquellas asistencias
+         * cuya fecha sea igual a la pasada por parametro. Si no hay ninguna asistencia para esta fecha, 
+         * se consulta la base de datos y se trae todas las asistencias
+         * que se encuentren dentro de la misma semana a la que pertenece la fecha parametro. Finalmente,
+         * nos fijamos que fechas de la semana con la que estamos trabajando no poseen asistencias y dejamos
+         * dichas fechas marcadas para no hacer una busqueda contra la base de datos innecesariamente
          * */
-
-        // Falta ver como trabajar con el hashSet 'fechasSinAsistencias'
         public List<Asistencia> obtenerAsistenciasParaFecha(DateTime fecha)
         {
-            List<Asistencia> asistenciasDeFecha = asistencias.obtenerAsistenciasDeFecha(fecha);
+            if (fechasSinAsistencias.Contains(fecha)) return new List<Asistencia>();
+
+            List<Asistencia> asistenciasDeFecha = buscarAsistenciasParaFechaLocalmente(fecha);
 
             if (asistenciasDeFecha.Count == 0)
             {
-                HashSet<DateTime> fechasConAsistencias = new HashSet<DateTime>();
+                asistenciasDeFecha = buscarAsistenciasParaFechaBaseDatos(fecha);
+            }
 
-                List<Asistencia> asistenciasDeSemana = DAOAsistencias.obtenerAsistenciasParaUnaSemana(fecha);
-                foreach (Asistencia asistencia in asistenciasDeSemana)
-                {
-                    asistencias.guardarDato(asistencia.Id, asistencia);
-                    fechasConAsistencias.Add(asistencia.Fecha);
+            return asistenciasDeFecha;
+        }
 
-                    // Se guarda el estado inicial con que llegan las asistencias desde la base de datos
-                    asistencia.guardarEstado();
-                }
-
-                if (!fechasConAsistencias.Contains(fecha.Date))
+        private List<Asistencia> buscarAsistenciasParaFechaLocalmente(DateTime fecha)
+        {
+            List<Asistencia> asistenciasDeFecha = new List<Asistencia>();
+            foreach (Asistencia asistencia in Asistencias)
+            {
+                if (asistencia.Fecha.Equals(fecha.Date))
                 {
-                    this.fechasSinAsistencias.Add(fecha.Date);
-                }
-                else
-                {
-                    asistenciasDeFecha = asistencias.obtenerAsistenciasDeFecha(fecha);
+                    asistenciasDeFecha.Add(asistencia);
                 }
             }
 
             return asistenciasDeFecha;
         }
 
-        public List<Asistencia> obtenerAsistencias()
+        private List<Asistencia> buscarAsistenciasParaFechaBaseDatos(DateTime fecha)
         {
-            return asistencias.obtenerDatos();
+            List<Asistencia> asistenciasDeSemana = DAOAsistencias.obtenerAsistenciasParaUnaSemana(fecha);
+            this.agregarAsistencias(asistenciasDeSemana);
+
+            List<Asistencia> asistenciasDeFecha = new List<Asistencia>();
+            foreach (Asistencia asistencia in asistenciasDeSemana)
+            {
+                // Se guarda el estado inicial con que llegan las asistencias desde la base de datos
+                asistencia.guardarEstado();
+
+                if (asistencia.Fecha.Equals(fecha))
+                {
+                    asistenciasDeFecha.Add(asistencia);
+                }
+            }
+
+            marcarFechasSinAsistencias(asistenciasDeSemana, fecha);
+
+            return asistenciasDeFecha;
         }
 
-        public void guardarAsistencia(Asistencia asistencia)
+        private void marcarFechasSinAsistencias(List<Asistencia> asistencias, DateTime fecha)
         {
-            asistencias.guardarDato(asistencia.Id, asistencia);
+            HashSet<DateTime> fechasConAsistencias = new HashSet<DateTime>();
+
+            foreach (Asistencia asistencia in asistencias)
+            {
+                fechasConAsistencias.Add(asistencia.Fecha);
+            }
+
+            List<DateTime> fechasDeSemana = obtenerFechasDeSemana(fecha);
+            foreach (DateTime fechaDeSemana in fechasDeSemana)
+            {
+                if (!fechasConAsistencias.Contains(fechaDeSemana.Date))
+                {
+                    this.fechasSinAsistencias.Add(fechaDeSemana.Date);
+                }
+            }
         }
 
-        public bool eliminarAsistencia(Asistencia asistencia)
+        private List<DateTime> obtenerFechasDeSemana(DateTime fecha)
         {
-            return asistencias.eliminarDato(asistencia.Id);
-        }
+            List<DateTime> diasDeSemana = new List<DateTime>();
 
-        public void eliminarAsistencias()
-        {
-            asistencias.limpiarContenedor();
-        }
+            DateTime inicioSemana = fecha.AddDays(-(int)fecha.DayOfWeek);
 
-        public Asistencia obtenerAsistencia(int idAsistencia)
-        {
-            return asistencias.obtenerDato(idAsistencia);
-        }
+            for (int i = 0; i <= 6; i++)
+            {
+                DateTime dia = inicioSemana.AddDays(i);
+                diasDeSemana.Add(dia);
+            }
 
-        public List<Asignatura> obtenerAsignaturas()
-        {
-            return asignaturas.obtenerDatos();
-        }
-
-        public List<Docente> obtenerDocentes()
-        {
-            return docentes.obtenerDatos();
-        }
-
-        public List<EstadoAsistencia> obtenerEstadosAsistencia()
-        {
-            return estadosAsistencia.obtenerDatos();
-        }
-
-        private class SincronizadorSoporte
-        {
-
+            return diasDeSemana;
         }
     }
 }

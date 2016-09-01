@@ -49,15 +49,15 @@ namespace AccesoDatos
                 uid = "matias";
                 password = "120491";*/
 
-                /*server = "localhost";
+                server = "localhost";
                 database = "rapla_test";
                 uid = "matias";
-                password = "120491";*/
+                password = "120491";
 
-                server = "tricorder";
+                /*server = "tricorder";
                 database = "rapla_test";
                 uid = "rapla_test";
-                password = "rapla_test";
+                password = "rapla_test";*/
             }
             else if (baseDeDatosAConectar == GestorConexion.ConexionPlanillaAsistencia)
             {

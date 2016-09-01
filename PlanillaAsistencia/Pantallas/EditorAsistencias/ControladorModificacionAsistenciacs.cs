@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Drawing;
 
 using AccesoDatos;
-using ContenedoresDeDatos;
 using Utilidades;
 using Entidades;
 using Configuracion;
@@ -22,21 +21,14 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 
         // La asistencia sobre la que el usuario hizo click en la grilla
         private AsistenciaTabla asistenciaSeleccionada;
-        // Las asistencias que se han ido cargando en las grillas luego de apretado el boton de guardado
-        private ContenedorAsistencias asistenciasTrabajadas;
+        private Dictionary<int, Asistencia> asistenciasTrabajadas = new Dictionary<int, Asistencia>();
 
-        private RangoHorario rangoHorarioManana;
-        private RangoHorario rangoHorarioTarde;
-        private RangoHorario rangoHorarioNoche;
-
-        private Temporizador temporizador;
+        private Temporizador temporizadorSincronizacionModelo;
 
         public ControladorEditorAsistencias(EditorAsistencias vista, ModeloEditorAsistencias modelo)
         {
             this.vista = vista;
             this.modelo = modelo;
-
-            this.asistenciasTrabajadas = new ContenedorAsistencias();
 
             vista.Controlador = this;
             modelo.Controlador = this;
@@ -44,13 +36,9 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             modelo.inicializar();
             vista.inicializar();
 
-            temporizador = new Temporizador(2);
-            temporizador.agregarObjetoTemporizable(this);
-            temporizador.habilitar(true);
-
-            rangoHorarioManana = config.RangoManana;
-            rangoHorarioTarde = config.RangoTarde;
-            rangoHorarioNoche = config.RangoNoche;
+            temporizadorSincronizacionModelo = new Temporizador(5);
+            temporizadorSincronizacionModelo.agregarObjetoTemporizable(this);
+            temporizadorSincronizacionModelo.habilitar(true);
         }
 
         public void manejarGuardarCambios()
@@ -69,7 +57,7 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             List<Asistencia> asistenciasModificadasValidasParaGuardar = new List<Asistencia>();
             List<Asistencia> asistenciasNoValidas = new List<Asistencia>();
 
-            foreach (Asistencia asistencia in asistenciasTrabajadas.obtenerDatos())
+            foreach (Asistencia asistencia in asistenciasTrabajadas.Values)
             {
                 if (asistencia.esModificada())
                 {
@@ -84,6 +72,15 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
                 }
             }
 
+            DAOAsistencias.updateAsistencias(asistenciasModificadasValidasParaGuardar);
+
+            foreach (Asistencia asistencia in asistenciasModificadasValidasParaGuardar)
+            {
+                asistencia.guardarEstado();
+                modelo.agregarAsistencia(asistencia);
+                this.asistenciasTrabajadas.Remove(asistencia.Id);
+            }
+
             int guardadas = asistenciasModificadasValidasParaGuardar.Count;
             int noValidas = asistenciasNoValidas.Count;
 
@@ -95,13 +92,6 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             if (noValidas > 0)
             {
                 vista.mostrarMensaje(noValidas + " asistencias tienen valores no validos", Color.Purple, 2000);
-            }
-
-            DAOAsistencias.updateAsistencias(asistenciasModificadasValidasParaGuardar);
-
-            foreach (Asistencia asistencia in asistenciasModificadasValidasParaGuardar)
-            {
-                asistencia.guardarEstado();
             }
         }
 
@@ -116,17 +106,17 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 
         public List<Asignatura> obtenerAsignaturas()
         {
-            return modelo.obtenerAsignaturas();
+            return modelo.Asignaturas;
         }
 
         public List<Docente> obtenerDocentes()
         {
-            return modelo.obtenerDocentes();
+            return modelo.Docentes;
         }
 
         public List<EstadoAsistencia> obtenerEstadosDeAsistencia()
         {
-            return modelo.obtenerEstadosAsistencia();
+            return modelo.EstadosAsistencia;
         }
 
         // Se encarga de cargar los datos de la asistencia seleccionada por el usuario tras haber hecho click en
@@ -149,7 +139,7 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 
         private bool hayAsistenciasModificadas()
         {
-            foreach (Asistencia asistencia in asistenciasTrabajadas.obtenerDatos())
+            foreach (Asistencia asistencia in this.asistenciasTrabajadas.Values)
             {
                 if (asistencia.esModificada()) return true;
             }
@@ -169,17 +159,15 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             {
                 foreach (Asistencia asistencia in asistenciasDeFecha)
                 {
-                    this.asistenciasTrabajadas.guardarDato(asistencia.Id, asistencia);
-
                     AsistenciaTabla nuevaAsistenciaTabla = new AsistenciaTabla(asistencia);
 
                     TimeSpan horaClase = asistencia.HoraEntradaEsperada;
 
-                    if (rangoHorarioManana.estaDentroDelRangoHorario(horaClase))
+                    if (config.RangoManana.estaDentroDelRangoHorario(horaClase))
                     {
                         asistenciasManana.Add(nuevaAsistenciaTabla);
                     }
-                    else if (rangoHorarioTarde.estaDentroDelRangoHorario(horaClase))
+                    else if (config.RangoTarde.estaDentroDelRangoHorario(horaClase))
                     {
                         asistenciasTarde.Add(nuevaAsistenciaTabla);
                     }
@@ -211,14 +199,16 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
         private void actualizarModelo()
         {
             modelo.refrescarDatosSoporte();
-            modelo.refrescarAsistencias();
+            modelo.sincronizarAsistencias();
         }
 
         private int determinarEstadoPlanillaAsistencia()
         {
+            bool existenAsistenciasModificadas = hayAsistenciasModificadas();
+
             if (asistenciaSeleccionada == null)
             {
-                if (hayAsistenciasModificadas())
+                if (existenAsistenciasModificadas)
                 {
                     return EditorAsistencias.ESTADO_SICAMBIO_NOSELECCION;
                 }
@@ -229,7 +219,7 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             }
             else
             {
-                if (hayAsistenciasModificadas())
+                if (existenAsistenciasModificadas)
                 {
                     return EditorAsistencias.ESTADO_SICAMBIO_SISELECCION;
                 }
@@ -242,6 +232,15 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 
         private void procesarModificacionDeAsistencia()
         {
+            if (asistenciasTrabajadas.ContainsKey(asistenciaSeleccionada.IdAsistencia))
+            {
+                asistenciasTrabajadas[asistenciaSeleccionada.IdAsistencia] = asistenciaSeleccionada.obtenerAsistencia();
+            }
+            else
+            {
+                asistenciasTrabajadas.Add(asistenciaSeleccionada.IdAsistencia, asistenciaSeleccionada.obtenerAsistencia());
+            }
+            
             vista.ponerEnEstado(determinarEstadoPlanillaAsistencia());
         }
 
@@ -293,9 +292,36 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
 
             if (this.asistenciaSeleccionada != null)
             {
+                AsistenciaTabla asistenciaTabla = null;
                 Asistencia asistencia = modelo.obtenerAsistencia(asistenciaSeleccionada.obtenerAsistencia().Id);
-                AsistenciaTabla asistenciaTabla = new AsistenciaTabla(asistencia);
+
+                if (asistencia != null) asistenciaTabla = new AsistenciaTabla(asistencia);
+                 
                 this.asistenciaSeleccionada = asistenciaTabla;
+
+                if (asistencia != null)
+                {
+                    vista.mostrarDatosDeAsistencia(asistencia);
+                }
+                else
+                {
+                    vista.ponerEnEstado(this.determinarEstadoPlanillaAsistencia());
+                }
+            }
+
+            List<Asistencia> asistenciasModeloActualizadas = 
+                modelo.obtenerAsistencias(this.asistenciasTrabajadas.Values.ToList<Asistencia>());
+
+            foreach (Asistencia asistencia in asistenciasModeloActualizadas)
+            {
+                if (this.asistenciasTrabajadas.ContainsKey(asistencia.Id))
+                {
+                    asistenciasTrabajadas[asistencia.Id] = asistencia;
+                }
+                else
+                {
+                    asistenciasTrabajadas.Add(asistencia.Id, asistencia);
+                }
             }
 
             this.mostrarAsistenciasDeFecha(vista.obtenerFechaSeleccionada());

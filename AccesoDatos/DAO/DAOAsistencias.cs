@@ -92,6 +92,54 @@ namespace AccesoDatos
             return asistencias;
         }
 
+        public static List<Asistencia> obtenerAsistenciasPorId(List<int> ids)
+        {
+            List<Asistencia> asistencias = new List<Asistencia>();
+
+            if (ids.Count == 0) return asistencias;
+
+            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
+
+            MySqlCommand command = new MySqlCommand();
+            command.Connection = gestorConexion.getConexionAbierta();
+
+            StringBuilder restriccionIN = new StringBuilder("IN(");
+
+            for (int i = 0; i < ids.Count; i++)
+            {
+                string nuevoParametro = "@id" + i;
+
+                restriccionIN.Append(nuevoParametro);
+                restriccionIN.Append(",");
+
+                command.Parameters.AddWithValue(nuevoParametro, ids.ElementAt(i));
+            }
+
+            restriccionIN.Remove(restriccionIN.Length - 1, 1);
+            restriccionIN.Append(")");
+
+            string consulta = obtenerSentenciaSelectSinRestricciones();
+            consulta += " WHERE asistencias.asistenciaId ";
+            consulta += restriccionIN.ToString();
+
+            command.CommandText = consulta;
+
+            MySqlDataReader reader = command.ExecuteReader();
+
+            try
+            {
+                while (reader.Read())
+                {
+                    Asistencia asistencia = armarAsistenciaDesdeReader(reader);
+                    asistencias.Add(asistencia);
+                }
+            }
+            catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
+            finally { gestorConexion.cerrarConexion(); }
+
+            return asistencias;
+        }
+
         // Obtiene la sentencia Select que se debe utilizar para obtener todas las asistencias de la base de datos
         private static string obtenerSentenciaSelectSinRestricciones()
         {

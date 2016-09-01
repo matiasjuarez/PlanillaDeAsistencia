@@ -159,10 +159,6 @@
       <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
       <Name>Entidades</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EstructurasDeDatos\ContenedoresDeDatos.csproj">
-      <Project>{213f254e-ba77-4766-8bac-b641cb867e0f}</Project>
-      <Name>ContenedoresDeDatos</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SincronizacionInterBase\SincronizacionInterBase.csproj">
       <Project>{9b0c567e-ce8f-4eb3-b23d-90c3e1256aab}</Project>
       <Name>SincronizacionInterBase</Name>

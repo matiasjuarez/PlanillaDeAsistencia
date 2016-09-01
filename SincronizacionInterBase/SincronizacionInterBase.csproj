@@ -59,10 +59,6 @@
       <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
       <Name>Entidades</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EstructurasDeDatos\ContenedoresDeDatos.csproj">
-      <Project>{213f254e-ba77-4766-8bac-b641cb867e0f}</Project>
-      <Name>ContenedoresDeDatos</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
