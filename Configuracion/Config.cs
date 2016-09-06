@@ -119,5 +119,6 @@ namespace Configuracion
                 return rangoNoche;
             }
         }
+
     }
 }

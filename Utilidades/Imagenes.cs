@@ -25,16 +25,20 @@ namespace Utilidades
 
         public static byte[] convertirImagenEnArregloDeBytes(Image imagen)
         {
-            MemoryStream ms = new MemoryStream();
+            /*MemoryStream ms = new MemoryStream();
             imagen.Save(ms, ImageFormat.Png);
 
             byte[] imagenArreglo = new byte[ms.Length];
 
             ms.Position = 0;
 
-            ms.Read(imagenArreglo, 0, imagenArreglo.Length);
+            ms.Read(imagenArreglo, 0, imagenArreglo.Length);*/
 
-            return imagenArreglo;
+            using (var ms = new MemoryStream())
+            {
+                imagen.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+                return ms.ToArray();
+            }
         }
     }
 }

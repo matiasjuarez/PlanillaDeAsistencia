@@ -7,7 +7,7 @@ using System.Drawing;
 namespace Entidades
 {
     [Serializable]
-    public class Encargado
+    public class Personal
     {
         private int id;
         private string nombre;
@@ -19,8 +19,15 @@ namespace Entidades
         private string mailGeneral;
         private string mailBBS;
         private Image foto;
+        private Usuario usuario;
 
-        public Encargado()
+        public Usuario Usuario
+        {
+            get { return usuario; }
+            set { usuario = value; }
+        }
+
+        public Personal()
         {
             nombre = "";
             apellido = "";
@@ -29,6 +36,7 @@ namespace Entidades
             legajo = "";
             mailBBS = "";
             mailGeneral = "";
+            Usuario = new Usuario();
         }
 
         public int Id

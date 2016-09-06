@@ -46,6 +46,7 @@
             this.txtTelefono = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.mkFechaNacimiento = new System.Windows.Forms.MaskedTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.btnEliminarFoto = new System.Windows.Forms.Button();
             this.btnTomarFoto = new System.Windows.Forms.Button();
@@ -57,12 +58,18 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.btnCancelar = new System.Windows.Forms.Button();
             this.btnGuardarCambios = new System.Windows.Forms.Button();
-            this.mkFechaNacimiento = new System.Windows.Forms.MaskedTextBox();
+            this.panelUsuario = new System.Windows.Forms.Panel();
+            this.lblNombreUsuario = new System.Windows.Forms.Label();
+            this.lblRolUsuario = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.btnEditarUsuario = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbFoto)).BeginInit();
             this.groupBox4.SuspendLayout();
+            this.panelUsuario.SuspendLayout();
             this.SuspendLayout();
             // 
             // listEncargados
@@ -72,7 +79,7 @@
             this.listEncargados.Name = "listEncargados";
             this.listEncargados.Size = new System.Drawing.Size(165, 446);
             this.listEncargados.TabIndex = 0;
-            this.listEncargados.SelectedIndexChanged += new System.EventHandler(this.listEncargados_SelectedIndexChanged);
+            this.listEncargados.Click += new System.EventHandler(this.listEncargados_Click);
             // 
             // lblNombre
             // 
@@ -137,7 +144,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(177, 235);
+            this.label4.Location = new System.Drawing.Point(188, 235);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(48, 13);
             this.label4.TabIndex = 9;
@@ -145,7 +152,7 @@
             // 
             // txtLegajo
             // 
-            this.txtLegajo.Location = new System.Drawing.Point(231, 228);
+            this.txtLegajo.Location = new System.Drawing.Point(287, 228);
             this.txtLegajo.Name = "txtLegajo";
             this.txtLegajo.Size = new System.Drawing.Size(166, 20);
             this.txtLegajo.TabIndex = 10;
@@ -234,6 +241,18 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "DATOS PERSONALES";
             // 
+            // mkFechaNacimiento
+            // 
+            this.mkFechaNacimiento.Location = new System.Drawing.Point(374, 56);
+            this.mkFechaNacimiento.Mask = "00/00/0000";
+            this.mkFechaNacimiento.Name = "mkFechaNacimiento";
+            this.mkFechaNacimiento.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.mkFechaNacimiento.Size = new System.Drawing.Size(166, 20);
+            this.mkFechaNacimiento.TabIndex = 8;
+            this.mkFechaNacimiento.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.mkFechaNacimiento.ValidatingType = typeof(System.DateTime);
+            this.mkFechaNacimiento.TextChanged += new System.EventHandler(this.mkFechaNacimiento_TextChanged);
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.btnEliminarFoto);
@@ -255,6 +274,7 @@
             this.btnEliminarFoto.TabIndex = 3;
             this.btnEliminarFoto.Text = "Eliminar";
             this.btnEliminarFoto.UseVisualStyleBackColor = true;
+            this.btnEliminarFoto.Click += new System.EventHandler(this.btnEliminarFoto_Click);
             // 
             // btnTomarFoto
             // 
@@ -296,6 +316,7 @@
             this.btnBajaEncargado.TabIndex = 16;
             this.btnBajaEncargado.Text = "Baja";
             this.btnBajaEncargado.UseVisualStyleBackColor = true;
+            this.btnBajaEncargado.Click += new System.EventHandler(this.btnBajaEncargado_Click);
             // 
             // btnModificarEncargado
             // 
@@ -350,23 +371,72 @@
             this.btnGuardarCambios.UseVisualStyleBackColor = true;
             this.btnGuardarCambios.Click += new System.EventHandler(this.btnGuardarCambios_Click);
             // 
-            // mkFechaNacimiento
+            // panelUsuario
             // 
-            this.mkFechaNacimiento.Location = new System.Drawing.Point(374, 56);
-            this.mkFechaNacimiento.Mask = "00/00/0000";
-            this.mkFechaNacimiento.Name = "mkFechaNacimiento";
-            this.mkFechaNacimiento.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.mkFechaNacimiento.Size = new System.Drawing.Size(166, 20);
-            this.mkFechaNacimiento.TabIndex = 8;
-            this.mkFechaNacimiento.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.mkFechaNacimiento.ValidatingType = typeof(System.DateTime);
-            this.mkFechaNacimiento.TextChanged += new System.EventHandler(this.mkFechaNacimiento_TextChanged);
+            this.panelUsuario.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelUsuario.Controls.Add(this.lblNombreUsuario);
+            this.panelUsuario.Controls.Add(this.lblRolUsuario);
+            this.panelUsuario.Controls.Add(this.label9);
+            this.panelUsuario.Controls.Add(this.btnEditarUsuario);
+            this.panelUsuario.Controls.Add(this.label8);
+            this.panelUsuario.Enabled = false;
+            this.panelUsuario.Location = new System.Drawing.Point(180, 254);
+            this.panelUsuario.Name = "panelUsuario";
+            this.panelUsuario.Size = new System.Drawing.Size(279, 118);
+            this.panelUsuario.TabIndex = 18;
             // 
-            // ABMCEncargados
+            // lblNombreUsuario
+            // 
+            this.lblNombreUsuario.AutoSize = true;
+            this.lblNombreUsuario.Location = new System.Drawing.Point(104, 19);
+            this.lblNombreUsuario.Name = "lblNombreUsuario";
+            this.lblNombreUsuario.Size = new System.Drawing.Size(84, 13);
+            this.lblNombreUsuario.TabIndex = 16;
+            this.lblNombreUsuario.Text = "No especificado";
+            // 
+            // lblRolUsuario
+            // 
+            this.lblRolUsuario.AutoSize = true;
+            this.lblRolUsuario.Location = new System.Drawing.Point(104, 53);
+            this.lblRolUsuario.Name = "lblRolUsuario";
+            this.lblRolUsuario.Size = new System.Drawing.Size(84, 13);
+            this.lblRolUsuario.TabIndex = 15;
+            this.lblRolUsuario.Text = "No especificado";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(8, 53);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(29, 13);
+            this.label9.TabIndex = 14;
+            this.label9.Text = "ROL";
+            // 
+            // btnEditarUsuario
+            // 
+            this.btnEditarUsuario.Location = new System.Drawing.Point(107, 85);
+            this.btnEditarUsuario.Name = "btnEditarUsuario";
+            this.btnEditarUsuario.Size = new System.Drawing.Size(169, 23);
+            this.btnEditarUsuario.TabIndex = 13;
+            this.btnEditarUsuario.Text = "Editar usuario";
+            this.btnEditarUsuario.UseVisualStyleBackColor = true;
+            this.btnEditarUsuario.Click += new System.EventHandler(this.btnEditarUsuario_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(8, 19);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(56, 13);
+            this.label8.TabIndex = 11;
+            this.label8.Text = "USUARIO";
+            // 
+            // PantallaAdministracionUsuarios
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Controls.Add(this.panelUsuario);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -374,7 +444,7 @@
             this.Controls.Add(this.txtLegajo);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.listEncargados);
-            this.Name = "ABMCEncargados";
+            this.Name = "PantallaAdministracionUsuarios";
             this.Size = new System.Drawing.Size(758, 461);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -383,6 +453,8 @@
             this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbFoto)).EndInit();
             this.groupBox4.ResumeLayout(false);
+            this.panelUsuario.ResumeLayout(false);
+            this.panelUsuario.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -420,5 +492,11 @@
         private System.Windows.Forms.Button btnGuardarCambios;
         private System.Windows.Forms.Button btnCancelar;
         private System.Windows.Forms.MaskedTextBox mkFechaNacimiento;
+        private System.Windows.Forms.Panel panelUsuario;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button btnEditarUsuario;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label lblRolUsuario;
+        private System.Windows.Forms.Label lblNombreUsuario;
     }
 }

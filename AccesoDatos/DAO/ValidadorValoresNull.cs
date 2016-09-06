@@ -100,13 +100,15 @@ namespace AccesoDatos
         {
             if(!reader.IsDBNull(indiceColumna))
             {
-                int length = (int)reader.GetBytes(indiceColumna, 0, null, 0, 0); 
+                /*int length = (int)reader.GetBytes(indiceColumna, 0, null, 0, 0); 
 
                 byte[] data = new byte[length];
 
                 reader.GetBytes(indiceColumna, 0, data, 0, length);
 
-                return data;
+                return data;*/
+
+                return (byte[])reader[indiceColumna];
             }
 
             return null;

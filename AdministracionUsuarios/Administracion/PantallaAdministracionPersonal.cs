@@ -9,15 +9,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Utilidades;
 using Entidades;
+using AdministracionUsuarios.Administracion;
 
 namespace AdministracionUsuarios
 {
     public partial class PantallaAdministracionUsuarios : ResizableControl
     {
+        private int estadoActual;
+        private const int ESTADO_INICIAL = 0;
+        private const int ESTADO_MODIFICACION = 1;
+        private const int ESTADO_ALTA = 2;
+
         private bool escucharEventos = true;
 
-        private ControladorABMCEncargados controlador;
-        public ControladorABMCEncargados Controlador
+        private ControladorAdministracionPersonal controlador;
+        public ControladorAdministracionPersonal Controlador
         {
             set { controlador = value; }
         }
@@ -26,30 +32,32 @@ namespace AdministracionUsuarios
         {
             InitializeComponent();
             inicializarEscalador();
+
+            this.controlador = new ControladorAdministracionPersonal(this);
         }
 
         public void inicializar()
         {
-            List<Encargado> encargados = controlador.obtenerEncargados();
-            cargarListaEncargados(encargados);
+            List<Personal> personal = controlador.obtenerPersonal();
+            cargarListaDePersonal(personal);
 
             ponerEnEstadoInicial();
 
-            tomarImagenEncargado(controlador.obtenerImagenInicial());
+            tomarImagenPersonal(controlador.obtenerImagenInicial());
         }
 
-        public void cargarListaEncargados(List<Encargado> encargados)
+        public void cargarListaDePersonal(List<Personal> encargados)
         {
             escucharEventos = false;
 
-            BindingList<Encargado> bindingEncargados = new BindingList<Encargado>(encargados);
+            BindingList<Personal> bindingEncargados = new BindingList<Personal>(encargados);
             listEncargados.DataSource = bindingEncargados;
             listEncargados.DisplayMember = "NombreCompleto";
 
             escucharEventos = true;
         }
 
-        public void tomarImagenEncargado(Image image)
+        public void tomarImagenPersonal(Image image)
         {
             pbFoto.Image = image;
         }
@@ -58,6 +66,8 @@ namespace AdministracionUsuarios
         {
             this.btnTomarFoto.Text = texto;
         }
+
+        
 
         private void btnSeleccionarFoto_Click(object sender, EventArgs e)
         {
@@ -120,10 +130,13 @@ namespace AdministracionUsuarios
 
             habilitarBotones(false, false, false, true, false, false, false, false);
 
+            estadoActual = ESTADO_INICIAL;
+            panelUsuario.Enabled = false;
+
             escucharEventos = true;
         }
 
-        public void ponerEnEstadoNuevoEncargado()
+        public void ponerEnEstadoNuevoPersonal()
         {
             escucharEventos = false;
 
@@ -132,41 +145,74 @@ namespace AdministracionUsuarios
 
             habilitarBotones(false, true, true, false, false, false, true, true);
 
+            estadoActual = ESTADO_ALTA;
+
+            panelUsuario.Enabled = true;
+
             escucharEventos = true;
         }
 
-        public void ponerEnEstadoModificarEncargado(Encargado encargado)
+        public void ponerEnEstadoModificarPersonal(Personal personal)
         {
             escucharEventos = false;
 
             habilitarCampos(true);
             limpiarCampos();
 
-            habilitarBotones(false, true, true, false, false, false, true, true);
+            habilitarBotones(true, true, true, false, false, false, true, true);
 
-            txtNombre.Text = encargado.Nombre;
-            txtApellido.Text = encargado.Apellido;
-            txtDocumento.Text = encargado.Dni;
-            txtTelefono.Text = encargado.Telefono;
-            txtMailBBS.Text = encargado.MailBBS;
-            txtMailPersonal.Text = encargado.MailGeneral;
-            txtLegajo.Text = encargado.Legajo;
+            mostrarDatosDePersonal(personal);
+
+            estadoActual = ESTADO_MODIFICACION;
+            panelUsuario.Enabled = true;
+
+            escucharEventos = true;
+        }
+
+        private void mostrarDatosDePersonal(Personal personal)
+        {
+            escucharEventos = false;
+
+            txtNombre.Text = personal.Nombre;
+            txtApellido.Text = personal.Apellido;
+            txtDocumento.Text = personal.Dni;
+            txtTelefono.Text = personal.Telefono;
+            txtMailBBS.Text = personal.MailBBS;
+            txtMailPersonal.Text = personal.MailGeneral;
+            txtLegajo.Text = personal.Legajo;
 
             string nacimiento = "";
-            try { nacimiento = encargado.FechaNacimiento.ToString("dd/MM/yyyy"); }
+            try { nacimiento = personal.FechaNacimiento.ToString("dd/MM/yyyy"); }
             catch { nacimiento = DateTime.Now.ToString("dd/MM/yyyy"); }
             mkFechaNacimiento.Text = nacimiento;
 
-            pbFoto.Image = encargado.Foto;
+            pbFoto.Image = personal.Foto;
+
+            if (personal.Usuario == null || personal.Usuario.Nombre == null || personal.Usuario.Nombre == string.Empty)
+            {
+                lblNombreUsuario.Text = "No especificado";
+                lblRolUsuario.Text = "No especificado";
+            }
+            else
+            {
+                lblNombreUsuario.Text = personal.Usuario.Nombre;
+                lblRolUsuario.Text = personal.Usuario.Rol.Nombre;
+            }
 
             escucharEventos = true;
+        }
+
+        public void mostrarDatosUsuario(string nombre, string rol)
+        {
+            lblNombreUsuario.Text = nombre;
+            lblRolUsuario.Text = rol;
         }
 
         private void txtNombre_TextChanged(object sender, EventArgs e)
         {
             if (escucharEventos)
             {
-                controlador.tomarNombreEncargado(obtenerTextoDeTextBox(sender));
+                controlador.tomarNombre(obtenerTextoDeTextBox(sender));
             }
             
         }
@@ -181,7 +227,7 @@ namespace AdministracionUsuarios
         {
             if (escucharEventos)
             {
-                controlador.tomarApellidoEncargado(obtenerTextoDeTextBox(sender));
+                controlador.tomarApellido(obtenerTextoDeTextBox(sender));
             }
         }
 
@@ -189,7 +235,7 @@ namespace AdministracionUsuarios
         {
             if (escucharEventos)
             {
-                controlador.tomarDocumentoEncargado(obtenerTextoDeTextBox(sender));
+                controlador.tomarDocumento(obtenerTextoDeTextBox(sender));
             }
         }
 
@@ -197,7 +243,7 @@ namespace AdministracionUsuarios
         {
             if (escucharEventos)
             {
-                controlador.tomarTelefonoEncargado(obtenerTextoDeTextBox(sender));
+                controlador.tomarTelefono(obtenerTextoDeTextBox(sender));
             }
         }
 
@@ -205,7 +251,7 @@ namespace AdministracionUsuarios
         {
             if (escucharEventos)
             {
-                controlador.tomarMailPersonalEncargado(obtenerTextoDeTextBox(sender));
+                controlador.tomarMailPersonal(obtenerTextoDeTextBox(sender));
             }
         }
 
@@ -213,7 +259,7 @@ namespace AdministracionUsuarios
         {
             if (escucharEventos)
             {
-                controlador.tomarMailBBSencargado(obtenerTextoDeTextBox(sender));
+                controlador.tomarMailBBS(obtenerTextoDeTextBox(sender));
             }
         }
 
@@ -221,20 +267,20 @@ namespace AdministracionUsuarios
         {
             if (escucharEventos)
             {
-                controlador.tomarLegajoEncargado(obtenerTextoDeTextBox(sender));
+                controlador.tomarLegajo(obtenerTextoDeTextBox(sender));
             }
         }
 
         private void btnModificarEncargado_Click(object sender, EventArgs e)
         {
-            Encargado encargadoSeleccionado = (Encargado)this.listEncargados.SelectedValue;
+            Personal personalSeleccionado = (Personal)this.listEncargados.SelectedValue;
 
-            if (encargadoSeleccionado != null) controlador.opcionModificarEncargado(encargadoSeleccionado);
+            if (personalSeleccionado != null) controlador.opcionModificarPersonal(personalSeleccionado);
         }
 
         private void btnNuevoEncargado_Click(object sender, EventArgs e)
         {
-            controlador.opcionNuevoEncargado();
+            controlador.opcionNuevoPersonal();
         }
 
         private void btnCancelar_Click(object sender, EventArgs e)
@@ -244,6 +290,8 @@ namespace AdministracionUsuarios
 
         private void btnGuardarCambios_Click(object sender, EventArgs e)
         {
+            Usuario usuario = new Usuario();
+            usuario.Nombre = lblNombreUsuario.Text;
             controlador.opcionGuardar();
         }
 
@@ -252,23 +300,44 @@ namespace AdministracionUsuarios
             return pbFoto.Image;
         }
 
-        private void listEncargados_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (!escucharEventos) return;
-
-            ListBox list = (ListBox)sender;
-
-            Encargado encargado = (Encargado)list.SelectedValue;
-
-            controlador.opcionModificarEncargado(encargado);
-        }
 
         private void mkFechaNacimiento_TextChanged(object sender, EventArgs e)
         {
             if (!escucharEventos) return;
 
             MaskedTextBox mk = (MaskedTextBox)sender;
-            controlador.tomarFechaNacimientoEncargado(mk.Text);
+            controlador.tomarFechaNacimiento(mk.Text);
+        }
+
+        private void btnEditarUsuario_Click(object sender, EventArgs e)
+        {
+            controlador.mostrarVentanaEditarUsuario();
+        }
+
+        private void listEncargados_Click(object sender, EventArgs e)
+        {
+            if (!escucharEventos) return;
+
+            ListBox list = (ListBox)sender;
+
+            Personal personal = (Personal)list.SelectedValue;
+
+            mostrarDatosDePersonal(personal);
+
+            btnModificarEncargado.Enabled = true;
+            btnBajaEncargado.Enabled = true;
+        }
+
+        private void btnBajaEncargado_Click(object sender, EventArgs e)
+        {
+            Personal personalSeleccionado = (Personal)this.listEncargados.SelectedValue;
+
+            if (personalSeleccionado != null) controlador.opcionBajaPersonal(personalSeleccionado);
+        }
+
+        private void btnEliminarFoto_Click(object sender, EventArgs e)
+        {
+            controlador.eliminarFotoPersonal();
         }
     }
 }

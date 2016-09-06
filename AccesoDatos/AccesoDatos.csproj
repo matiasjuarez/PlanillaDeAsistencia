@@ -49,10 +49,12 @@
     <Compile Include="DAO\DAOAsistencias.cs" />
     <Compile Include="DAO\DAOAulas.cs" />
     <Compile Include="DAO\DAOCursos.cs" />
-    <Compile Include="DAO\DAOEncargados.cs" />
+    <Compile Include="DAO\DAOPersonal.cs" />
     <Compile Include="DAO\DAOEstadoAsistencia.cs" />
     <Compile Include="DAO\DAOAppointmentsRapla.cs" />
     <Compile Include="DAO\DAODocentes.cs" />
+    <Compile Include="DAO\DAORoles.cs" />
+    <Compile Include="DAO\DAOUsuario.cs" />
     <Compile Include="DAO\GestorConexion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DAO\ValidadorValoresNull.cs" />

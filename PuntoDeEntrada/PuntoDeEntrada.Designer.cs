@@ -62,14 +62,14 @@
             // sESIONToolStripMenuItem
             // 
             this.sESIONToolStripMenuItem.Name = "sESIONToolStripMenuItem";
-            this.sESIONToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sESIONToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.sESIONToolStripMenuItem.Text = "SESION";
             this.sESIONToolStripMenuItem.Click += new System.EventHandler(this.sESIONToolStripMenuItem_Click);
             // 
             // aDMINISTRARToolStripMenuItem
             // 
             this.aDMINISTRARToolStripMenuItem.Name = "aDMINISTRARToolStripMenuItem";
-            this.aDMINISTRARToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aDMINISTRARToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.aDMINISTRARToolStripMenuItem.Text = "ADMINISTRAR";
             this.aDMINISTRARToolStripMenuItem.Click += new System.EventHandler(this.aDMINISTRARToolStripMenuItem_Click);
             // 
@@ -104,6 +104,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "PuntoDeEntrada";
             this.Text = "Form1";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

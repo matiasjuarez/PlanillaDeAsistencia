@@ -16,7 +16,7 @@ namespace Entidades
         private int cantidadAlumnos;
         private Docente docente;
         private Asignatura asignatura;
-        private Encargado encargado;
+        private Personal encargado;
         private Curso curso;
         private EstadoAsistencia estadoAsistencia;
         private List<Aula> aulas;

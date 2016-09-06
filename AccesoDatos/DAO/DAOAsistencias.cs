@@ -184,7 +184,7 @@ namespace AccesoDatos
             Asistencia asistencia = new Asistencia();
             Docente docente = new Docente();
             Asignatura asignatura = new Asignatura();
-            Encargado encargado = new Encargado();
+            Personal encargado = new Personal();
             Curso curso = new Curso();
             Especialidad especialidad = new Especialidad();
             EstadoAsistencia estadoAsistencia = new EstadoAsistencia();

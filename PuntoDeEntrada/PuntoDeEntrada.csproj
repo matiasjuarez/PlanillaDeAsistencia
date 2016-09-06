@@ -78,9 +78,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AdministracionUsuarios\AdministracionUsuarios.csproj">
+    <ProjectReference Include="..\AdministracionUsuarios\AdministracionPersonal.csproj">
       <Project>{4c75e6ff-0c01-46d0-98ba-86667b3cc32f}</Project>
-      <Name>AdministracionUsuarios</Name>
+      <Name>AdministracionPersonal</Name>
     </ProjectReference>
     <ProjectReference Include="..\PlanillaAsistencia\PlanillaAsistencia.csproj">
       <Project>{cd0c34fd-52f9-4124-9d8a-8b48337a54dd}</Project>

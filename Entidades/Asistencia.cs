@@ -25,7 +25,7 @@ namespace Entidades
         private int cantidadAlumnos;
         private Docente docente;
         private Asignatura asignatura;
-        private Encargado encargado;
+        private Personal encargado;
         private Curso curso;
         private EstadoAsistencia estadoAsistencia;
         private List<Aula> aulas;
@@ -43,7 +43,7 @@ namespace Entidades
             horaSalidaReal = new TimeSpan(0, 0, 0);
             docente = new Docente();
             asignatura = new Asignatura();
-            encargado = new Encargado();
+            encargado = new Personal();
             curso = new Curso();
             estadoAsistencia = new EstadoAsistencia();
             aulas = new List<Aula>();
@@ -133,7 +133,7 @@ namespace Entidades
             set { asignatura = value; }
         }
         
-        public Encargado Encargado
+        public Personal Encargado
         {
             get { return encargado; }
             set { encargado = value; }

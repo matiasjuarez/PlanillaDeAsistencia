@@ -22,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuracion", "Configurac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SincronizacionInterBase", "SincronizacionInterBase\SincronizacionInterBase.csproj", "{9B0C567E-CE8F-4EB3-B23D-90C3E1256AAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdministracionUsuarios", "AdministracionUsuarios\AdministracionUsuarios.csproj", "{4C75E6FF-0C01-46D0-98BA-86667B3CC32F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdministracionPersonal", "AdministracionUsuarios\AdministracionPersonal.csproj", "{4C75E6FF-0C01-46D0-98BA-86667B3CC32F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuntoDeEntrada", "PuntoDeEntrada\PuntoDeEntrada.csproj", "{CAF06596-CB1B-4291-82BA-1C9F2649077F}"
 EndProject
