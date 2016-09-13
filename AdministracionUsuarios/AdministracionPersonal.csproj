@@ -53,6 +53,12 @@
     <Compile Include="Administracion\AltaRol.Designer.cs">
       <DependentUpon>AltaRol.cs</DependentUpon>
     </Compile>
+    <Compile Include="Administracion\CambioPassword.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Administracion\CambioPassword.Designer.cs">
+      <DependentUpon>CambioPassword.cs</DependentUpon>
+    </Compile>
     <Compile Include="Administracion\EdicionUsuario.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -73,15 +79,11 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sesion\Controlador.cs" />
-    <Compile Include="Sesion\VentanaSesion.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Sesion\VentanaSesion.Designer.cs">
-      <DependentUpon>VentanaSesion.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="Administracion\AltaRol.resx">
       <DependentUpon>AltaRol.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Administracion\CambioPassword.resx">
+      <DependentUpon>CambioPassword.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Administracion\EdicionUsuario.resx">
       <DependentUpon>EdicionUsuario.cs</DependentUpon>
@@ -102,9 +104,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Sesion\VentanaSesion.resx">
-      <DependentUpon>VentanaSesion.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

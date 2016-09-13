@@ -137,6 +137,7 @@ namespace AccesoDatos
                 arregloFoto = Imagenes.convertirImagenEnArregloDeBytes(personal.Foto);
             }
 
+            comandoPersonal.Parameters.AddWithValue("@Usuario", personal.Usuario.Nombre);
             comandoPersonal.Parameters.AddWithValue("@Foto", arregloFoto);
 
             try
@@ -212,8 +213,9 @@ namespace AccesoDatos
             Personal personal = new Personal();
 
             personal.Id = reader.GetInt32("id");
-            personal.Nombre = ValidadorValoresNull.getString(reader,"nombre", "");
+            personal.Nombre = ValidadorValoresNull.getString(reader,"nombrePersonal", "");
             personal.Apellido = ValidadorValoresNull.getString(reader, "apellido", "");
+            personal.Telefono = ValidadorValoresNull.getString(reader, "telefono", "");
             personal.Dni = ValidadorValoresNull.getString(reader,"DNI", "");
             personal.FechaNacimiento = ValidadorValoresNull.getDateTime(reader, "fechaNacimiento");
             personal.Legajo = ValidadorValoresNull.getString(reader,"legajo", "");
@@ -222,6 +224,10 @@ namespace AccesoDatos
 
             byte[] fotoData = ValidadorValoresNull.getBinaryData(reader, "foto");
             personal.Foto = Imagenes.obtenerImagenDesdeArregloDeBytes(fotoData);
+
+            string nombreUsuario = ValidadorValoresNull.getString(reader, "nombreUsuario", null);
+            Usuario usuario = DAOUsuario.buscarUsuario(nombreUsuario);
+            personal.Usuario = usuario;
 
             return personal;
         }
@@ -247,8 +253,8 @@ namespace AccesoDatos
         private static string obtenerSelectBasico()
         {
             StringBuilder consulta = new StringBuilder();
-            consulta.Append("SELECT id, p.nombre, apellido, telefono, DNI, ");
-            consulta.Append("fechaNacimiento, legajo, mailGeneral, mailBBS, foto, u.nombre, u.rol ");
+            consulta.Append("SELECT id, p.nombre as nombrePersonal, apellido, telefono, DNI, ");
+            consulta.Append("fechaNacimiento, legajo, mailGeneral, mailBBS, foto, u.nombre as nombreUsuario, u.rol ");
             consulta.Append("FROM personal as p ");
             consulta.Append("LEFT JOIN usuario as u on u.nombre = p.usuario");
 
@@ -259,7 +265,7 @@ namespace AccesoDatos
         {
             StringBuilder consulta = new StringBuilder();
             consulta.Append("INSERT INTO personal(nombre, apellido, telefono, DNI, ");
-            consulta.Append("fechaNacimiento, legajo, mailGeneral, mailBBS, foto) ");
+            consulta.Append("fechaNacimiento, legajo, mailGeneral, mailBBS, foto, usuario) ");
             consulta.Append("VALUES(");
             consulta.Append("@Nombre, ");
             consulta.Append("@Apellido, ");
@@ -269,7 +275,8 @@ namespace AccesoDatos
             consulta.Append("@Legajo, ");
             consulta.Append("@MailGeneral, ");
             consulta.Append("@MailBBS, ");
-            consulta.Append("@Foto)");
+            consulta.Append("@Foto, ");
+            consulta.Append("@Usuario)");
 
             return consulta.ToString();
         }

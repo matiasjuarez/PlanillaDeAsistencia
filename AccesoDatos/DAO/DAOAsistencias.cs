@@ -147,14 +147,14 @@ namespace AccesoDatos
                     "asistencias.fecha, asistencias.comienzoClaseEsperado as InicioEsperado, " +
                     "asistencias.finClaseEsperado as FinEsperado, asistencias.comienzoClaseReal as InicioReal, " +
                     "asistencias.finClaseReal as FinReal, asistencias.cantidadAlumnos as Alumnos, " +
-                    "asistencias.encargadoNombre as Encargado, asistencias.idEncargado, asistencias.docenteNombre, " +
+                    "asistencias.personalNombre as Personal, asistencias.idPersonal, asistencias.docenteNombre, " +
                     "asistencias.docenteId, asistencias.asignaturaNombre, asistencias.asignaturaId, " +
                     "asistencias.estadoAsistenciaNombre, asistencias.estadoAsistenciaId, " +
                     "asistencias.cursoId, asistencias.cursoNombre, aulas.aulasId, aulas.aulasNombre, asistencias.observaciones FROM ( " +
                     "select asistencia.id as asistenciaId, asistencia.appointmentId as APID, asistencia.eventId as eventId, fecha, " +
                     "comienzoClaseEsperado, finClaseEsperado, " +
                     "comienzoClaseReal, finClaseReal, cantidadAlumnos, " +
-                    "(encargado.nombre + ' ' + encargado.apellido) as encargadoNombre, idEncargado, " +
+                    "(personal.nombre + ' ' + personal.apellido) as personalNombre, personal.id as idPersonal, " +
                     "docente.nombre as docenteNombre, docente.id as docenteId, " +
                     "asignatura.nombre as asignaturaNombre, asignatura.id as asignaturaId, " +
                     "estadoasistencia.nombre as estadoAsistenciaNombre, estadoasistencia.id as estadoAsistenciaId, " +
@@ -164,7 +164,7 @@ namespace AccesoDatos
                     "left join asignatura on asignatura.id = asistencia.idAsignatura " +
                     "left join estadoasistencia on estadoasistencia.id = asistencia.idEstadoAsistencia " +
                     "left join curso on curso.id = asistencia.idCurso " +
-                    "left join encargado on encargado.id = asistencia.idEncargado " +
+                    "left join personal on personal.id = asistencia.idEncargado " +
                     ") as asistencias " +
                     "LEFT join ( " +
                     "SELECT idAppointmentAsistencia, group_concat(idAula) aulasId, group_concat(a.nombre) aulasNombre " +
@@ -184,7 +184,7 @@ namespace AccesoDatos
             Asistencia asistencia = new Asistencia();
             Docente docente = new Docente();
             Asignatura asignatura = new Asignatura();
-            Personal encargado = new Personal();
+            Personal personal = new Personal();
             Curso curso = new Curso();
             Especialidad especialidad = new Especialidad();
             EstadoAsistencia estadoAsistencia = new EstadoAsistencia();
@@ -195,8 +195,8 @@ namespace AccesoDatos
             asignatura.Nombre = ValidadorValoresNull.getString(reader, "asignaturaNombre", "");
             asignatura.Id = ValidadorValoresNull.getInt(reader, "asignaturaId", configuracion.IdAsignaturaNoAsignada);
 
-            encargado.Nombre = ValidadorValoresNull.getString(reader, "encargado", "");
-            encargado.Id = ValidadorValoresNull.getInt(reader, "idEncargado", configuracion.IdEncargadoNoAsignado);
+            personal.Nombre = ValidadorValoresNull.getString(reader, "personal", "");
+            personal.Id = ValidadorValoresNull.getInt(reader, "idPersonal", configuracion.IdEncargadoNoAsignado);
 
             curso.Id = ValidadorValoresNull.getInt(reader, "cursoId", configuracion.IdCursoNoAsignado);
             curso.Nombre = ValidadorValoresNull.getString(reader, "cursoNombre", "");
@@ -227,7 +227,7 @@ namespace AccesoDatos
             asistencia.Asignatura = asignatura;
             asistencia.Curso = curso;
             asistencia.Docente = docente;
-            asistencia.Encargado = encargado;
+            asistencia.Encargado = personal;
             asistencia.EstadoAsistencia = estadoAsistencia;
             asistencia.CantidadAlumnos = ValidadorValoresNull.getInt(reader, "alumnos", 0);
             asistencia.Fecha = ValidadorValoresNull.getDateTime(reader, "Fecha");

@@ -33,10 +33,12 @@
             this.txtNombreUsuario = new System.Windows.Forms.TextBox();
             this.cmbRoles = new System.Windows.Forms.ComboBox();
             this.btnAgregarRol = new System.Windows.Forms.Button();
-            this.btnAceptar = new System.Windows.Forms.Button();
             this.btnBloquear = new System.Windows.Forms.Button();
             this.btnReiniciarContrasena = new System.Windows.Forms.Button();
-            this.btnCancelar = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.lblHabilitado = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -82,60 +84,68 @@
             this.btnAgregarRol.UseVisualStyleBackColor = true;
             this.btnAgregarRol.Click += new System.EventHandler(this.btnAgregarRol_Click);
             // 
-            // btnAceptar
-            // 
-            this.btnAceptar.Location = new System.Drawing.Point(295, 84);
-            this.btnAceptar.Name = "btnAceptar";
-            this.btnAceptar.Size = new System.Drawing.Size(75, 52);
-            this.btnAceptar.TabIndex = 5;
-            this.btnAceptar.Text = "ACEPTAR";
-            this.btnAceptar.UseVisualStyleBackColor = true;
-            this.btnAceptar.Click += new System.EventHandler(this.btnAceptar_Click);
-            // 
             // btnBloquear
             // 
-            this.btnBloquear.Location = new System.Drawing.Point(97, 84);
+            this.btnBloquear.Location = new System.Drawing.Point(248, 3);
             this.btnBloquear.Name = "btnBloquear";
-            this.btnBloquear.Size = new System.Drawing.Size(77, 52);
+            this.btnBloquear.Size = new System.Drawing.Size(116, 35);
             this.btnBloquear.TabIndex = 6;
             this.btnBloquear.Text = "BLOQUEAR";
             this.btnBloquear.UseVisualStyleBackColor = true;
+            this.btnBloquear.Click += new System.EventHandler(this.btnBloquear_Click);
             // 
             // btnReiniciarContrasena
             // 
-            this.btnReiniciarContrasena.Location = new System.Drawing.Point(16, 84);
+            this.btnReiniciarContrasena.Location = new System.Drawing.Point(3, 3);
             this.btnReiniciarContrasena.Name = "btnReiniciarContrasena";
-            this.btnReiniciarContrasena.Size = new System.Drawing.Size(75, 52);
+            this.btnReiniciarContrasena.Size = new System.Drawing.Size(124, 36);
             this.btnReiniciarContrasena.TabIndex = 7;
             this.btnReiniciarContrasena.Text = "Reiniciar password";
             this.btnReiniciarContrasena.UseVisualStyleBackColor = true;
+            this.btnReiniciarContrasena.Click += new System.EventHandler(this.btnReiniciarContrasena_Click);
             // 
-            // btnCancelar
+            // label3
             // 
-            this.btnCancelar.Location = new System.Drawing.Point(214, 84);
-            this.btnCancelar.Name = "btnCancelar";
-            this.btnCancelar.Size = new System.Drawing.Size(75, 52);
-            this.btnCancelar.TabIndex = 8;
-            this.btnCancelar.Text = "CANCELAR";
-            this.btnCancelar.UseVisualStyleBackColor = true;
-            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(13, 79);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(71, 13);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "HABILITADO";
+            // 
+            // lblHabilitado
+            // 
+            this.lblHabilitado.AutoSize = true;
+            this.lblHabilitado.Location = new System.Drawing.Point(149, 79);
+            this.lblHabilitado.Name = "lblHabilitado";
+            this.lblHabilitado.Size = new System.Drawing.Size(0, 13);
+            this.lblHabilitado.TabIndex = 10;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.btnReiniciarContrasena);
+            this.panel1.Controls.Add(this.btnBloquear);
+            this.panel1.Location = new System.Drawing.Point(3, 104);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(367, 41);
+            this.panel1.TabIndex = 11;
             // 
             // EdicionUsuario
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.Controls.Add(this.btnCancelar);
-            this.Controls.Add(this.btnReiniciarContrasena);
-            this.Controls.Add(this.btnBloquear);
-            this.Controls.Add(this.btnAceptar);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.lblHabilitado);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnAgregarRol);
             this.Controls.Add(this.cmbRoles);
             this.Controls.Add(this.txtNombreUsuario);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "EdicionUsuario";
-            this.Size = new System.Drawing.Size(373, 146);
+            this.Size = new System.Drawing.Size(373, 148);
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -148,9 +158,10 @@
         private System.Windows.Forms.TextBox txtNombreUsuario;
         private System.Windows.Forms.ComboBox cmbRoles;
         private System.Windows.Forms.Button btnAgregarRol;
-        private System.Windows.Forms.Button btnAceptar;
         private System.Windows.Forms.Button btnBloquear;
         private System.Windows.Forms.Button btnReiniciarContrasena;
-        private System.Windows.Forms.Button btnCancelar;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblHabilitado;
+        private System.Windows.Forms.Panel panel1;
     }
 }

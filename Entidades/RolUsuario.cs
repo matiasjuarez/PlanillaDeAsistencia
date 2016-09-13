@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Entidades
 {
+    [Serializable]
     public class RolUsuario
     {
         private string nombre;

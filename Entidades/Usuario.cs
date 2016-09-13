@@ -5,10 +5,12 @@ using System.Text;
 
 namespace Entidades
 {
+    [Serializable]
     public class Usuario
     {
         private string nombre;
         private string password;
+        private bool habilitado;
         private RolUsuario rol;
 
         public Usuario()
@@ -26,6 +28,12 @@ namespace Entidades
         {
             get { return password; }
             set { password = value; }
+        }
+
+        public bool Habilitado
+        {
+            get { return habilitado; }
+            set { habilitado = value; }
         }
 
         public RolUsuario Rol

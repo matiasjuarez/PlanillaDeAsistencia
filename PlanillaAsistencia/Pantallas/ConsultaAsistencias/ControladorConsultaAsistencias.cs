@@ -47,6 +47,12 @@ namespace PlanillaAsistencia.Pantallas.VistaGlobalAsistencias
 
             asistencias = obtenerAsistencias();
 
+            // Esto no hace falta. Es un arreglo a un bug rapido que se debe revisar
+            foreach (AsistenciaTabla asistencia in asistencias)
+            {
+                asistencia.obtenerAsistencia().guardarEstado();
+            }
+
             filtrarAsistencias(asistencias);
 
             mostrarAsistencias(asistencias);

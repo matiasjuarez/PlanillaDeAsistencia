@@ -22,14 +22,15 @@ namespace AdministracionUsuarios
         private const int ESTADO_MODIFICACION = 2;
         private int estadoActual = -1;
 
-        private PantallaAdministracionUsuarios vista;
+        private PantallaAdministracionPersonal vista;
         private Image imagenInicial;
         private CamaraWeb camara;
 
         //private List<Personal> personal;
         private Personal personalSeleccionado;
+        private String nombreUsuarioOriginal;
 
-        public ControladorAdministracionPersonal(PantallaAdministracionUsuarios vista)
+        public ControladorAdministracionPersonal(PantallaAdministracionPersonal vista)
         {
             this.vista = vista;
             vista.Controlador = this;
@@ -114,6 +115,17 @@ namespace AdministracionUsuarios
 
             vista.ponerEnEstadoModificarPersonal(personal);
             this.personalSeleccionado = personal;
+            this.nombreUsuarioOriginal = personal.Usuario.Nombre;
+        }
+
+        public void seSeleccionoPersonal(Personal personal)
+        {
+            this.ponerEnEstadoInicial();
+            this.personalSeleccionado = personal;
+
+            vista.ponerEnEstadoInicial();
+            vista.mostrarDatosDePersonal(personal);
+            vista.habilitarBotonesModificacionPersonal(true);
         }
 
         public void opcionBajaPersonal(Personal personal)
@@ -150,10 +162,14 @@ namespace AdministracionUsuarios
 
         public void opcionGuardar()
         {
+            personalSeleccionado.Usuario.Nombre = vista.obtenerNombreUsuario();
+            personalSeleccionado.Usuario.Rol = vista.obtenerRolUsuario();
+
             if (!validarDatos()) return;
 
             if (this.estadoActual == ESTADO_ALTA)
             {
+                personalSeleccionado.Usuario.Password = personalSeleccionado.Usuario.Nombre;
                 if (DAOPersonal.insertarPersonal(personalSeleccionado))
                 {
                     //this.personal.Add(personalSeleccionado);
@@ -161,13 +177,13 @@ namespace AdministracionUsuarios
                     vista.ponerEnEstadoInicial();
                     vista.tomarImagenPersonal(this.imagenInicial);
                 }
+
             }
             else if (this.estadoActual == ESTADO_MODIFICACION)
             {
-                if (!DAOUsuario.existeUsuario(personalSeleccionado.Usuario.Nombre))
-                {
-                    DAOUsuario.insertar(personalSeleccionado.Usuario);
-                }
+                Usuario user = personalSeleccionado.Usuario;
+
+                DAOUsuario.modificar(this.nombreUsuarioOriginal, user.Nombre, user.Rol.Nombre);
 
                 if (DAOPersonal.modificarPersonal(personalSeleccionado))
                 {
@@ -181,7 +197,7 @@ namespace AdministracionUsuarios
             this.personalSeleccionado = null;
         }
 
-        public void mostrarVentanaEditarUsuario()
+        /*public void mostrarVentanaEditarUsuario()
         {
             EdicionUsuario edicionUsuario;
             using (var form = crearVentanaEdicionUsuario(out edicionUsuario))
@@ -192,7 +208,7 @@ namespace AdministracionUsuarios
                 usuario.Nombre = edicionUsuario.NombreUsuario;
                 usuario.Rol = edicionUsuario.RolUsuario;
 
-                this.vista.mostrarDatosUsuario(usuario.Nombre, usuario.Rol.Nombre);
+                this.vista.mostrarDatosUsuario(usuario);
             }
         }
 
@@ -225,7 +241,7 @@ namespace AdministracionUsuarios
             form.Controls.Add(edicionUsuario);
 
             return form;
-        }
+        }*/
 
         private bool validarDatos()
         {
@@ -242,6 +258,8 @@ namespace AdministracionUsuarios
                 return false;
             }
 
+            if (!validarUsuario(personalSeleccionado.Usuario)) return false;
+
             Image imagenSeleccionada = vista.obtenerImagenSeleccionada();
             if (imagenSeleccionada != this.imagenInicial)
             {
@@ -250,6 +268,45 @@ namespace AdministracionUsuarios
             else
             {
                 personalSeleccionado.Foto = null;
+            }
+
+            return true;
+        }
+
+        private bool validarUsuario(Usuario usuario)
+        {
+            if (usuario.Nombre == null || usuario.Nombre.Length < 6)
+            {
+                MessageBox.Show("El nombre de usuario debe contener al menos 6 caracteres");
+                return false;
+            }
+
+            // Vemos que lo que ingreso el usuario sean caracteres alfanumericos
+            foreach (char aChar in usuario.Nombre)
+            {
+                if (!Char.IsLetterOrDigit(aChar))
+                {
+                    MessageBox.Show("Solo se permite letras y numeros en el nombre de usuario");
+                    return false;
+                }
+            }
+
+            if (usuario.Rol == null)
+            {
+                MessageBox.Show("El usuario debe tener un rol asignado");
+                return false;
+            }
+
+            if (DAOUsuario.existeUsuario(usuario.Nombre))
+            {
+                if (estadoActual == ESTADO_MODIFICACION)
+                {
+                    if (usuario.Nombre != nombreUsuarioOriginal)
+                    {
+                        MessageBox.Show("Ya hay un usuario con ese nombre");
+                        return false;
+                    }
+                }
             }
 
             return true;
@@ -330,6 +387,23 @@ namespace AdministracionUsuarios
         {
             this.personalSeleccionado.Foto = this.imagenInicial;
             vista.tomarImagenPersonal(this.imagenInicial);
+        }
+
+        public void cambiarBloqueoUsuario()
+        {
+            if (personalSeleccionado.Usuario.Habilitado) DAOUsuario.bloquearUsuario(personalSeleccionado.Usuario, true);
+            else DAOUsuario.bloquearUsuario(personalSeleccionado.Usuario, false);
+
+            personalSeleccionado.Usuario = DAOUsuario.buscarUsuario(personalSeleccionado.Usuario.Nombre);
+
+            vista.mostrarUsuario(personalSeleccionado.Usuario);
+        }
+
+        public void reiniciarPassword()
+        {
+            personalSeleccionado.Usuario.Password = "";
+            DAOUsuario.reiniciarPassword(personalSeleccionado.Usuario);
+            MessageBox.Show("La contraseña del usuario ha sido eliminada");
         }
     }
 }

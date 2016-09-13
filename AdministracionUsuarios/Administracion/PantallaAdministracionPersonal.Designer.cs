@@ -1,6 +1,6 @@
 ﻿namespace AdministracionUsuarios
 {
-    partial class PantallaAdministracionUsuarios
+    partial class PantallaAdministracionPersonal
     {
         /// <summary> 
         /// Required designer variable.
@@ -46,7 +46,7 @@
             this.txtTelefono = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.mkFechaNacimiento = new System.Windows.Forms.MaskedTextBox();
+            this.dtpFechaNacimiento = new System.Windows.Forms.DateTimePicker();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.btnEliminarFoto = new System.Windows.Forms.Button();
             this.btnTomarFoto = new System.Windows.Forms.Button();
@@ -59,17 +59,23 @@
             this.btnCancelar = new System.Windows.Forms.Button();
             this.btnGuardarCambios = new System.Windows.Forms.Button();
             this.panelUsuario = new System.Windows.Forms.Panel();
-            this.lblNombreUsuario = new System.Windows.Forms.Label();
-            this.lblRolUsuario = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.btnEditarUsuario = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.btnReiniciarContrasena = new System.Windows.Forms.Button();
+            this.btnBloquear = new System.Windows.Forms.Button();
+            this.lblHabilitado = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.btnAgregarRol = new System.Windows.Forms.Button();
+            this.cmbRoles = new System.Windows.Forms.ComboBox();
+            this.txtNombreUsuario = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbFoto)).BeginInit();
             this.groupBox4.SuspendLayout();
             this.panelUsuario.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // listEncargados
@@ -77,7 +83,7 @@
             this.listEncargados.FormattingEnabled = true;
             this.listEncargados.Location = new System.Drawing.Point(3, 3);
             this.listEncargados.Name = "listEncargados";
-            this.listEncargados.Size = new System.Drawing.Size(165, 446);
+            this.listEncargados.Size = new System.Drawing.Size(165, 212);
             this.listEncargados.TabIndex = 0;
             this.listEncargados.Click += new System.EventHandler(this.listEncargados_Click);
             // 
@@ -144,7 +150,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(188, 235);
+            this.label4.Location = new System.Drawing.Point(477, 125);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(48, 13);
             this.label4.TabIndex = 9;
@@ -152,7 +158,7 @@
             // 
             // txtLegajo
             // 
-            this.txtLegajo.Location = new System.Drawing.Point(287, 228);
+            this.txtLegajo.Location = new System.Drawing.Point(576, 118);
             this.txtLegajo.Name = "txtLegajo";
             this.txtLegajo.Size = new System.Drawing.Size(166, 20);
             this.txtLegajo.TabIndex = 10;
@@ -226,7 +232,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.mkFechaNacimiento);
+            this.groupBox2.Controls.Add(this.dtpFechaNacimiento);
             this.groupBox2.Controls.Add(this.lblNombre);
             this.groupBox2.Controls.Add(this.txtNombre);
             this.groupBox2.Controls.Add(this.label1);
@@ -241,17 +247,14 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "DATOS PERSONALES";
             // 
-            // mkFechaNacimiento
+            // dtpFechaNacimiento
             // 
-            this.mkFechaNacimiento.Location = new System.Drawing.Point(374, 56);
-            this.mkFechaNacimiento.Mask = "00/00/0000";
-            this.mkFechaNacimiento.Name = "mkFechaNacimiento";
-            this.mkFechaNacimiento.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.mkFechaNacimiento.Size = new System.Drawing.Size(166, 20);
-            this.mkFechaNacimiento.TabIndex = 8;
-            this.mkFechaNacimiento.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.mkFechaNacimiento.ValidatingType = typeof(System.DateTime);
-            this.mkFechaNacimiento.TextChanged += new System.EventHandler(this.mkFechaNacimiento_TextChanged);
+            this.dtpFechaNacimiento.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpFechaNacimiento.Location = new System.Drawing.Point(371, 57);
+            this.dtpFechaNacimiento.Name = "dtpFechaNacimiento";
+            this.dtpFechaNacimiento.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.dtpFechaNacimiento.Size = new System.Drawing.Size(169, 20);
+            this.dtpFechaNacimiento.TabIndex = 8;
             // 
             // groupBox3
             // 
@@ -259,7 +262,7 @@
             this.groupBox3.Controls.Add(this.btnTomarFoto);
             this.groupBox3.Controls.Add(this.btnSeleccionarFoto);
             this.groupBox3.Controls.Add(this.pbFoto);
-            this.groupBox3.Location = new System.Drawing.Point(474, 118);
+            this.groupBox3.Location = new System.Drawing.Point(474, 155);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(276, 254);
             this.groupBox3.TabIndex = 13;
@@ -310,7 +313,7 @@
             // 
             // btnBajaEncargado
             // 
-            this.btnBajaEncargado.Location = new System.Drawing.Point(177, 19);
+            this.btnBajaEncargado.Location = new System.Drawing.Point(177, 10);
             this.btnBajaEncargado.Name = "btnBajaEncargado";
             this.btnBajaEncargado.Size = new System.Drawing.Size(75, 23);
             this.btnBajaEncargado.TabIndex = 16;
@@ -320,7 +323,7 @@
             // 
             // btnModificarEncargado
             // 
-            this.btnModificarEncargado.Location = new System.Drawing.Point(96, 19);
+            this.btnModificarEncargado.Location = new System.Drawing.Point(96, 10);
             this.btnModificarEncargado.Name = "btnModificarEncargado";
             this.btnModificarEncargado.Size = new System.Drawing.Size(75, 23);
             this.btnModificarEncargado.TabIndex = 15;
@@ -330,7 +333,7 @@
             // 
             // btnNuevoEncargado
             // 
-            this.btnNuevoEncargado.Location = new System.Drawing.Point(15, 19);
+            this.btnNuevoEncargado.Location = new System.Drawing.Point(15, 10);
             this.btnNuevoEncargado.Name = "btnNuevoEncargado";
             this.btnNuevoEncargado.Size = new System.Drawing.Size(75, 23);
             this.btnNuevoEncargado.TabIndex = 14;
@@ -345,15 +348,15 @@
             this.groupBox4.Controls.Add(this.btnModificarEncargado);
             this.groupBox4.Controls.Add(this.btnBajaEncargado);
             this.groupBox4.Controls.Add(this.btnNuevoEncargado);
-            this.groupBox4.Location = new System.Drawing.Point(180, 400);
+            this.groupBox4.Location = new System.Drawing.Point(3, 415);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(564, 49);
+            this.groupBox4.Size = new System.Drawing.Size(747, 39);
             this.groupBox4.TabIndex = 17;
             this.groupBox4.TabStop = false;
             // 
             // btnCancelar
             // 
-            this.btnCancelar.Location = new System.Drawing.Point(483, 19);
+            this.btnCancelar.Location = new System.Drawing.Point(666, 10);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(75, 23);
             this.btnCancelar.TabIndex = 18;
@@ -363,7 +366,7 @@
             // 
             // btnGuardarCambios
             // 
-            this.btnGuardarCambios.Location = new System.Drawing.Point(381, 19);
+            this.btnGuardarCambios.Location = new System.Drawing.Point(558, 10);
             this.btnGuardarCambios.Name = "btnGuardarCambios";
             this.btnGuardarCambios.Size = new System.Drawing.Size(75, 23);
             this.btnGuardarCambios.TabIndex = 17;
@@ -374,62 +377,107 @@
             // panelUsuario
             // 
             this.panelUsuario.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelUsuario.Controls.Add(this.lblNombreUsuario);
-            this.panelUsuario.Controls.Add(this.lblRolUsuario);
-            this.panelUsuario.Controls.Add(this.label9);
-            this.panelUsuario.Controls.Add(this.btnEditarUsuario);
+            this.panelUsuario.Controls.Add(this.panel2);
+            this.panelUsuario.Controls.Add(this.lblHabilitado);
             this.panelUsuario.Controls.Add(this.label8);
-            this.panelUsuario.Enabled = false;
-            this.panelUsuario.Location = new System.Drawing.Point(180, 254);
+            this.panelUsuario.Controls.Add(this.btnAgregarRol);
+            this.panelUsuario.Controls.Add(this.cmbRoles);
+            this.panelUsuario.Controls.Add(this.txtNombreUsuario);
+            this.panelUsuario.Controls.Add(this.label9);
+            this.panelUsuario.Controls.Add(this.label10);
+            this.panelUsuario.Location = new System.Drawing.Point(3, 224);
             this.panelUsuario.Name = "panelUsuario";
-            this.panelUsuario.Size = new System.Drawing.Size(279, 118);
+            this.panelUsuario.Size = new System.Drawing.Size(377, 158);
             this.panelUsuario.TabIndex = 18;
             // 
-            // lblNombreUsuario
+            // panel2
             // 
-            this.lblNombreUsuario.AutoSize = true;
-            this.lblNombreUsuario.Location = new System.Drawing.Point(104, 19);
-            this.lblNombreUsuario.Name = "lblNombreUsuario";
-            this.lblNombreUsuario.Size = new System.Drawing.Size(84, 13);
-            this.lblNombreUsuario.TabIndex = 16;
-            this.lblNombreUsuario.Text = "No especificado";
+            this.panel2.Controls.Add(this.btnReiniciarContrasena);
+            this.panel2.Controls.Add(this.btnBloquear);
+            this.panel2.Location = new System.Drawing.Point(3, 105);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(367, 41);
+            this.panel2.TabIndex = 19;
             // 
-            // lblRolUsuario
+            // btnReiniciarContrasena
             // 
-            this.lblRolUsuario.AutoSize = true;
-            this.lblRolUsuario.Location = new System.Drawing.Point(104, 53);
-            this.lblRolUsuario.Name = "lblRolUsuario";
-            this.lblRolUsuario.Size = new System.Drawing.Size(84, 13);
-            this.lblRolUsuario.TabIndex = 15;
-            this.lblRolUsuario.Text = "No especificado";
+            this.btnReiniciarContrasena.Location = new System.Drawing.Point(3, 3);
+            this.btnReiniciarContrasena.Name = "btnReiniciarContrasena";
+            this.btnReiniciarContrasena.Size = new System.Drawing.Size(124, 36);
+            this.btnReiniciarContrasena.TabIndex = 7;
+            this.btnReiniciarContrasena.Text = "Reiniciar password";
+            this.btnReiniciarContrasena.UseVisualStyleBackColor = true;
+            this.btnReiniciarContrasena.Click += new System.EventHandler(this.btnReiniciarContrasena_Click);
             // 
-            // label9
+            // btnBloquear
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(8, 53);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(29, 13);
-            this.label9.TabIndex = 14;
-            this.label9.Text = "ROL";
+            this.btnBloquear.Location = new System.Drawing.Point(248, 3);
+            this.btnBloquear.Name = "btnBloquear";
+            this.btnBloquear.Size = new System.Drawing.Size(116, 35);
+            this.btnBloquear.TabIndex = 6;
+            this.btnBloquear.Text = "BLOQUEAR";
+            this.btnBloquear.UseVisualStyleBackColor = true;
+            this.btnBloquear.Click += new System.EventHandler(this.btnBloquear_Click);
             // 
-            // btnEditarUsuario
+            // lblHabilitado
             // 
-            this.btnEditarUsuario.Location = new System.Drawing.Point(107, 85);
-            this.btnEditarUsuario.Name = "btnEditarUsuario";
-            this.btnEditarUsuario.Size = new System.Drawing.Size(169, 23);
-            this.btnEditarUsuario.TabIndex = 13;
-            this.btnEditarUsuario.Text = "Editar usuario";
-            this.btnEditarUsuario.UseVisualStyleBackColor = true;
-            this.btnEditarUsuario.Click += new System.EventHandler(this.btnEditarUsuario_Click);
+            this.lblHabilitado.AutoSize = true;
+            this.lblHabilitado.Location = new System.Drawing.Point(149, 80);
+            this.lblHabilitado.Name = "lblHabilitado";
+            this.lblHabilitado.Size = new System.Drawing.Size(0, 13);
+            this.lblHabilitado.TabIndex = 18;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(8, 19);
+            this.label8.Location = new System.Drawing.Point(13, 80);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(56, 13);
-            this.label8.TabIndex = 11;
-            this.label8.Text = "USUARIO";
+            this.label8.Size = new System.Drawing.Size(71, 13);
+            this.label8.TabIndex = 17;
+            this.label8.Text = "HABILITADO";
+            // 
+            // btnAgregarRol
+            // 
+            this.btnAgregarRol.Location = new System.Drawing.Point(118, 47);
+            this.btnAgregarRol.Name = "btnAgregarRol";
+            this.btnAgregarRol.Size = new System.Drawing.Size(28, 22);
+            this.btnAgregarRol.TabIndex = 16;
+            this.btnAgregarRol.Text = "+";
+            this.btnAgregarRol.UseVisualStyleBackColor = true;
+            this.btnAgregarRol.Click += new System.EventHandler(this.btnAgregarRol_Click);
+            // 
+            // cmbRoles
+            // 
+            this.cmbRoles.FormattingEnabled = true;
+            this.cmbRoles.Location = new System.Drawing.Point(152, 47);
+            this.cmbRoles.Name = "cmbRoles";
+            this.cmbRoles.Size = new System.Drawing.Size(218, 21);
+            this.cmbRoles.TabIndex = 15;
+            // 
+            // txtNombreUsuario
+            // 
+            this.txtNombreUsuario.Location = new System.Drawing.Point(152, 10);
+            this.txtNombreUsuario.Name = "txtNombreUsuario";
+            this.txtNombreUsuario.Size = new System.Drawing.Size(218, 20);
+            this.txtNombreUsuario.TabIndex = 14;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(13, 55);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(29, 13);
+            this.label9.TabIndex = 13;
+            this.label9.Text = "ROL";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(13, 17);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(56, 13);
+            this.label10.TabIndex = 12;
+            this.label10.Text = "USUARIO";
             // 
             // PantallaAdministracionUsuarios
             // 
@@ -455,6 +503,7 @@
             this.groupBox4.ResumeLayout(false);
             this.panelUsuario.ResumeLayout(false);
             this.panelUsuario.PerformLayout();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -491,12 +540,17 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button btnGuardarCambios;
         private System.Windows.Forms.Button btnCancelar;
-        private System.Windows.Forms.MaskedTextBox mkFechaNacimiento;
+        private System.Windows.Forms.DateTimePicker dtpFechaNacimiento;
         private System.Windows.Forms.Panel panelUsuario;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button btnReiniciarContrasena;
+        private System.Windows.Forms.Button btnBloquear;
+        private System.Windows.Forms.Label lblHabilitado;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button btnEditarUsuario;
+        private System.Windows.Forms.Button btnAgregarRol;
+        private System.Windows.Forms.ComboBox cmbRoles;
+        private System.Windows.Forms.TextBox txtNombreUsuario;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label lblRolUsuario;
-        private System.Windows.Forms.Label lblNombreUsuario;
+        private System.Windows.Forms.Label label10;
     }
 }

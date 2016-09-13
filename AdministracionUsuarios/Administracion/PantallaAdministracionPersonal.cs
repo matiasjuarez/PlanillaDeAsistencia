@@ -10,10 +10,12 @@ using System.Windows.Forms;
 using Utilidades;
 using Entidades;
 using AdministracionUsuarios.Administracion;
+using System.Diagnostics;
+using AccesoDatos.DAO;
 
 namespace AdministracionUsuarios
 {
-    public partial class PantallaAdministracionUsuarios : ResizableControl
+    public partial class PantallaAdministracionPersonal : ResizableControl
     {
         private int estadoActual;
         private const int ESTADO_INICIAL = 0;
@@ -28,11 +30,11 @@ namespace AdministracionUsuarios
             set { controlador = value; }
         }
 
-        public PantallaAdministracionUsuarios()
+        public PantallaAdministracionPersonal()
         {
             InitializeComponent();
             inicializarEscalador();
-
+            cargarRoles();
             this.controlador = new ControladorAdministracionPersonal(this);
         }
 
@@ -89,9 +91,13 @@ namespace AdministracionUsuarios
             txtTelefono.ResetText();
             txtMailBBS.ResetText();
             txtMailPersonal.ResetText();
-            mkFechaNacimiento.ResetText();
+            dtpFechaNacimiento.ResetText();
 
             pbFoto.Image = controlador.obtenerImagenInicial();
+
+            txtNombreUsuario.ResetText();
+            lblHabilitado.ResetText();
+            cmbRoles.SelectedIndex = -1;
         }
 
         private void habilitarCampos(bool habilitar)
@@ -104,7 +110,7 @@ namespace AdministracionUsuarios
             txtTelefono.Enabled = habilitar;
             txtMailBBS.Enabled = habilitar;
             txtMailPersonal.Enabled = habilitar;
-            mkFechaNacimiento.Enabled = habilitar;
+            dtpFechaNacimiento.Enabled = habilitar;
         }
 
         private void habilitarBotones(bool btnEliminarFoto, bool btnSeleccionarFoto, bool btnCamara,
@@ -148,6 +154,11 @@ namespace AdministracionUsuarios
             estadoActual = ESTADO_ALTA;
 
             panelUsuario.Enabled = true;
+            btnBloquear.Enabled = false;
+            btnReiniciarContrasena.Enabled = false;
+            txtNombreUsuario.ResetText();
+            cmbRoles.SelectedIndex = -1;
+            lblHabilitado.ResetText();
 
             escucharEventos = true;
         }
@@ -164,12 +175,15 @@ namespace AdministracionUsuarios
             mostrarDatosDePersonal(personal);
 
             estadoActual = ESTADO_MODIFICACION;
+
             panelUsuario.Enabled = true;
+            btnBloquear.Enabled = true;
+            btnReiniciarContrasena.Enabled = true;
 
             escucharEventos = true;
         }
 
-        private void mostrarDatosDePersonal(Personal personal)
+        public void mostrarDatosDePersonal(Personal personal)
         {
             escucharEventos = false;
 
@@ -181,31 +195,28 @@ namespace AdministracionUsuarios
             txtMailPersonal.Text = personal.MailGeneral;
             txtLegajo.Text = personal.Legajo;
 
-            string nacimiento = "";
-            try { nacimiento = personal.FechaNacimiento.ToString("dd/MM/yyyy"); }
-            catch { nacimiento = DateTime.Now.ToString("dd/MM/yyyy"); }
-            mkFechaNacimiento.Text = nacimiento;
-
-            pbFoto.Image = personal.Foto;
-
-            if (personal.Usuario == null || personal.Usuario.Nombre == null || personal.Usuario.Nombre == string.Empty)
+            try
             {
-                lblNombreUsuario.Text = "No especificado";
-                lblRolUsuario.Text = "No especificado";
+                dtpFechaNacimiento.Value = personal.FechaNacimiento;
+            }
+            catch (Exception e)
+            {
+                Debug.Write(e.StackTrace);
+                dtpFechaNacimiento.Value = dtpFechaNacimiento.MinDate;
+            }
+
+            if (personal.Foto != null)
+            {
+                pbFoto.Image = personal.Foto;
             }
             else
             {
-                lblNombreUsuario.Text = personal.Usuario.Nombre;
-                lblRolUsuario.Text = personal.Usuario.Rol.Nombre;
+                pbFoto.Image = controlador.obtenerImagenInicial();
             }
 
-            escucharEventos = true;
-        }
+            mostrarUsuario(personal.Usuario);
 
-        public void mostrarDatosUsuario(string nombre, string rol)
-        {
-            lblNombreUsuario.Text = nombre;
-            lblRolUsuario.Text = rol;
+            escucharEventos = true;
         }
 
         private void txtNombre_TextChanged(object sender, EventArgs e)
@@ -214,7 +225,6 @@ namespace AdministracionUsuarios
             {
                 controlador.tomarNombre(obtenerTextoDeTextBox(sender));
             }
-            
         }
 
         private string obtenerTextoDeTextBox(object sender)
@@ -290,8 +300,6 @@ namespace AdministracionUsuarios
 
         private void btnGuardarCambios_Click(object sender, EventArgs e)
         {
-            Usuario usuario = new Usuario();
-            usuario.Nombre = lblNombreUsuario.Text;
             controlador.opcionGuardar();
         }
 
@@ -309,11 +317,6 @@ namespace AdministracionUsuarios
             controlador.tomarFechaNacimiento(mk.Text);
         }
 
-        private void btnEditarUsuario_Click(object sender, EventArgs e)
-        {
-            controlador.mostrarVentanaEditarUsuario();
-        }
-
         private void listEncargados_Click(object sender, EventArgs e)
         {
             if (!escucharEventos) return;
@@ -321,8 +324,7 @@ namespace AdministracionUsuarios
             ListBox list = (ListBox)sender;
 
             Personal personal = (Personal)list.SelectedValue;
-
-            mostrarDatosDePersonal(personal);
+            controlador.seSeleccionoPersonal(personal);
 
             btnModificarEncargado.Enabled = true;
             btnBajaEncargado.Enabled = true;
@@ -338,6 +340,108 @@ namespace AdministracionUsuarios
         private void btnEliminarFoto_Click(object sender, EventArgs e)
         {
             controlador.eliminarFotoPersonal();
+        }
+
+
+        //*************************************************************************
+        public void cargarRoles()
+        {
+            List<RolUsuario> roles = DAORoles.obtenerTodosLosRoles();
+
+            CargadorCombo.cargar<RolUsuario>(cmbRoles, roles, "Nombre", "Nombre");
+
+            cmbRoles.SelectedIndex = -1;
+        }
+
+        public void mostrarUsuario(Usuario usuario)
+        {
+            if (usuario == null || usuario.Nombre == null || usuario.Nombre == string.Empty)
+            {
+                txtNombreUsuario.Text = "No especificado";
+                cmbRoles.SelectedIndex = -1;
+            }
+            else
+            {
+                txtNombreUsuario.Text = usuario.Nombre;
+
+                for (int i = 0; i < cmbRoles.Items.Count; i++)
+                {
+                    RolUsuario valor = (RolUsuario)cmbRoles.Items[i];
+                    if (valor.Nombre == usuario.Rol.Nombre)
+                    {
+                        cmbRoles.SelectedIndex = i;
+                        break;
+                    }
+                }
+
+                if (usuario.Habilitado)
+                {
+                    btnBloquear.Text = "BLOQUEAR";
+                    lblHabilitado.Text = "SI";
+                }
+                else
+                {
+                    lblHabilitado.Text = "NO";
+                    btnBloquear.Text = "DESBLOQUEAR";
+                }
+            }
+        }
+
+        public void habilitarBotonesModificacionPersonal(bool habilitar)
+        {
+            btnModificarEncargado.Enabled = habilitar;
+            btnBajaEncargado.Enabled = habilitar;
+        }
+
+        private void btnAgregarRol_Click(object sender, EventArgs e)
+        {
+            Form form = new Form();
+            form.Size = new Size(0, 0);
+            form.AutoSize = true;
+
+            // Define the border style of the form to a dialog box.
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+
+            // Set the MaximizeBox to false to remove the maximize box.
+            form.MaximizeBox = false;
+
+            // Set the MinimizeBox to false to remove the minimize box.
+            form.MinimizeBox = false;
+
+            // Set the start position of the form to the center of the screen.
+            form.StartPosition = FormStartPosition.CenterScreen; 
+
+            AltaRol altaRol = new AltaRol();
+            altaRol.Dock = DockStyle.Fill;
+
+            form.Controls.Add(altaRol);
+
+            form.ShowDialog();
+
+            if (altaRol.ResultadoOK)
+            {
+                cargarRoles();
+            }
+        }
+
+        private void btnBloquear_Click(object sender, EventArgs e)
+        {
+            controlador.cambiarBloqueoUsuario();
+        }
+
+        private void btnReiniciarContrasena_Click(object sender, EventArgs e)
+        {
+            controlador.reiniciarPassword();
+        }
+
+        public string obtenerNombreUsuario()
+        {
+            return txtNombreUsuario.Text;
+        }
+
+        public RolUsuario obtenerRolUsuario()
+        {
+            return (RolUsuario)cmbRoles.SelectedItem;
         }
     }
 }
