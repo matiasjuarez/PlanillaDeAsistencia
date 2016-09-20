@@ -218,6 +218,7 @@
             // tripleGrillaVistaGlobal
             // 
             this.tripleGrillaVistaGlobal.Location = new System.Drawing.Point(0, 162);
+            this.tripleGrillaVistaGlobal.ModoPresentacion = 1;
             this.tripleGrillaVistaGlobal.Name = "tripleGrillaVistaGlobal";
             this.tripleGrillaVistaGlobal.Size = new System.Drawing.Size(797, 326);
             this.tripleGrillaVistaGlobal.TabIndex = 4;

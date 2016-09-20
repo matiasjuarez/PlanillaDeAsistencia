@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DatosLocales")]
+[assembly: AssemblyTitle("ConsoleApplication1")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Toshiba")]
-[assembly: AssemblyProduct("DatosLocales")]
+[assembly: AssemblyProduct("ConsoleApplication1")]
 [assembly: AssemblyCopyright("Copyright © Toshiba 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("6f76fe23-51ef-464e-b1c8-e9710bd6fa34")]
+[assembly: Guid("65db8933-bb89-4804-8990-3909e370991a")]
 
 // Version information for an assembly consists of the following four values:
 //

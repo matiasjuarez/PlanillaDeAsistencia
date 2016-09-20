@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EABCC520-164C-4698-943C-229BB153C608}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{67B7BA7B-2712-49A9-B02A-C4CA6706EB49}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DatosLocales</RootNamespace>
-    <AssemblyName>DatosLocales</AssemblyName>
+    <RootNamespace>ConsoleApplication1</RootNamespace>
+    <AssemblyName>ConsoleApplication1</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -39,23 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AccesoDatos\AccesoDatos.csproj">
-      <Project>{beea5f26-3a6f-4a01-8d62-ef0c27e929bf}</Project>
-      <Name>AccesoDatos</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Entidades\Entidades.csproj">
-      <Project>{cb3a2234-2123-4e15-b58c-b7ff2a731204}</Project>
-      <Name>Entidades</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EstructurasDeDatos\ContenedoresDeDatos.csproj">
-      <Project>{213f254e-ba77-4766-8bac-b641cb867e0f}</Project>
-      <Name>ContenedoresDeDatos</Name>
-    </ProjectReference>
+    <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

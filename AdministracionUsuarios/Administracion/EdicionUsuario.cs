@@ -11,7 +11,7 @@ using Entidades;
 using AccesoDatos.DAO;
 using Utilidades;
 
-namespace AdministracionUsuarios.Administracion
+namespace AdministracionPersonal.Administracion
 {
     public partial class EdicionUsuario : UserControl
     {

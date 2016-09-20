@@ -20,6 +20,20 @@ namespace PlanillaAsistencia.ControlesPersonalizados
         private ManejadorGrillas manejadorGrillas;
         private Asistencia asistenciaSeleccionada;
 
+        private int modoPresentacion = 0;
+        private int MODO_ESTADO_ASISTENCIAS = 0;
+        private int MODO_DISTINCION_POR_DIA = 1;
+
+        [Browsable(true)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        [EditorBrowsable(EditorBrowsableState.Always)]
+        [Bindable(true)]
+        public int ModoPresentacion
+        {
+            get { return modoPresentacion; }
+            set { modoPresentacion = value; }
+        }
+
         private List<IObservadorTripleGrilla> observadores;
         
         public TripleGrillaAsistencias()
@@ -414,17 +428,24 @@ namespace PlanillaAsistencia.ControlesPersonalizados
                     fila.Visible = true;
                 }
 
-                if (asistenciaActual.esModificada())
+                if (tga.modoPresentacion == tga.MODO_ESTADO_ASISTENCIAS)
                 {
-                    if (asistenciaActual.EsValidaParaGuardar) pintarFilaComoModificada(fila);
-                    else pintarFilaComoNoValidaParaGuardarse(fila);
+                    if (asistenciaActual.esModificada())
+                    {
+                        if (asistenciaActual.EsValidaParaGuardar) pintarFilaComoModificada(fila);
+                        else pintarFilaComoNoValidaParaGuardarse(fila);
+                    }
+                    else if (asistenciaActual.esSinHoraEntradaReal_PostHoraEntradaEsperada() ||
+                        asistenciaActual.esSinHoraSalidaReal_PostHoraSalidaEsperada())
+                    {
+                        pintarFilaSinHoraCargada(fila);
+                    }
+                    else
+                    {
+                        pintarFilaComoNormal(fila);
+                    }
                 }
-                else if (asistenciaActual.esSinHoraEntradaReal_PostHoraEntradaEsperada() || 
-                    asistenciaActual.esSinHoraSalidaReal_PostHoraSalidaEsperada())
-                {
-                    pintarFilaSinHoraCargada(fila);
-                }
-                else
+                else if(tga.modoPresentacion == tga.MODO_DISTINCION_POR_DIA)
                 {
                     pintarFilaComoNormal(fila);
                 }

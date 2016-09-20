@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using AccesoDatos.DAO;
 using Entidades;
 
-namespace AdministracionUsuarios.Administracion
+namespace AdministracionPersonal.Administracion
 {
     public partial class AltaRol : UserControl
     {

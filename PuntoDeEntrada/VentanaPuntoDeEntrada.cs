@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Utilidades;
 using PlanillaAsistencia.Principal;
-using AdministracionUsuarios;
-using PuntoDeEntrada.Sesion;
-using AdministracionUsuarios.Administracion;
+using AdministracionPersonal.Administracion;
+using AdministracionPersonal.InicioSesion;
+using EstadisticasRapla;
+using System.Windows.Forms.Integration;
+using System.Windows.Interop;
 
 namespace PuntoDeEntrada
 {
-    public partial class PuntoDeEntrada : Form
+    public partial class VentanaPuntoDeEntrada : Form
     {
         private PlanillaAsistencias planillaAsistencias;
         private PantallaAdministracionPersonal pantallaAdministracionUsuarios;
@@ -26,7 +28,7 @@ namespace PuntoDeEntrada
             set { controladorPuntoDeEntrada = value; }
         }
 
-        public PuntoDeEntrada()
+        public VentanaPuntoDeEntrada()
         {
             InitializeComponent();
         }
@@ -49,6 +51,11 @@ namespace PuntoDeEntrada
         public void mostrarMenuAccesoCambioPassword(bool mostrar)
         {
             cAMBIOPASSToolStripMenuItem.Visible = mostrar;
+        }
+
+        public void mostrarMenuAccesoEstadisticasRapla(bool mostrar)
+        {
+            eSTADISTICASRAPLAToolStripMenuItem.Visible = mostrar;
         }
 
         private void pLANILLAASISTENCIAToolStripMenuItem_Click(object sender, EventArgs e)
@@ -89,6 +96,14 @@ namespace PuntoDeEntrada
             CambioPassword cambioPassword = controladorPuntoDeEntrada.obtenerVentanaCambioPassword();
 
             if (cambioPassword != null) mostrarUserControl(cambioPassword);
+        }
+
+        private void eSTADISTICASRAPLAToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            /*Form form = new Form();
+            WindowInteropHelper wih = new WindowInteropHelper(new MainWindow());
+            wih.Owner = form.Handle;
+            form.ShowDialog();*/
         }
     }
 }

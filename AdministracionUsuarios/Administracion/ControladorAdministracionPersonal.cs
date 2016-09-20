@@ -11,9 +11,8 @@ using Entidades;
 using AccesoDatos;
 using System.Diagnostics;
 using AccesoDatos.DAO;
-using AdministracionUsuarios.Administracion;
 
-namespace AdministracionUsuarios
+namespace AdministracionPersonal.Administracion
 {
     public class ControladorAdministracionPersonal : IObservadorCamara
     {
@@ -45,7 +44,7 @@ namespace AdministracionUsuarios
         {
             if (imagenInicial == null)
             {
-                imagenInicial = new Bitmap(AdministracionUsuarios.Properties.Resources.mystery);
+                imagenInicial = new Bitmap(AdministracionPersonal.Properties.Resources.mystery);
             }
 
             return imagenInicial;

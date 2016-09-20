@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Utilidades;
 using Entidades;
-using AdministracionUsuarios.Administracion;
 using System.Diagnostics;
 using AccesoDatos.DAO;
 
-namespace AdministracionUsuarios
+namespace AdministracionPersonal.Administracion
 {
     public partial class PantallaAdministracionPersonal : ResizableControl
     {

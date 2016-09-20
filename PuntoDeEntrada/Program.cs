@@ -19,7 +19,7 @@ namespace PuntoDeEntrada
             Application.SetCompatibleTextRenderingDefault(false);
 
             ControladorPuntoEntrada controladorPuntoDeEntrada = new ControladorPuntoEntrada();
-            PuntoDeEntrada puntoDeEntrada = new PuntoDeEntrada();
+            VentanaPuntoDeEntrada puntoDeEntrada = new VentanaPuntoDeEntrada();
 
             controladorPuntoDeEntrada.PuntoDeEntrada = puntoDeEntrada;
             puntoDeEntrada.ControladorPuntoDeEntrada = controladorPuntoDeEntrada;

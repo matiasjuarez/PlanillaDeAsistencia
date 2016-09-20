@@ -1,6 +1,6 @@
 ﻿namespace PuntoDeEntrada
 {
-    partial class PuntoDeEntrada
+    partial class VentanaPuntoDeEntrada
     {
         /// <summary>
         /// Required designer variable.
@@ -28,14 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VentanaPuntoDeEntrada));
             this.menuPrincipal = new System.Windows.Forms.MenuStrip();
             this.uSUARIOSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sESIONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cAMBIOPASSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aDMINISTRARToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pLANILLAASISTENCIAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.oBJETOSPERDIDOSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelPrincipal = new System.Windows.Forms.Panel();
-            this.cAMBIOPASSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eSTADISTICASRAPLAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuPrincipal.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,7 +46,8 @@
             this.menuPrincipal.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.uSUARIOSToolStripMenuItem,
             this.pLANILLAASISTENCIAToolStripMenuItem,
-            this.oBJETOSPERDIDOSToolStripMenuItem});
+            this.oBJETOSPERDIDOSToolStripMenuItem,
+            this.eSTADISTICASRAPLAToolStripMenuItem});
             this.menuPrincipal.Location = new System.Drawing.Point(0, 0);
             this.menuPrincipal.Name = "menuPrincipal";
             this.menuPrincipal.Size = new System.Drawing.Size(711, 24);
@@ -64,14 +67,21 @@
             // sESIONToolStripMenuItem
             // 
             this.sESIONToolStripMenuItem.Name = "sESIONToolStripMenuItem";
-            this.sESIONToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sESIONToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.sESIONToolStripMenuItem.Text = "SESION";
             this.sESIONToolStripMenuItem.Click += new System.EventHandler(this.sESIONToolStripMenuItem_Click);
+            // 
+            // cAMBIOPASSToolStripMenuItem
+            // 
+            this.cAMBIOPASSToolStripMenuItem.Name = "cAMBIOPASSToolStripMenuItem";
+            this.cAMBIOPASSToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.cAMBIOPASSToolStripMenuItem.Text = "CAMBIO PASS";
+            this.cAMBIOPASSToolStripMenuItem.Click += new System.EventHandler(this.cAMBIOPASSToolStripMenuItem_Click);
             // 
             // aDMINISTRARToolStripMenuItem
             // 
             this.aDMINISTRARToolStripMenuItem.Name = "aDMINISTRARToolStripMenuItem";
-            this.aDMINISTRARToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aDMINISTRARToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.aDMINISTRARToolStripMenuItem.Text = "ADMINISTRAR";
             this.aDMINISTRARToolStripMenuItem.Click += new System.EventHandler(this.aDMINISTRARToolStripMenuItem_Click);
             // 
@@ -96,23 +106,24 @@
             this.panelPrincipal.Size = new System.Drawing.Size(711, 237);
             this.panelPrincipal.TabIndex = 1;
             // 
-            // cAMBIOPASSToolStripMenuItem
+            // eSTADISTICASRAPLAToolStripMenuItem
             // 
-            this.cAMBIOPASSToolStripMenuItem.Name = "cAMBIOPASSToolStripMenuItem";
-            this.cAMBIOPASSToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.cAMBIOPASSToolStripMenuItem.Text = "CAMBIO PASS";
-            this.cAMBIOPASSToolStripMenuItem.Click += new System.EventHandler(this.cAMBIOPASSToolStripMenuItem_Click);
+            this.eSTADISTICASRAPLAToolStripMenuItem.Name = "eSTADISTICASRAPLAToolStripMenuItem";
+            this.eSTADISTICASRAPLAToolStripMenuItem.Size = new System.Drawing.Size(134, 20);
+            this.eSTADISTICASRAPLAToolStripMenuItem.Text = "ESTADISTICAS RAPLA";
+            this.eSTADISTICASRAPLAToolStripMenuItem.Click += new System.EventHandler(this.eSTADISTICASRAPLAToolStripMenuItem_Click);
             // 
-            // PuntoDeEntrada
+            // VentanaPuntoDeEntrada
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(711, 261);
             this.Controls.Add(this.panelPrincipal);
             this.Controls.Add(this.menuPrincipal);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuPrincipal;
-            this.Name = "PuntoDeEntrada";
-            this.Text = "Form1";
+            this.Name = "VentanaPuntoDeEntrada";
+            this.Text = "LABSIS";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.menuPrincipal.ResumeLayout(false);
             this.menuPrincipal.PerformLayout();
@@ -131,6 +142,7 @@
         private System.Windows.Forms.ToolStripMenuItem oBJETOSPERDIDOSToolStripMenuItem;
         private System.Windows.Forms.Panel panelPrincipal;
         private System.Windows.Forms.ToolStripMenuItem cAMBIOPASSToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eSTADISTICASRAPLAToolStripMenuItem;
     }
 }
 

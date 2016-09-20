@@ -1,4 +1,4 @@
-﻿namespace AdministracionUsuarios
+﻿namespace AdministracionPersonal.Administracion
 {
     partial class PantallaAdministracionPersonal
     {
@@ -302,8 +302,8 @@
             // pbFoto
             // 
             this.pbFoto.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pbFoto.Image = global::AdministracionUsuarios.Properties.Resources.mystery;
-            this.pbFoto.InitialImage = global::AdministracionUsuarios.Properties.Resources.mystery;
+            this.pbFoto.Image = global::AdministracionPersonal.Properties.Resources.mystery;
+            this.pbFoto.InitialImage = global::AdministracionPersonal.Properties.Resources.mystery;
             this.pbFoto.Location = new System.Drawing.Point(6, 19);
             this.pbFoto.Name = "pbFoto";
             this.pbFoto.Size = new System.Drawing.Size(264, 196);

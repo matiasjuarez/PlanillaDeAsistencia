@@ -1,4 +1,5 @@
 ﻿using AccesoDatos.DAO;
+using Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,25 +7,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Entidades;
 
-namespace PuntoDeEntrada.Sesion
+namespace AdministracionPersonal.InicioSesion
 {
     public class ControladorSesion
     {
         private List<IObservadorCambioEstadoSesion> observadoresSesion = new List<IObservadorCambioEstadoSesion>();
-
-        private Usuario usuarioLogeado;
-        public Usuario UsuarioLogeado
-        {
-            get { return usuarioLogeado; }
-        }
-
-        private DateTime horaInicioSesion;
-        public DateTime HoraInicioSesion
-        {
-            get { return horaInicioSesion; }
-        }
 
         private VentanaSesion ventanaSesion;
         public VentanaSesion VentanaSesion
@@ -44,7 +32,7 @@ namespace PuntoDeEntrada.Sesion
 
         public void botonSesionPresionado()
         {
-            if (usuarioLogeado == null)
+            if (Sesion.obtenerSesionActual() == null || Sesion.obtenerSesionActual().Usuario == null)
             {
                 string usuario = ventanaSesion.obtenerUsuario();
                 string password = ventanaSesion.obtenerPassword();
@@ -56,10 +44,14 @@ namespace PuntoDeEntrada.Sesion
             }
             else
             {
-                usuarioLogeado = null;
+                Sesion.cerrarSesion();
                 ventanaSesion.ponerEnEstadoSesionNoIniciada();
-                notificarObservadoresCierreSesion();
             }
+        }
+
+        public DateTime obtenerHoraInicioSesion()
+        {
+            return Sesion.obtenerSesionActual().HoraInicioSesion;
         }
 
         private bool iniciarSesion(string usuario, string password)
@@ -71,33 +63,9 @@ namespace PuntoDeEntrada.Sesion
             }
             else
             {
-                usuarioLogeado = DAOUsuario.buscarUsuario(usuario);
-                horaInicioSesion = DateTime.Now;
-                notificarObservadoresInicioSesion();
+                Sesion.iniciarSesion(DAOUsuario.buscarUsuario(usuario));
                 return true;
             }
         }
-
-        private void notificarObservadoresInicioSesion()
-        {
-            foreach (IObservadorCambioEstadoSesion observador in observadoresSesion)
-            {
-                observador.observarInicioSesion(usuarioLogeado);
-            }
-        }
-
-        private void notificarObservadoresCierreSesion()
-        {
-            foreach (IObservadorCambioEstadoSesion observador in observadoresSesion)
-            {
-                observador.observarCierreSesion(usuarioLogeado);
-            }
-        }
-    }
-
-    public interface IObservadorCambioEstadoSesion
-    {
-        void observarCierreSesion(Usuario usuario);
-        void observarInicioSesion(Usuario usuario);
     }
 }

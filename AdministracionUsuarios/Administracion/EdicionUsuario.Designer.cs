@@ -1,4 +1,4 @@
-﻿namespace AdministracionUsuarios.Administracion
+﻿namespace AdministracionPersonal.Administracion
 {
     partial class EdicionUsuario
     {
