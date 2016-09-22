@@ -61,7 +61,8 @@
             this.btnSesion.Location = new System.Drawing.Point(357, 20);
             this.btnSesion.Name = "btnSesion";
             this.btnSesion.Size = new System.Drawing.Size(78, 74);
-            this.btnSesion.TabIndex = 6;
+            this.btnSesion.TabIndex = 0;
+            this.btnSesion.TabStop = false;
             this.btnSesion.UseVisualStyleBackColor = true;
             this.btnSesion.Click += new System.EventHandler(this.btnSesion_Click);
             // 
@@ -70,7 +71,7 @@
             this.txtUsuario.Location = new System.Drawing.Point(173, 20);
             this.txtUsuario.Name = "txtUsuario";
             this.txtUsuario.Size = new System.Drawing.Size(169, 20);
-            this.txtUsuario.TabIndex = 5;
+            this.txtUsuario.TabIndex = 1;
             this.txtUsuario.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtUsuario_KeyDown);
             // 
             // txtPassword
@@ -79,7 +80,7 @@
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(169, 20);
-            this.txtPassword.TabIndex = 4;
+            this.txtPassword.TabIndex = 2;
             this.txtPassword.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPassword_KeyDown);
             // 
             // label4

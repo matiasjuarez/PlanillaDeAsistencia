@@ -80,6 +80,7 @@
     <Compile Include="InicioSesion\VentanaSesion.Designer.cs">
       <DependentUpon>VentanaSesion.cs</DependentUpon>
     </Compile>
+    <Compile Include="PasswordEncriptacion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Administracion\AltaRol.resx">
       <DependentUpon>AltaRol.cs</DependentUpon>

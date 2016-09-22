@@ -134,6 +134,7 @@ namespace AdministracionPersonal.Administracion
             if (confirmacion == DialogResult.Yes)
             {
                 DAOPersonal.darDeBaja(personal);
+                DAOUsuario.bloquearUsuario(personal.Usuario, true);
 
                 vista.ponerEnEstadoInicial();
                 vista.cargarListaDePersonal(DAOPersonal.obtenerTodoElPersonal());
@@ -168,7 +169,7 @@ namespace AdministracionPersonal.Administracion
 
             if (this.estadoActual == ESTADO_ALTA)
             {
-                personalSeleccionado.Usuario.Password = personalSeleccionado.Usuario.Nombre;
+                personalSeleccionado.Usuario.Password = PasswordEncriptacion.encriptarPassword(personalSeleccionado.Usuario.Nombre.ToLower());
                 if (DAOPersonal.insertarPersonal(personalSeleccionado))
                 {
                     //this.personal.Add(personalSeleccionado);
@@ -306,6 +307,11 @@ namespace AdministracionPersonal.Administracion
                         return false;
                     }
                 }
+                else if(estadoActual == ESTADO_ALTA)
+                {
+                    MessageBox.Show("Ya hay un usuario con ese nombre");
+                    return false;
+                }
             }
 
             return true;
@@ -400,7 +406,7 @@ namespace AdministracionPersonal.Administracion
 
         public void reiniciarPassword()
         {
-            personalSeleccionado.Usuario.Password = "";
+            personalSeleccionado.Usuario.Password = PasswordEncriptacion.encriptarPassword("");
             DAOUsuario.reiniciarPassword(personalSeleccionado.Usuario);
             MessageBox.Show("La contraseña del usuario ha sido eliminada");
         }

@@ -14,14 +14,12 @@ using AdministracionPersonal.InicioSesion;
 using EstadisticasRapla;
 using System.Windows.Forms.Integration;
 using System.Windows.Interop;
+using System.Windows.Shapes;
 
 namespace PuntoDeEntrada
 {
     public partial class VentanaPuntoDeEntrada : Form
     {
-        private PlanillaAsistencias planillaAsistencias;
-        private PantallaAdministracionPersonal pantallaAdministracionUsuarios;
-
         private ControladorPuntoEntrada controladorPuntoDeEntrada;
         public ControladorPuntoEntrada ControladorPuntoDeEntrada
         {
@@ -60,10 +58,7 @@ namespace PuntoDeEntrada
 
         private void pLANILLAASISTENCIAToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (planillaAsistencias == null)
-            {
-                planillaAsistencias = new PlanillaAsistencias();
-            }
+            PlanillaAsistencias planillaAsistencias = controladorPuntoDeEntrada.obtenerVentanaPlanillaAsistencia();
 
             mostrarUserControl(planillaAsistencias);
         }
@@ -77,12 +72,9 @@ namespace PuntoDeEntrada
 
         private void aDMINISTRARToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (pantallaAdministracionUsuarios == null)
-            {
-                pantallaAdministracionUsuarios = new PantallaAdministracionPersonal();
-            }
+            PantallaAdministracionPersonal pantallaAdministracionPersonal = controladorPuntoDeEntrada.obtenerPantallaAdministracionPersonal();
 
-            mostrarUserControl(pantallaAdministracionUsuarios);
+            mostrarUserControl(pantallaAdministracionPersonal);
         }
 
         private void sESIONToolStripMenuItem_Click(object sender, EventArgs e)
@@ -104,6 +96,15 @@ namespace PuntoDeEntrada
             WindowInteropHelper wih = new WindowInteropHelper(new MainWindow());
             wih.Owner = form.Handle;
             form.ShowDialog();*/
+
+            /*var wpfWindow = new EstadisticasRapla.MainWindow();
+            ElementHost.EnableModelessKeyboardInterop(wpfWindow);
+            wpfWindow.ShowDialog();*/
+
+            var wpfWindow = new EstadisticasRapla.MainWindow();
+            WindowInteropHelper wih = new WindowInteropHelper(wpfWindow);
+            //wih.Owner = form.Handle;
+            wpfWindow.ShowDialog();
         }
     }
 }

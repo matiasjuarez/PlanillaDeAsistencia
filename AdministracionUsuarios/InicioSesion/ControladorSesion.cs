@@ -56,6 +56,11 @@ namespace AdministracionPersonal.InicioSesion
 
         private bool iniciarSesion(string usuario, string password)
         {
+            if(usuario.ToLower() != "admin")
+            {
+                password = PasswordEncriptacion.encriptarPassword(password);
+            }
+
             if (!DAOUsuario.comprobarUsuarioPassword(usuario, password))
             {
                 MessageBox.Show("Por favor, compruebe el nombre de usuario y la contraseña");

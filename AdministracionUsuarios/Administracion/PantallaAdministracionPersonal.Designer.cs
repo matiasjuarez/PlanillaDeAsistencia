@@ -85,6 +85,7 @@
             this.listEncargados.Name = "listEncargados";
             this.listEncargados.Size = new System.Drawing.Size(165, 212);
             this.listEncargados.TabIndex = 0;
+            this.listEncargados.TabStop = false;
             this.listEncargados.Click += new System.EventHandler(this.listEncargados_Click);
             // 
             // lblNombre
@@ -101,7 +102,7 @@
             this.txtNombre.Location = new System.Drawing.Point(91, 21);
             this.txtNombre.Name = "txtNombre";
             this.txtNombre.Size = new System.Drawing.Size(166, 20);
-            this.txtNombre.TabIndex = 2;
+            this.txtNombre.TabIndex = 1;
             this.txtNombre.TextChanged += new System.EventHandler(this.txtNombre_TextChanged);
             // 
             // txtApellido
@@ -109,7 +110,7 @@
             this.txtApellido.Location = new System.Drawing.Point(374, 21);
             this.txtApellido.Name = "txtApellido";
             this.txtApellido.Size = new System.Drawing.Size(166, 20);
-            this.txtApellido.TabIndex = 4;
+            this.txtApellido.TabIndex = 2;
             this.txtApellido.TextChanged += new System.EventHandler(this.txtApellido_TextChanged);
             // 
             // label1
@@ -135,7 +136,7 @@
             this.txtDocumento.Location = new System.Drawing.Point(91, 58);
             this.txtDocumento.Name = "txtDocumento";
             this.txtDocumento.Size = new System.Drawing.Size(166, 20);
-            this.txtDocumento.TabIndex = 6;
+            this.txtDocumento.TabIndex = 3;
             this.txtDocumento.TextChanged += new System.EventHandler(this.txtDocumento_TextChanged);
             // 
             // label3
@@ -161,7 +162,7 @@
             this.txtLegajo.Location = new System.Drawing.Point(576, 118);
             this.txtLegajo.Name = "txtLegajo";
             this.txtLegajo.Size = new System.Drawing.Size(166, 20);
-            this.txtLegajo.TabIndex = 10;
+            this.txtLegajo.TabIndex = 8;
             this.txtLegajo.TextChanged += new System.EventHandler(this.txtLegajo_TextChanged);
             // 
             // groupBox1
@@ -175,7 +176,7 @@
             this.groupBox1.Location = new System.Drawing.Point(180, 116);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(279, 102);
-            this.groupBox1.TabIndex = 11;
+            this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "CONTACTO";
             // 
@@ -184,7 +185,7 @@
             this.txtMailBBS.Location = new System.Drawing.Point(107, 71);
             this.txtMailBBS.Name = "txtMailBBS";
             this.txtMailBBS.Size = new System.Drawing.Size(166, 20);
-            this.txtMailBBS.TabIndex = 16;
+            this.txtMailBBS.TabIndex = 7;
             this.txtMailBBS.TextChanged += new System.EventHandler(this.txtMailBBS_TextChanged);
             // 
             // label7
@@ -201,7 +202,7 @@
             this.txtMailPersonal.Location = new System.Drawing.Point(107, 45);
             this.txtMailPersonal.Name = "txtMailPersonal";
             this.txtMailPersonal.Size = new System.Drawing.Size(166, 20);
-            this.txtMailPersonal.TabIndex = 14;
+            this.txtMailPersonal.TabIndex = 6;
             this.txtMailPersonal.TextChanged += new System.EventHandler(this.txtMailPersonal_TextChanged);
             // 
             // label6
@@ -218,7 +219,7 @@
             this.txtTelefono.Location = new System.Drawing.Point(107, 19);
             this.txtTelefono.Name = "txtTelefono";
             this.txtTelefono.Size = new System.Drawing.Size(166, 20);
-            this.txtTelefono.TabIndex = 12;
+            this.txtTelefono.TabIndex = 5;
             this.txtTelefono.TextChanged += new System.EventHandler(this.txtTelefono_TextChanged);
             // 
             // label5
@@ -243,7 +244,7 @@
             this.groupBox2.Location = new System.Drawing.Point(180, 10);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(570, 100);
-            this.groupBox2.TabIndex = 12;
+            this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "DATOS PERSONALES";
             // 
@@ -254,7 +255,8 @@
             this.dtpFechaNacimiento.Name = "dtpFechaNacimiento";
             this.dtpFechaNacimiento.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.dtpFechaNacimiento.Size = new System.Drawing.Size(169, 20);
-            this.dtpFechaNacimiento.TabIndex = 8;
+            this.dtpFechaNacimiento.TabIndex = 4;
+            this.dtpFechaNacimiento.TabStop = false;
             // 
             // groupBox3
             // 
@@ -275,6 +277,7 @@
             this.btnEliminarFoto.Name = "btnEliminarFoto";
             this.btnEliminarFoto.Size = new System.Drawing.Size(75, 23);
             this.btnEliminarFoto.TabIndex = 3;
+            this.btnEliminarFoto.TabStop = false;
             this.btnEliminarFoto.Text = "Eliminar";
             this.btnEliminarFoto.UseVisualStyleBackColor = true;
             this.btnEliminarFoto.Click += new System.EventHandler(this.btnEliminarFoto_Click);
@@ -285,6 +288,7 @@
             this.btnTomarFoto.Name = "btnTomarFoto";
             this.btnTomarFoto.Size = new System.Drawing.Size(75, 23);
             this.btnTomarFoto.TabIndex = 2;
+            this.btnTomarFoto.TabStop = false;
             this.btnTomarFoto.Text = "Camara";
             this.btnTomarFoto.UseVisualStyleBackColor = true;
             this.btnTomarFoto.Click += new System.EventHandler(this.btnTomarFoto_Click);
@@ -295,6 +299,7 @@
             this.btnSeleccionarFoto.Name = "btnSeleccionarFoto";
             this.btnSeleccionarFoto.Size = new System.Drawing.Size(75, 23);
             this.btnSeleccionarFoto.TabIndex = 1;
+            this.btnSeleccionarFoto.TabStop = false;
             this.btnSeleccionarFoto.Text = "Seleccionar";
             this.btnSeleccionarFoto.UseVisualStyleBackColor = true;
             this.btnSeleccionarFoto.Click += new System.EventHandler(this.btnSeleccionarFoto_Click);
@@ -316,7 +321,8 @@
             this.btnBajaEncargado.Location = new System.Drawing.Point(177, 10);
             this.btnBajaEncargado.Name = "btnBajaEncargado";
             this.btnBajaEncargado.Size = new System.Drawing.Size(75, 23);
-            this.btnBajaEncargado.TabIndex = 16;
+            this.btnBajaEncargado.TabIndex = 13;
+            this.btnBajaEncargado.TabStop = false;
             this.btnBajaEncargado.Text = "Baja";
             this.btnBajaEncargado.UseVisualStyleBackColor = true;
             this.btnBajaEncargado.Click += new System.EventHandler(this.btnBajaEncargado_Click);
@@ -326,7 +332,8 @@
             this.btnModificarEncargado.Location = new System.Drawing.Point(96, 10);
             this.btnModificarEncargado.Name = "btnModificarEncargado";
             this.btnModificarEncargado.Size = new System.Drawing.Size(75, 23);
-            this.btnModificarEncargado.TabIndex = 15;
+            this.btnModificarEncargado.TabIndex = 12;
+            this.btnModificarEncargado.TabStop = false;
             this.btnModificarEncargado.Text = "Modificar";
             this.btnModificarEncargado.UseVisualStyleBackColor = true;
             this.btnModificarEncargado.Click += new System.EventHandler(this.btnModificarEncargado_Click);
@@ -336,7 +343,8 @@
             this.btnNuevoEncargado.Location = new System.Drawing.Point(15, 10);
             this.btnNuevoEncargado.Name = "btnNuevoEncargado";
             this.btnNuevoEncargado.Size = new System.Drawing.Size(75, 23);
-            this.btnNuevoEncargado.TabIndex = 14;
+            this.btnNuevoEncargado.TabIndex = 11;
+            this.btnNuevoEncargado.TabStop = false;
             this.btnNuevoEncargado.Text = "Alta";
             this.btnNuevoEncargado.UseVisualStyleBackColor = true;
             this.btnNuevoEncargado.Click += new System.EventHandler(this.btnNuevoEncargado_Click);
@@ -359,7 +367,8 @@
             this.btnCancelar.Location = new System.Drawing.Point(666, 10);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(75, 23);
-            this.btnCancelar.TabIndex = 18;
+            this.btnCancelar.TabIndex = 15;
+            this.btnCancelar.TabStop = false;
             this.btnCancelar.Text = "Cancelar";
             this.btnCancelar.UseVisualStyleBackColor = true;
             this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
@@ -369,7 +378,8 @@
             this.btnGuardarCambios.Location = new System.Drawing.Point(558, 10);
             this.btnGuardarCambios.Name = "btnGuardarCambios";
             this.btnGuardarCambios.Size = new System.Drawing.Size(75, 23);
-            this.btnGuardarCambios.TabIndex = 17;
+            this.btnGuardarCambios.TabIndex = 14;
+            this.btnGuardarCambios.TabStop = false;
             this.btnGuardarCambios.Text = "Guardar";
             this.btnGuardarCambios.UseVisualStyleBackColor = true;
             this.btnGuardarCambios.Click += new System.EventHandler(this.btnGuardarCambios_Click);
@@ -388,7 +398,8 @@
             this.panelUsuario.Location = new System.Drawing.Point(3, 224);
             this.panelUsuario.Name = "panelUsuario";
             this.panelUsuario.Size = new System.Drawing.Size(377, 158);
-            this.panelUsuario.TabIndex = 18;
+            this.panelUsuario.TabIndex = 3;
+            this.panelUsuario.TabStop = true;
             // 
             // panel2
             // 
@@ -405,6 +416,7 @@
             this.btnReiniciarContrasena.Name = "btnReiniciarContrasena";
             this.btnReiniciarContrasena.Size = new System.Drawing.Size(124, 36);
             this.btnReiniciarContrasena.TabIndex = 7;
+            this.btnReiniciarContrasena.TabStop = false;
             this.btnReiniciarContrasena.Text = "Reiniciar password";
             this.btnReiniciarContrasena.UseVisualStyleBackColor = true;
             this.btnReiniciarContrasena.Click += new System.EventHandler(this.btnReiniciarContrasena_Click);
@@ -415,6 +427,7 @@
             this.btnBloquear.Name = "btnBloquear";
             this.btnBloquear.Size = new System.Drawing.Size(116, 35);
             this.btnBloquear.TabIndex = 6;
+            this.btnBloquear.TabStop = false;
             this.btnBloquear.Text = "BLOQUEAR";
             this.btnBloquear.UseVisualStyleBackColor = true;
             this.btnBloquear.Click += new System.EventHandler(this.btnBloquear_Click);
@@ -442,6 +455,7 @@
             this.btnAgregarRol.Name = "btnAgregarRol";
             this.btnAgregarRol.Size = new System.Drawing.Size(28, 22);
             this.btnAgregarRol.TabIndex = 16;
+            this.btnAgregarRol.TabStop = false;
             this.btnAgregarRol.Text = "+";
             this.btnAgregarRol.UseVisualStyleBackColor = true;
             this.btnAgregarRol.Click += new System.EventHandler(this.btnAgregarRol_Click);
@@ -452,14 +466,14 @@
             this.cmbRoles.Location = new System.Drawing.Point(152, 47);
             this.cmbRoles.Name = "cmbRoles";
             this.cmbRoles.Size = new System.Drawing.Size(218, 21);
-            this.cmbRoles.TabIndex = 15;
+            this.cmbRoles.TabIndex = 10;
             // 
             // txtNombreUsuario
             // 
             this.txtNombreUsuario.Location = new System.Drawing.Point(152, 10);
             this.txtNombreUsuario.Name = "txtNombreUsuario";
             this.txtNombreUsuario.Size = new System.Drawing.Size(218, 20);
-            this.txtNombreUsuario.TabIndex = 14;
+            this.txtNombreUsuario.TabIndex = 9;
             // 
             // label9
             // 
@@ -479,7 +493,7 @@
             this.label10.TabIndex = 12;
             this.label10.Text = "USUARIO";
             // 
-            // PantallaAdministracionUsuarios
+            // PantallaAdministracionPersonal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -492,7 +506,7 @@
             this.Controls.Add(this.txtLegajo);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.listEncargados);
-            this.Name = "PantallaAdministracionUsuarios";
+            this.Name = "PantallaAdministracionPersonal";
             this.Size = new System.Drawing.Size(758, 461);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

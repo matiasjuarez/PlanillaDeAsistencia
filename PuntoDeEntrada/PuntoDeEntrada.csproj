@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MahApps.Metro">
+      <HintPath>..\..\..\..\..\Estadisticas\EstadisticasRapla\packages\MahApps.Metro.1.1.2.0\lib\net40\MahApps.Metro.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -45,6 +48,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +111,10 @@
     <ProjectReference Include="..\PlanillaAsistencia\PlanillaAsistencia.csproj">
       <Project>{cd0c34fd-52f9-4124-9d8a-8b48337a54dd}</Project>
       <Name>PlanillaAsistencia</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SincronizacionInterBase\SincronizacionInterBase.csproj">
+      <Project>{9b0c567e-ce8f-4eb3-b23d-90c3e1256aab}</Project>
+      <Name>SincronizacionInterBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilidades\Utilidades.csproj">
       <Project>{7fcc5895-70d4-4825-a03c-e4d88eaca187}</Project>
