@@ -47,22 +47,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Administracion\AltaRol.cs">
+    <Compile Include="Usuarios\AltaRol.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Administracion\AltaRol.Designer.cs">
+    <Compile Include="Usuarios\AltaRol.Designer.cs">
       <DependentUpon>AltaRol.cs</DependentUpon>
     </Compile>
-    <Compile Include="Administracion\CambioPassword.cs">
+    <Compile Include="Password\CambioPassword.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Administracion\CambioPassword.Designer.cs">
+    <Compile Include="Password\CambioPassword.Designer.cs">
       <DependentUpon>CambioPassword.cs</DependentUpon>
     </Compile>
-    <Compile Include="Administracion\EdicionUsuario.cs">
+    <Compile Include="Usuarios\ControladorEdicionUsuario.cs" />
+    <Compile Include="Usuarios\EdicionUsuario.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Administracion\EdicionUsuario.Designer.cs">
+    <Compile Include="Usuarios\EdicionUsuario.Designer.cs">
       <DependentUpon>EdicionUsuario.cs</DependentUpon>
     </Compile>
     <Compile Include="Administracion\PantallaAdministracionPersonal.cs">
@@ -80,15 +81,15 @@
     <Compile Include="InicioSesion\VentanaSesion.Designer.cs">
       <DependentUpon>VentanaSesion.cs</DependentUpon>
     </Compile>
-    <Compile Include="PasswordEncriptacion.cs" />
+    <Compile Include="Password\PasswordEncriptacion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Administracion\AltaRol.resx">
+    <EmbeddedResource Include="Usuarios\AltaRol.resx">
       <DependentUpon>AltaRol.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Administracion\CambioPassword.resx">
+    <EmbeddedResource Include="Password\CambioPassword.resx">
       <DependentUpon>CambioPassword.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Administracion\EdicionUsuario.resx">
+    <EmbeddedResource Include="Usuarios\EdicionUsuario.resx">
       <DependentUpon>EdicionUsuario.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Administracion\PantallaAdministracionPersonal.resx">

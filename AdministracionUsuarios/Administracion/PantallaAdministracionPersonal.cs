@@ -11,6 +11,7 @@ using Utilidades;
 using Entidades;
 using System.Diagnostics;
 using AccesoDatos.DAO;
+using AdministracionPersonal.Usuarios;
 
 namespace AdministracionPersonal.Administracion
 {

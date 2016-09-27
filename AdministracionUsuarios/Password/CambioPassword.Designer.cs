@@ -1,4 +1,4 @@
-﻿namespace AdministracionPersonal.Administracion
+﻿namespace AdministracionPersonal.Password
 {
     partial class CambioPassword
     {

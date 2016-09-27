@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using PlanillaAsistencia.Principal;
 
-namespace PuntoDeEntrada
+namespace PuntoDeEntrada.Main
 {
     static class Program
     {

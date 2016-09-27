@@ -1,4 +1,4 @@
-﻿namespace PuntoDeEntrada
+﻿namespace PuntoDeEntrada.Main
 {
     partial class VentanaPuntoDeEntrada
     {

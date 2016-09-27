@@ -15,8 +15,9 @@ using EstadisticasRapla;
 using System.Windows.Forms.Integration;
 using System.Windows.Interop;
 using System.Windows.Shapes;
+using AdministracionPersonal.Password;
 
-namespace PuntoDeEntrada
+namespace PuntoDeEntrada.Main
 {
     public partial class VentanaPuntoDeEntrada : Form
     {
