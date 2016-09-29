@@ -15,11 +15,10 @@ namespace AccesoDatos.DAO
         {
             List<RolUsuario> roles = new List<RolUsuario>();
 
-            GestorConexion gestor = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "Select nombre from rol_usuario";
 
-            MySqlCommand command = new MySqlCommand(consulta, gestor.getConexionAbierta());
+            MySqlConnection conexion = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            MySqlCommand command = new MySqlCommand(consulta, conexion);
 
             try
             {
@@ -42,17 +41,16 @@ namespace AccesoDatos.DAO
             }
             finally
             {
-                gestor.cerrarConexion();
+                GestorConexion.cerrarConexion(conexion);
             }
         }
 
         public static bool existeRol(RolUsuario rol)
         {
-            GestorConexion gestor = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "Select nombre from rol_usuario where nombre=@nombre";
 
-            MySqlCommand command = new MySqlCommand(consulta, gestor.getConexionAbierta());
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            MySqlCommand command = new MySqlCommand(consulta, connection);
             command.Parameters.AddWithValue("@nombre", rol.Nombre);
 
             try
@@ -68,17 +66,16 @@ namespace AccesoDatos.DAO
             }
             finally
             {
-                gestor.cerrarConexion();
+                GestorConexion.cerrarConexion(connection);
             }
         }
 
         public static bool insertar(RolUsuario rol)
         {
-            GestorConexion gestor = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "INSERT INTO rol_usuario(nombre) VALUES(@nombre)";
 
-            MySqlCommand command = new MySqlCommand(consulta, gestor.getConexionAbierta());
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            MySqlCommand command = new MySqlCommand(consulta, connection);
             command.Parameters.AddWithValue("@nombre", rol.Nombre);
 
             try
@@ -93,7 +90,7 @@ namespace AccesoDatos.DAO
             }
             finally
             {
-                gestor.cerrarConexion();
+                GestorConexion.cerrarConexion(connection);
             }
         }
     }

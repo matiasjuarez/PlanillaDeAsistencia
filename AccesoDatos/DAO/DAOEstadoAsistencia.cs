@@ -17,13 +17,11 @@ namespace AccesoDatos
         {
             List<EstadoAsistencia> estadosAsistencia = new List<EstadoAsistencia>();
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "SELECT id, nombre FROM estadoasistencia";
 
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             try
             {
@@ -43,7 +41,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(comando.Connection);
             }
 
             return estadosAsistencia;

@@ -16,14 +16,12 @@ namespace AccesoDatos
         {
             List<Aula> aulas = new List<Aula>();
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "SELECT id, nombre, descripcion FROM aula";
 
             // Creamos el comando sql
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             // Ejecutamos la consulta
             MySqlDataReader reader = comando.ExecuteReader();
@@ -38,7 +36,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(comando.Connection); }
 
             return aulas;
         }
@@ -48,13 +46,11 @@ namespace AccesoDatos
         {
             Aula aula = null;
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "SELECT id, nombre, descripcion FROM aula WHERE id = @id";
 
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
             comando.Parameters.AddWithValue("@id", id);
 
             MySqlDataReader reader = comando.ExecuteReader();
@@ -67,7 +63,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(comando.Connection); }
 
             return aula;
         }
@@ -84,13 +80,11 @@ namespace AccesoDatos
 
         public static Boolean existeAula(Aula aula)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "SELECT nombre FROM aula WHERE nombre = @nombre";
 
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
             comando.Parameters.AddWithValue("@nombre", aula.Nombre);
 
             try
@@ -107,7 +101,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(comando.Connection);
             }
         }
 
@@ -118,10 +112,8 @@ namespace AccesoDatos
 
         public static void insertarAulas(List<Aula> aulas)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             MySqlCommand command = new MySqlCommand();
-            command.Connection = gestorConexion.getConexionAbierta();
+            command.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             StringBuilder builder = new StringBuilder("INSERT INTO aula(nombre, descripcion) VALUES");
 
@@ -144,7 +136,7 @@ namespace AccesoDatos
 
             try { command.ExecuteNonQuery(); }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(command.Connection); }
         }
     }
 }

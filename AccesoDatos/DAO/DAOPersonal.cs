@@ -22,14 +22,13 @@ namespace AccesoDatos
         // Devuelve null si no se encuentra un curso con ese id
         public static Personal obtenerPersonalPorID(int id)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             StringBuilder consulta = new StringBuilder(obtenerSelectBasico());
             consulta.Append(" WHERE id = @id");
 
+            MySqlConnection conexion = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta.ToString();
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = conexion;
 
             comando.Parameters.AddWithValue("@id", id);
 
@@ -48,7 +47,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(conexion);
             }
 
             return null;
@@ -56,11 +55,10 @@ namespace AccesoDatos
 
         public static void darDeBaja(Personal personal)
         {
-            GestorConexion gestor = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             String consulta = "UPDATE personal SET estado = 'B' WHERE id=@id";
 
-            MySqlCommand command = new MySqlCommand(consulta, gestor.getConexionAbierta());
+            MySqlConnection conexion = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            MySqlCommand command = new MySqlCommand(consulta, conexion);
             command.Parameters.AddWithValue("@id", personal.Id);
 
             try
@@ -74,7 +72,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestor.cerrarConexion();
+                GestorConexion.cerrarConexion(conexion);
             }
         }
 
@@ -82,12 +80,11 @@ namespace AccesoDatos
         {
             List<Personal> encargados = new List<Personal>();
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = obtenerSelectBasico();
             consulta += " WHERE estado = 'A'";
 
-            MySqlCommand comando = new MySqlCommand(consulta, gestorConexion.getConexionAbierta());
+            MySqlConnection conexion = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            MySqlCommand comando = new MySqlCommand(consulta, conexion);
 
             MySqlDataReader reader = comando.ExecuteReader();
 
@@ -107,7 +104,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(conexion);
             }
         }
 
@@ -115,12 +112,11 @@ namespace AccesoDatos
         {
             if (personal == null) return false;
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-            MySqlConnection connection = gestorConexion.getConexionAbierta();
+            MySqlConnection conexion = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             MySqlCommand comandoPersonal = new MySqlCommand();
             comandoPersonal.CommandText = obtenerInsert(personal);
-            comandoPersonal.Connection = gestorConexion.getConexionAbierta();
+            comandoPersonal.Connection = conexion;
 
             comandoPersonal.Parameters.AddWithValue("@Nombre", personal.Nombre);
             comandoPersonal.Parameters.AddWithValue("@Apellido", personal.Apellido);
@@ -154,22 +150,21 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(conexion);
             }
         }
 
         public static bool modificarPersonal(Personal personal)
         {
             if (personal == null) return false;
-
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
+            
             StringBuilder consulta = new StringBuilder(obtenerUpdateBasico());
             consulta.Append(" WHERE id = @Id");
 
+            MySqlConnection conexion = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta.ToString();
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = conexion;
 
             comando.Parameters.AddWithValue("@Nombre", personal.Nombre);
             comando.Parameters.AddWithValue("@Apellido", personal.Apellido);
@@ -202,7 +197,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(conexion);
             }
         }
 

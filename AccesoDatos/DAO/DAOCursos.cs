@@ -19,13 +19,12 @@ namespace AccesoDatos
         {
             List<Curso> cursos = new List<Curso>();
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "SELECT curso.id as IdCurso, curso.nombre as Nombre FROM curso";
 
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            MySqlConnection conexion = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            comando.Connection = conexion;
 
             MySqlDataReader reader = comando.ExecuteReader();
 
@@ -40,7 +39,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(conexion); }
 
             return cursos;
         }
@@ -48,13 +47,13 @@ namespace AccesoDatos
         // Devuelve null si no se encuentra un curso con ese id
         public static Curso obtenerCursoPorID(int id)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "SELECT curso.id as IdCurso, curso.nombre as Nombre FROM curso WHERE id = @id";
 
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+
+            MySqlConnection conexion = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            comando.Connection = conexion;
             comando.Parameters.AddWithValue("@id", id);
 
             MySqlDataReader reader = comando.ExecuteReader();
@@ -75,7 +74,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(conexion);
             }
 
             return null;
@@ -88,10 +87,9 @@ namespace AccesoDatos
 
         public static void insertarCursos(List<Curso> cursos)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
+            MySqlConnection conexion = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
             MySqlCommand comando = new MySqlCommand();
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = conexion;
 
             string consulta = "INSERT INTO curso(Nombre) VALUES";
 
@@ -118,7 +116,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(conexion);
             }
         }
     }

@@ -14,13 +14,11 @@ namespace AccesoDatos
         {
             List<Docente> docentes = new List<Docente>();
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "SELECT id, nombre FROM docente ORDER BY nombre";
 
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             MySqlDataReader reader = comando.ExecuteReader();
 
@@ -32,7 +30,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(comando.Connection); }
 
             return docentes;
         }
@@ -48,11 +46,11 @@ namespace AccesoDatos
         // Devuelve null si no se encuentra un docente con ese id
         public static Docente obtenerDocentePorID(int id)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             string consulta = "SELECT id, nombre FROM docente WHERE id=@id ORDER BY nombre";
 
-            MySqlCommand command = new MySqlCommand(consulta, gestorConexion.getConexionAbierta());
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            MySqlCommand command = new MySqlCommand(consulta, connection);
             command.Parameters.AddWithValue("@id", id);
 
             try
@@ -64,18 +62,17 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(connection); }
 
             return null;
         }
 
         public static Docente buscarDocentePorNombre(string nombre)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "SELECT id, nombre FROM docente ORDER BY nombre WHERE nombre=@nombre";
 
-            MySqlCommand command = new MySqlCommand(consulta, gestorConexion.getConexionAbierta());
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            MySqlCommand command = new MySqlCommand(consulta, connection);
             command.Parameters.AddWithValue("@nombre", nombre);
 
             try
@@ -87,7 +84,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(connection); }
 
             return null;
         }
@@ -96,11 +93,11 @@ namespace AccesoDatos
         // Basamos la comprobacion en el nombre del docente guardado en la base de datos del rapla
         public static bool existeDocente(Docente docente)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "SELECT nombre FROM docente where nombre=@nombre";
 
-            MySqlCommand command = new MySqlCommand(consulta, gestorConexion.getConexionAbierta());
+
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            MySqlCommand command = new MySqlCommand(consulta, connection);
             command.Parameters.AddWithValue("@nombre", docente.Nombre);
 
             try
@@ -117,7 +114,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(connection);
             }
         }
 
@@ -128,10 +125,10 @@ namespace AccesoDatos
 
         public static void insertarDocentes(List<Docente> docentes)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             MySqlCommand command = new MySqlCommand();
-            command.Connection = gestorConexion.getConexionAbierta();
+
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            command.Connection = connection;
 
             string consulta = "INSERT INTO docente(nombre) VALUES";
             for (int i = 0; i < docentes.Count; i++)
@@ -157,7 +154,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(connection);
             }
         }
     }

@@ -179,13 +179,11 @@ namespace AccesoDatos
         private static List<Appointment> obtenerAppointmentsDesde2016(DateTime fechaInicio, DateTime fechaFin){
             List<Appointment> eventos = new List<Appointment>();
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionRapla);
-
             string consulta = obtenerSentenciaSelect2016();
 
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionRapla);
 
             // Creamos sus parametros
             MySqlParameter fechaInicioParam = new MySqlParameter();

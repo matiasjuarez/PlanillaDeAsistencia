@@ -321,7 +321,7 @@
             this.datePickerCargaAsistencia.Name = "datePickerCargaAsistencia";
             this.datePickerCargaAsistencia.Size = new System.Drawing.Size(200, 20);
             this.datePickerCargaAsistencia.TabIndex = 22;
-            this.datePickerCargaAsistencia.Value = new System.DateTime(2016, 3, 17, 0, 0, 0, 0);
+            this.datePickerCargaAsistencia.Value = System.DateTime.Now;
             this.datePickerCargaAsistencia.CloseUp += new System.EventHandler(this.datePickerCargaAsistencia_CloseUp);
             // 
             // lbleMensajes
@@ -339,11 +339,12 @@
             // tripleGrillaAsistencias
             // 
             this.tripleGrillaAsistencias.Location = new System.Drawing.Point(3, 237);
+            this.tripleGrillaAsistencias.ModoPresentacion = 0;
             this.tripleGrillaAsistencias.Name = "tripleGrillaAsistencias";
             this.tripleGrillaAsistencias.Size = new System.Drawing.Size(780, 247);
             this.tripleGrillaAsistencias.TabIndex = 28;
             // 
-            // ModificacionAsistencias
+            // EditorAsistencias
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -356,7 +357,7 @@
             this.Controls.Add(this.grpBoxDocente);
             this.Controls.Add(this.grpBoxHorarios);
             this.Controls.Add(this.datePickerCargaAsistencia);
-            this.Name = "ModificacionAsistencias";
+            this.Name = "EditorAsistencias";
             this.Size = new System.Drawing.Size(788, 488);
             this.grpBoxGeneral.ResumeLayout(false);
             this.grpBoxGeneral.PerformLayout();

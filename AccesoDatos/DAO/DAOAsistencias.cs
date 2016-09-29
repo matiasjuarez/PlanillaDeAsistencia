@@ -17,13 +17,11 @@ namespace AccesoDatos
         {
             List<Asistencia> asistencias = new List<Asistencia>();
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-            
             string consulta = obtenerSentenciaSelectSinRestricciones();
             consulta += " WHERE comienzoClaseEsperado BETWEEN @fechaInicio and @fechaFin";
 
             MySqlCommand command = new MySqlCommand();
-            command.Connection = gestorConexion.getConexionAbierta();
+            command.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
             command.CommandText = consulta;
             command.Parameters.AddWithValue("@fechaInicio", fechaHoraInicio);
             command.Parameters.AddWithValue("@fechaFin", fechaHoraFin);
@@ -39,7 +37,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(command.Connection); }
 
             return asistencias;
         }
@@ -50,10 +48,8 @@ namespace AccesoDatos
 
             if (fechas.Count == 0) return asistencias;
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             MySqlCommand command = new MySqlCommand();
-            command.Connection = gestorConexion.getConexionAbierta();
+            command.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             StringBuilder restriccionIN = new StringBuilder("IN(");
 
@@ -87,7 +83,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(command.Connection); }
 
             return asistencias;
         }
@@ -98,10 +94,8 @@ namespace AccesoDatos
 
             if (ids.Count == 0) return asistencias;
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             MySqlCommand command = new MySqlCommand();
-            command.Connection = gestorConexion.getConexionAbierta();
+            command.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             StringBuilder restriccionIN = new StringBuilder("IN(");
 
@@ -135,7 +129,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(command.Connection); }
 
             return asistencias;
         }
@@ -289,10 +283,8 @@ namespace AccesoDatos
             List<Asistencia> asistencias = new List<Asistencia>();
             if (ids.Count == 0) return asistencias;
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             MySqlCommand command = new MySqlCommand();
-            command.Connection = gestorConexion.getConexionAbierta();
+            command.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             StringBuilder restriccionIN = new StringBuilder("IN(");
 
@@ -326,7 +318,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(command.Connection); }
 
             return asistencias;
         }
@@ -347,8 +339,7 @@ namespace AccesoDatos
         {
             if (asistencias.Count == 0) return;
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-            MySqlConnection connection = gestorConexion.getConexionAbierta();
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
             MySqlTransaction transaction = connection.BeginTransaction();
             int i = 0;
             foreach (Asistencia asistencia in asistencias)
@@ -427,7 +418,7 @@ namespace AccesoDatos
                 transaction.Rollback();
                 GestorExcepciones.mostrarExcepcion(e); 
             }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(connection); }
         }
 
         private static void insertarAulasDeAsistencia(Asistencia asistencia)
@@ -448,15 +439,14 @@ namespace AccesoDatos
                 }
             }
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-            MySqlConnection connection = gestorConexion.getConexionAbierta();
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             MySqlCommand comando = new MySqlCommand();
             comando.Connection = connection;
 
             bool insertar = false;
 
-            string consulta = "INSERT INTO aulasPorAsistencia (idAppointmentAsistencia, idAula) VALUES";
+            string consulta = "INSERT INTO aulasporasistencia (idAppointmentAsistencia, idAula) VALUES";
 
             int i = 0;
             foreach(KeyValuePair<int, Asistencia> entrada in asistenciaPorAppointment)
@@ -493,16 +483,15 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(connection);
             }
         }
 
-        public static void updateAsistencias(List<Asistencia> asistencias)
+        /*public static void updateAsistencias(List<Asistencia> asistencias)
         {
             if (asistencias.Count == 0) return;
 
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-            MySqlConnection connection = gestorConexion.getConexionAbierta();
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             MySqlCommand comando = new MySqlCommand();
             comando.Connection = connection;
@@ -575,7 +564,92 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(connection);
+            }
+        }*/
+
+        public static void updateAsistencias(List<Asistencia> asistencias)
+        {
+            if (asistencias.Count == 0) return;
+
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
+            MySqlTransaction transaction = connection.BeginTransaction();
+
+            for (int i = 0; i < asistencias.Count; i++)
+            {
+                MySqlCommand comando = new MySqlCommand();
+                comando.Connection = connection;
+                comando.Transaction = transaction;
+
+                StringBuilder query = new StringBuilder();
+
+                string comienzoClaseEsperado = "@comienzoClaseEsperado" + i;
+                string finClaseEsperado = "@finClaseEsperado" + i;
+                string comienzoClaseReal = "@comienzoClaseReal" + i;
+                string finClaseReal = "@finClaseReal" + i;
+                string cantidadAlumnos = "@cantidadAlumnos" + i;
+                string idDocente = "@idDocente" + i;
+                string idAsignatura = "@idAsignatura" + i;
+                string idEncargado = "@idEncargado" + i;
+                string idEstadoAsistencia = "@idEstadoAsistencia" + i;
+                string idCurso = "@idCurso" + i;
+                string observaciones = "@observaciones" + i;
+                string idAsistencia = "@idAsistencia" + i;
+
+                query.Append("UPDATE asistencia set ");
+                query.Append("comienzoClaseEsperado = " + comienzoClaseEsperado + ", ");
+                query.Append("finClaseEsperado = " + finClaseEsperado + ", ");
+                query.Append("comienzoClaseReal = " + comienzoClaseReal + ", ");
+                query.Append("finClaseReal = " + finClaseReal + ", ");
+                query.Append("cantidadAlumnos = " + cantidadAlumnos + ", ");
+                query.Append("idDocente = " + idDocente + ", ");
+                query.Append("idAsignatura = " + idAsignatura + ", ");
+                query.Append("idEncargado = " + idEncargado + ", ");
+                query.Append("idEstadoAsistencia = " + idEstadoAsistencia + ", ");
+                query.Append("idCurso = " + idCurso + ", ");
+                query.Append("observaciones = " + observaciones + " ");
+                query.Append("WHERE id = " + idAsistencia + ";");
+
+                Asistencia asistencia = asistencias.ElementAt(i);
+                comando.Parameters.Add(new MySqlParameter(comienzoClaseEsperado, asistencia.obtenerEntradaEsperada()));
+                comando.Parameters.Add(new MySqlParameter(finClaseEsperado, asistencia.obtenerSalidaEsperada()));
+                comando.Parameters.Add(new MySqlParameter(comienzoClaseReal, asistencia.obtenerEntradaReal()));
+                comando.Parameters.Add(new MySqlParameter(finClaseReal, asistencia.obtenerSalidaReal()));
+                comando.Parameters.Add(new MySqlParameter(cantidadAlumnos, asistencia.CantidadAlumnos));
+                comando.Parameters.Add(new MySqlParameter(idDocente, asistencia.Docente.Id));
+                comando.Parameters.Add(new MySqlParameter(idAsignatura, asistencia.Asignatura.Id));
+                comando.Parameters.Add(new MySqlParameter(idEncargado, asistencia.Encargado.Id));
+                comando.Parameters.Add(new MySqlParameter(idEstadoAsistencia, asistencia.EstadoAsistencia.Id));
+                comando.Parameters.Add(new MySqlParameter(idCurso, asistencia.Curso.Id));
+                comando.Parameters.Add(new MySqlParameter(observaciones, asistencia.Observaciones));
+                comando.Parameters.Add(new MySqlParameter(idAsistencia, asistencia.Id));
+
+                comando.CommandText = query.ToString();
+
+                comando.ExecuteNonQuery();
+            }
+
+            try
+            {
+                transaction.Commit();
+
+                eliminarAulasDeAsistencias(asistencias);
+
+                foreach (Asistencia asistencia in asistencias)
+                {
+                    if (asistencia.Aulas != null && asistencia.Aulas.Count > 0)
+                    {
+                        insertarAulasDeAsistencia(asistencia);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                GestorExcepciones.mostrarExcepcion(e);
+            }
+            finally
+            {
+                GestorConexion.cerrarConexion(connection);
             }
         }
 
@@ -587,12 +661,10 @@ namespace AccesoDatos
         public static void eliminarAulasDeAsistencias(List<Asistencia> asistencias)
         {
             if (asistencias.Count == 0) return;
-
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
+            
             MySqlCommand comando = new MySqlCommand();
 
-            string query = "DELETE FROM aulasPorAsistencia WHERE idAppointmentAsistencia IN(";
+            string query = "DELETE FROM aulasporasistencia WHERE idAppointmentAsistencia IN(";
 
             int i = 0;
             foreach (Asistencia asistencia in asistencias)
@@ -609,7 +681,7 @@ namespace AccesoDatos
             query += ")";
 
             comando.CommandText = query;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             try
             {
@@ -621,7 +693,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(comando.Connection);
             }
         }
 
@@ -632,8 +704,7 @@ namespace AccesoDatos
 
         public static void eliminarAsistencias(List<Asistencia> asistencias)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-            MySqlConnection connection = gestorConexion.getConexionAbierta();
+            MySqlConnection connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
             MySqlTransaction transaction = connection.BeginTransaction();
 
             string consulta = "DELETE FROM asistencia WHERE id=@id;";
@@ -662,7 +733,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(connection);
             }
         }
     }

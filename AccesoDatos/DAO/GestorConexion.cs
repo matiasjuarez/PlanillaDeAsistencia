@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using System.Configuration;
+
 using MySql.Data.MySqlClient;
 using MySql.Data;
 
@@ -14,8 +16,6 @@ namespace AccesoDatos
 {
     public class GestorConexion
     {
-        private MySqlConnection connection;
-
         // El servidor en el que esta la base de datos
         private string server = "";
         // El nombre de la base de datos
@@ -30,86 +30,109 @@ namespace AccesoDatos
         public static readonly int ConexionRapla = 0;
         public static readonly int ConexionPlanillaAsistencia = 1;
 
+        private string connectionStringPlanillaAsistencia = "";
+        private string connectionStringRapla = "";
+
+        private static GestorConexion instanciaGestorConexion;
+
+        public static GestorConexion getInstance()
+        {
+            if (instanciaGestorConexion == null)
+            {
+                instanciaGestorConexion = new GestorConexion();
+            }
+
+            return instanciaGestorConexion;
+        }
 
         //Constructor
-        public GestorConexion(int baseDeDatosAConectar)
+        private GestorConexion()
         {
-            Initialize(baseDeDatosAConectar);
+            Initialize();
         }
 
         // Inicializa la coneccion contra la base de datos seleccionada
-        private void Initialize(int baseDeDatosAConectar)
+        private void Initialize()
         {
             string connectionString = null;
-
-            if (baseDeDatosAConectar == GestorConexion.ConexionRapla)
-            {
                 /*server = "localhost";
                 database = "rapla2016";
                 uid = "matias";
                 password = "120491";*/
 
-                server = "localhost";
+                /*server = "localhost";
                 database = "rapla_test";
                 uid = "matias";
-                password = "120491";
+                password = "120491";*/
 
                 /*server = "tricorder";
                 database = "rapla_test";
                 uid = "rapla_test";
                 password = "rapla_test";*/
-            }
-            else if (baseDeDatosAConectar == GestorConexion.ConexionPlanillaAsistencia)
-            {
-                server = "localhost";
+
+                connectionStringPlanillaAsistencia = ConfigurationManager.ConnectionStrings["planilla_asistencias"].ConnectionString;
+                connectionStringRapla = ConfigurationManager.ConnectionStrings["rapla"].ConnectionString;
+                /*server = "localhost";
                 database = "planilla_asistencia";
                 uid = "matias";
-                password = "120491";
-            }
+                password = "120491";*/
+            
 
-            connectionString = "SERVER=" + server + ";" + "DATABASE=" +
-            database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
+            //connectionString = "SERVER=" + server + ";" + "DATABASE=" +
+            //database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
 
-            connection = new MySqlConnection(connectionString);
+            //connection = new MySqlConnection(connectionString);
         }
 
 
         // Devuelve un objeto MySqlConnecion ya abierto y listo para usar
-        public MySqlConnection getConexionAbierta()
+        public MySqlConnection getConexion(int baseDeDatosAConectar)
         {
+            MySqlConnection conexion = null;
+
             try
             {
-                if (connection != null && connection.State == System.Data.ConnectionState.Closed)
+                if(baseDeDatosAConectar == GestorConexion.ConexionPlanillaAsistencia)
                 {
-                    connection.Open();
+                    conexion = new MySqlConnection(connectionStringPlanillaAsistencia);
                 }
+                else if (baseDeDatosAConectar == GestorConexion.ConexionRapla)
+                {
+                    conexion = new MySqlConnection(connectionStringRapla);
+                }
+                else
+                {
+                    throw new ArgumentException("El valor: " + baseDeDatosAConectar + " no es valido");
+                }
+
+                conexion.Open();
+                return conexion;
             }
             catch (MySqlException ex)
             {
                 GestorExcepciones.mostrarExcepcion(ex, "Algo fue mal cuando se intento conectar con la base de datos: ");
+                return null;
                 //Environment.Exit(1);
             }
-            
-            return connection;
         }
 
         // Cierra la coneccion
-        public bool cerrarConexion()
+        public static bool cerrarConexion(MySqlConnection conexion)
         {
-            bool valor = true;
-
             try
             {
-                if (connection != null && connection.State == System.Data.ConnectionState.Open) {
-                    connection.Close();
+                if (conexion != null && conexion.State == System.Data.ConnectionState.Open)
+                {
+                    conexion.Close();
                 }
+
+                return true;
             }
             catch(Exception e)
             {
                 GestorExcepciones.mostrarExcepcion(e);
+                return false;
             }
-
-            return valor;
         }
 
         

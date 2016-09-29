@@ -13,14 +13,12 @@ namespace AccesoDatos
         public static List<Asignatura> obtenerTodasLasAsignaturas()
         {
             List<Asignatura> asignaturas = new List<Asignatura>();
-
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
+            
             string consulta = "SELECT id, nombre, idJefeCatedra FROM asignatura ORDER BY nombre";
 
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             try
             {
@@ -33,7 +31,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(comando.Connection); }
 
             return asignaturas;
         }
@@ -52,14 +50,12 @@ namespace AccesoDatos
         public static Asignatura obtenerAsignaturaPorID(int id)
         {
             Asignatura asignatura = null;
-
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
+            
             string consulta = "SELECT id, nombre, idJefeCatedra FROM asignatura WHERE id = @id";
 
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
             comando.Parameters.AddWithValue("@id", id);
 
             try
@@ -72,7 +68,7 @@ namespace AccesoDatos
                 }
             }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(comando.Connection); }
 
             return asignatura;
         }
@@ -82,14 +78,12 @@ namespace AccesoDatos
         // y en el id del jefe de catedra
         public static bool existeAsignatura(Asignatura asignatura)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             string consulta = "SELECT nombre, idJefeCatedra FROM asignatura " + 
                 "WHERE nombre = @nombre and idJefeCatedra = @idJefeCatedra";
 
             MySqlCommand comando = new MySqlCommand();
             comando.CommandText = consulta;
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
             comando.Parameters.AddWithValue("@nombre", asignatura.Nombre);
             comando.Parameters.AddWithValue("@idJefeCatedra", asignatura.JefeCatedra.Id);
 
@@ -105,7 +99,7 @@ namespace AccesoDatos
             }
             finally
             {
-                gestorConexion.cerrarConexion();
+                GestorConexion.cerrarConexion(comando.Connection);
             }
         }
 
@@ -116,10 +110,8 @@ namespace AccesoDatos
 
         public static void insertarAsignaturas(List<Asignatura> asignaturas)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
             MySqlCommand comando = new MySqlCommand();
-            comando.Connection = gestorConexion.getConexionAbierta();
+            comando.Connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia);
 
             string consulta = "INSERT INTO asignatura(nombre, idJefeCatedra) VALUES";
 
@@ -140,7 +132,7 @@ namespace AccesoDatos
 
             try { comando.ExecuteNonQuery(); }
             catch (MySqlException e) { GestorExcepciones.mostrarExcepcion(e); }
-            finally { gestorConexion.cerrarConexion(); }
+            finally { GestorConexion.cerrarConexion(comando.Connection); }
         }
 
         public static void actualizarAsignatura(Asignatura asignatura)
@@ -150,9 +142,7 @@ namespace AccesoDatos
 
         public static void actualizarAsignaturas(List<Asignatura> asignaturas)
         {
-            GestorConexion gestorConexion = new GestorConexion(GestorConexion.ConexionPlanillaAsistencia);
-
-            using (var connection = gestorConexion.getConexionAbierta())
+            using (var connection = GestorConexion.getInstance().getConexion(GestorConexion.ConexionPlanillaAsistencia))
             {
                 MySqlTransaction transaction = connection.BeginTransaction();
 

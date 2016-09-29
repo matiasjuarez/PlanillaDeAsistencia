@@ -11,7 +11,7 @@ using Utilidades;
 using PlanillaAsistencia.Principal;
 using AdministracionPersonal.Administracion;
 using AdministracionPersonal.InicioSesion;
-using EstadisticasRapla;
+//using EstadisticasRapla;
 using System.Windows.Forms.Integration;
 using System.Windows.Interop;
 using System.Windows.Shapes;
@@ -102,10 +102,10 @@ namespace PuntoDeEntrada.Main
             ElementHost.EnableModelessKeyboardInterop(wpfWindow);
             wpfWindow.ShowDialog();*/
 
-            var wpfWindow = new EstadisticasRapla.MainWindow();
+            /*var wpfWindow = new EstadisticasRapla.MainWindow();
             WindowInteropHelper wih = new WindowInteropHelper(wpfWindow);
             //wih.Owner = form.Handle;
-            wpfWindow.ShowDialog();
+            wpfWindow.ShowDialog();*/
         }
     }
 }

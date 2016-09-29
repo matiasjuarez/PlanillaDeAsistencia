@@ -88,10 +88,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Estadisticas\EstadisticasRapla\EstadisticasRapla\EstadisticasRapla.csproj">
-      <Project>{41dd3f8f-a8ab-4806-92fb-997cee721a3e}</Project>
-      <Name>EstadisticasRapla</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AccesoDatos\AccesoDatos.csproj">
       <Project>{beea5f26-3a6f-4a01-8d62-ef0c27e929bf}</Project>
       <Name>AccesoDatos</Name>
