@@ -27,7 +27,7 @@ namespace PuntoDeEntrada.Main
             Sesion.agregarObservadorSesion(this);
         }
 
-        public void configurarVistaSegunRolDeUsuario(Usuario usuario)
+        private void configurarVistaSegunRolDeUsuario(Usuario usuario)
         {
             if (usuario == null)
             {
@@ -75,6 +75,8 @@ namespace PuntoDeEntrada.Main
 
                 ventanaSesion.Controlador = controladorSesion;
                 controladorSesion.VentanaSesion = ventanaSesion;
+
+                controladorSesion.agregarObservadorSesion(this);
             }
             
             return ventanaSesion;
@@ -114,6 +116,19 @@ namespace PuntoDeEntrada.Main
             }
 
             return pantallaAdministracionUsuarios;
+        }
+
+        void IObservadorCambioEstadoSesion.observarCierreSesion()
+        {
+            this.ventanaPlanilla = null;
+            this.pantallaAdministracionUsuarios = null;
+            configurarVistaSegunRolDeUsuario(null);
+        }
+
+        void IObservadorCambioEstadoSesion.observarInicioSesion()
+        {
+            Usuario usuario = Sesion.obtenerSesionActual().Usuario;
+            configurarVistaSegunRolDeUsuario(usuario);
         }
     }
 }

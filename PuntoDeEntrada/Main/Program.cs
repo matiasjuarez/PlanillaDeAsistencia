@@ -23,7 +23,7 @@ namespace PuntoDeEntrada.Main
 
             controladorPuntoDeEntrada.PuntoDeEntrada = puntoDeEntrada;
             puntoDeEntrada.ControladorPuntoDeEntrada = controladorPuntoDeEntrada;
-            controladorPuntoDeEntrada.configurarVistaSegunRolDeUsuario(null);
+            controladorPuntoDeEntrada.observarCierreSesion();
 
             Application.Run(puntoDeEntrada);
         }

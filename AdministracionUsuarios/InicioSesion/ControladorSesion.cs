@@ -31,6 +31,22 @@ namespace AdministracionPersonal.InicioSesion
             return observadoresSesion.Remove(observador);
         }
 
+        private void notificarInicioSesion()
+        {
+            foreach (IObservadorCambioEstadoSesion observador in observadoresSesion)
+            {
+                observador.observarInicioSesion();
+            }
+        }
+
+        private void notificarCierreSesion()
+        {
+            foreach (IObservadorCambioEstadoSesion observador in observadoresSesion)
+            {
+                observador.observarCierreSesion();
+            }
+        }
+
         public void botonSesionPresionado()
         {
             if (Sesion.obtenerSesionActual() == null || Sesion.obtenerSesionActual().Usuario == null)
@@ -41,12 +57,14 @@ namespace AdministracionPersonal.InicioSesion
                 if (iniciarSesion(usuario, password))
                 {
                     ventanaSesion.ponerEnEstadoSesionIniciada();
+                    notificarInicioSesion();
                 }
             }
             else
             {
                 Sesion.cerrarSesion();
                 ventanaSesion.ponerEnEstadoSesionNoIniciada();
+                notificarCierreSesion();
             }
         }
 

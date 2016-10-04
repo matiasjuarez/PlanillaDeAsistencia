@@ -36,7 +36,7 @@ namespace PlanillaAsistencia.Pantallas.EditorAsistencias
             modelo.inicializar();
             vista.inicializar();
 
-            temporizadorSincronizacionModelo = new Temporizador(5);
+            temporizadorSincronizacionModelo = new Temporizador(30);
             temporizadorSincronizacionModelo.agregarObjetoTemporizable(this);
             temporizadorSincronizacionModelo.habilitar(true);
         }
