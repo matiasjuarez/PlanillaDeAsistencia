@@ -153,6 +153,9 @@ namespace Entidades
 
         public bool tieneEstadoConfirmado()
         {
+            // Si quieren que se busquen todos los appointments, incluso los que estan sin confirmar, devolver siempre true.
+            // Si solo se quieren los que estan confirmados, fijarse que su estado de reserva sea 260 o 261
+            //return true;
             if (this.estadoReserva == 260 || this.estadoReserva == 261) return true;
 
             return false;

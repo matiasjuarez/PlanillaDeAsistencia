@@ -102,7 +102,8 @@ namespace PuntoDeEntrada.Main
 
                 // Cada vez que abrimos la planilla de asistencia sincronizamos los ultimos dos meses (60 dias) contra la base de datos
                 // del rapla
-                ControladorSincronizacionInterBase.sincronizar(DateTime.Now.Subtract(new TimeSpan(90, 0, 0, 0)), DateTime.Now);
+                //ControladorSincronizacionInterBase.sincronizar(DateTime.Now.Subtract(new TimeSpan(90, 0, 0, 0)), DateTime.Now);
+                ControladorSincronizacionInterBase.sincronizar(new DateTime(DateTime.Now.Year, 1, 1), DateTime.Now);
             }
 
             return this.ventanaPlanilla;
